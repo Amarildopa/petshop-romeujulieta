@@ -1,0 +1,42 @@
+export const dogBreeds = [
+  "Labrador Retriever",
+  "Golden Retriever",
+  "German Shepherd",
+  "Poodle",
+  "Bulldog",
+  "Beagle",
+  "Rottweiler",
+  "Dachshund",
+  "Siberian Husky",
+  "Pomeranian",
+  "Shih Tzu",
+  "Boxer",
+  "Chihuahua",
+  "Yorkshire Terrier",
+  "Maltese",
+  "Australian Shepherd",
+  "Doberman Pinscher",
+  "Great Dane",
+  "Shetland Sheepdog",
+  "Border Collie",
+  "SRD (Sem Raça Definida)"
+];
+
+export const catBreeds = [
+  "Siamês",
+  "Persa",
+  "Maine Coon",
+  "Ragdoll",
+  "Bengal",
+  "Sphynx",
+  "British Shorthair",
+  "Abyssinian",
+  "Scottish Fold",
+  "Birman",
+  "Russian Blue",
+  "American Shorthair",
+  "Oriental",
+  "Norwegian Forest Cat",
+  "Siberian",
+  "SRD (Sem Raça Definida)"
+];

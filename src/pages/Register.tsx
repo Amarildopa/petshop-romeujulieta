@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Phone, Mail, Chrome, Apple, CheckCircle, Dog, Plus, Trash2 } from 'lucide-react';
+import { auth, db } from '../firebaseConfig'; // Importando auth e db do firebase
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, collection, writeBatch } from 'firebase/firestore';
 
 interface Pet {
   name: string;
@@ -10,6 +13,13 @@ interface Pet {
 }
 
 export const Register: React.FC = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
   const [showPassword, setShowPassword] = useState(false);
   const [step, setStep] = useState(1);
   const [registrationMethod, setRegistrationMethod] = useState<'email' | 'phone'>('email');
@@ -25,6 +35,44 @@ export const Register: React.FC = () => {
     'Suporte 24/7 via WhatsApp'
   ];
 
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    if (password.length < 6) {
+        setError("A senha deve ter no mínimo 6 caracteres.");
+        setLoading(false);
+        return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Salva os dados do usuário no Firestore, agora com a role
+      await setDoc(doc(db, "usuarios", user.uid), {
+        fullName: fullName,
+        email: user.email,
+        createdAt: new Date(),
+        role: 'cliente', // <<< Papel padrão para novos usuários
+      });
+      
+      setStep(2); // Avança para o passo de adicionar pets
+      setLoading(false);
+
+    } catch (error: any) {
+      if (error.code === 'auth/email-already-in-use') {
+        setError("Este e-mail já está em uso.");
+      } else {
+        setError("Ocorreu um erro ao criar a conta. Tente novamente.");
+      }
+      console.error("Erro no registro:", error);
+      setLoading(false);
+    }
+  };
+
+
   const handleAddPet = () => {
     if (currentPet.name && currentPet.species) {
       setPets([...pets, currentPet]);
@@ -36,6 +84,34 @@ export const Register: React.FC = () => {
   const handleRemovePet = (index: number) => {
     setPets(pets.filter((_, i) => i !== index));
   };
+
+  const handleFinishRegistration = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      setError("Usuário não encontrado. Por favor, tente novamente.");
+      setStep(1); // Volta para o passo 1 se o usuário não for encontrado
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Usa um batch para salvar todos os pets de uma vez
+      const batch = writeBatch(db);
+      pets.forEach(pet => {
+        const petRef = doc(collection(db, "usuarios", user.uid, "pets"));
+        batch.set(petRef, pet);
+      });
+      await batch.commit();
+
+      setLoading(false);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Erro ao salvar pets:", error);
+      setError("Ocorreu um erro ao salvar seus pets.");
+      setLoading(false);
+    }
+  }
 
   if (step === 1) {
     return (
@@ -107,7 +183,8 @@ export const Register: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setRegistrationMethod('phone')}
-                  className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md transition-colors ${
+                  disabled
+                  className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     registrationMethod === 'phone'
                       ? 'bg-white text-primary-dark shadow-sm'
                       : 'text-text-color'
@@ -118,7 +195,7 @@ export const Register: React.FC = () => {
                 </button>
               </div>
 
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleRegister}>
                 <div>
                   <label className="block text-sm font-medium text-text-color mb-2">
                     Nome Completo
@@ -126,6 +203,9 @@ export const Register: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Seu nome completo"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
                     className="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
                   />
                 </div>
@@ -141,6 +221,9 @@ export const Register: React.FC = () => {
                         ? 'seu@email.com' 
                         : '(11) 99999-9999'
                     }
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
                     className="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
                   />
                 </div>
@@ -152,7 +235,10 @@ export const Register: React.FC = () => {
                   <div className="relative">
                     <input
                       type={showPassword ? 'text' : 'password'}
-                      placeholder="Mínimo 8 caracteres"
+                      placeholder="Mínimo 6 caracteres"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
                       className="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors pr-12"
                     />
                     <button
@@ -164,30 +250,33 @@ export const Register: React.FC = () => {
                     </button>
                   </div>
                 </div>
+                
+                {error && (
+                  <div className="text-status-danger text-sm text-center p-2 bg-red-50 rounded-lg">
+                    {error}
+                  </div>
+                )}
 
                 <div className="flex items-start space-x-3">
                   <input
                     type="checkbox"
+                    required
                     className="h-4 w-4 text-primary focus:ring-primary border-accent rounded mt-1"
                   />
                   <span className="text-sm text-text-color">
                     Aceito os{' '}
                     <Link to="/terms" className="text-primary hover:text-primary-dark">
                       Termos de Uso
-                    </Link>{' '}
-                    e{' '}
-                    <Link to="/privacy" className="text-primary hover:text-primary-dark">
-                      Política de Privacidade
                     </Link>
                   </span>
                 </div>
 
                 <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  className="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark hover:shadow-lg transition-all font-medium"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark hover:shadow-lg transition-all font-medium disabled:bg-opacity-50"
                 >
-                  Continuar
+                  {loading ? 'Criando conta...' : 'Continuar'}
                 </button>
               </form>
 
@@ -202,11 +291,11 @@ export const Register: React.FC = () => {
                 </div>
 
                 <div className="mt-6 grid grid-cols-2 gap-3">
-                  <button className="w-full inline-flex justify-center py-3 px-4 border border-accent rounded-lg bg-white text-sm font-medium text-text-color-dark hover:bg-surface-dark transition-colors">
+                  <button disabled className="w-full inline-flex justify-center py-3 px-4 border border-accent rounded-lg bg-white text-sm font-medium text-text-color-dark hover:bg-surface-dark transition-colors disabled:opacity-50">
                     <Chrome className="h-5 w-5 text-red-500" />
                     <span className="ml-2">Google</span>
                   </button>
-                  <button className="w-full inline-flex justify-center py-3 px-4 border border-accent rounded-lg bg-white text-sm font-medium text-text-color-dark hover:bg-surface-dark transition-colors">
+                  <button disabled className="w-full inline-flex justify-center py-3 px-4 border border-accent rounded-lg bg-white text-sm font-medium text-text-color-dark hover:bg-surface-dark transition-colors disabled:opacity-50">
                     <Apple className="h-5 w-5 text-gray-900" />
                     <span className="ml-2">Apple</span>
                   </button>
@@ -229,6 +318,7 @@ export const Register: React.FC = () => {
     );
   }
 
+  // Passo 2: Adicionar Pets
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <motion.div
@@ -337,6 +427,12 @@ export const Register: React.FC = () => {
             </button>
           )}
 
+          {error && (
+              <div className="text-status-danger text-sm text-center p-2 bg-red-50 rounded-lg mt-4">
+                {error}
+              </div>
+          )}
+
           <div className="mt-6 flex space-x-4">
             <button
               type="button"
@@ -345,12 +441,13 @@ export const Register: React.FC = () => {
             >
               Voltar
             </button>
-            <Link
-              to="/dashboard"
-              className="flex-1 bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark hover:shadow-lg transition-all font-medium text-center"
+            <button
+              onClick={handleFinishRegistration}
+              disabled={loading}
+              className="flex-1 bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark hover:shadow-lg transition-all font-medium text-center disabled:bg-opacity-50"
             >
-              Finalizar Cadastro
-            </Link>
+              {loading ? 'Finalizando...' : 'Finalizar Cadastro'}
+            </button>
           </div>
         </div>
       </motion.div>

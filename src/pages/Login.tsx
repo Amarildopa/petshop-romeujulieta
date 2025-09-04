@@ -2,17 +2,33 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Phone, Mail, Chrome, Apple, PawPrint } from 'lucide-react';
+import { auth } from '../firebaseConfig'; // Importando auth
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  
   const [showPassword, setShowPassword] = useState(false);
   const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
-  const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Em uma aplicação real, aqui ocorreria a autenticação.
-    // Por enquanto, apenas navegamos para o dashboard.
-    navigate('/dashboard');
+    setLoading(true);
+    setError(null);
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setLoading(false);
+      navigate('/dashboard');
+    } catch (error: any) {
+      setError("E-mail ou senha inválidos.");
+      console.error("Erro no login:", error);
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,7 +63,8 @@ export const Login: React.FC = () => {
             </button>
             <button
               onClick={() => setLoginMethod('phone')}
-              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md transition-colors ${
+              disabled
+              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md transition-colors disabled:opacity-50 ${
                 loginMethod === 'phone'
                   ? 'bg-white text-primary-dark shadow-sm'
                   : 'text-text-color'
@@ -70,6 +87,9 @@ export const Login: React.FC = () => {
                     ? 'seu@email.com' 
                     : '(11) 99999-9999'
                 }
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
               />
             </div>
@@ -82,6 +102,9 @@ export const Login: React.FC = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Digite sua senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
                   className="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors pr-12"
                 />
                 <button
@@ -93,6 +116,12 @@ export const Login: React.FC = () => {
                 </button>
               </div>
             </div>
+
+            {error && (
+              <div className="text-status-danger text-sm text-center p-2 bg-red-50 rounded-lg">
+                {error}
+              </div>
+            )}
 
             <div className="flex items-center justify-between">
               <label className="flex items-center">
@@ -112,9 +141,10 @@ export const Login: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark hover:shadow-lg transition-all font-medium"
+              disabled={loading}
+              className="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark hover:shadow-lg transition-all font-medium disabled:bg-opacity-50"
             >
-              Entrar
+              {loading ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
 
@@ -129,11 +159,11 @@ export const Login: React.FC = () => {
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button className="w-full inline-flex justify-center py-3 px-4 border border-accent rounded-lg bg-white text-sm font-medium text-text-color-dark hover:bg-surface-dark transition-colors">
+              <button disabled className="w-full inline-flex justify-center py-3 px-4 border border-accent rounded-lg bg-white text-sm font-medium text-text-color-dark hover:bg-surface-dark transition-colors disabled:opacity-50">
                 <Chrome className="h-5 w-5 text-red-500" />
                 <span className="ml-2">Google</span>
               </button>
-              <button className="w-full inline-flex justify-center py-3 px-4 border border-accent rounded-lg bg-white text-sm font-medium text-text-color-dark hover:bg-surface-dark transition-colors">
+              <button disabled className="w-full inline-flex justify-center py-3 px-4 border border-accent rounded-lg bg-white text-sm font-medium text-text-color-dark hover:bg-surface-dark transition-colors disabled:opacity-50">
                 <Apple className="h-5 w-5 text-gray-900" />
                 <span className="ml-2">Apple</span>
               </button>
