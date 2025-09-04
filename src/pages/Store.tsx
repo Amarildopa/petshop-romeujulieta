@@ -1,0 +1,339 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { 
+  ShoppingCart, 
+  Search, 
+  Filter, 
+  Star,
+  Heart,
+  Truck,
+  Shield,
+  Award,
+  Package,
+  ShoppingBag
+} from 'lucide-react';
+import { faker } from '@faker-js/faker';
+
+export const Store: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [cartItems, setCartItems] = useState<string[]>([]);
+
+  const categories = [
+    { id: 'all', name: 'Todos os Produtos', count: 45 },
+    { id: 'food', name: 'Ração Premium', count: 12 },
+    { id: 'treats', name: 'Petiscos Naturais', count: 8 },
+    { id: 'accessories', name: 'Acessórios', count: 15 },
+    { id: 'toys', name: 'Brinquedos', count: 10 }
+  ];
+
+  const generateProducts = () => {
+    const productTypes = [
+      { type: 'food', names: ['Ração Premium para Cães', 'Ração Hipoalergênica', 'Ração Natural Orgânica', 'Ração para Filhotes'] },
+      { type: 'treats', names: ['Petisco Natural de Frango', 'Osso Natural', 'Biscoito Integral', 'Snack Funcional'] },
+      { type: 'accessories', names: ['Coleira Premium', 'Cama Ortopédica', 'Bebedouro Automático', 'Transportadora'] },
+      { type: 'toys', names: ['Brinquedo Interativo', 'Mordedor Natural', 'Bolinha Resistente', 'Corda para Brincar'] }
+    ];
+
+    const products = [];
+    
+    productTypes.forEach(category => {
+      category.names.forEach((name, index) => {
+        products.push({
+          id: `${category.type}-${index}`,
+          name,
+          category: category.type,
+          price: parseFloat(faker.commerce.price({ min: 25, max: 200, dec: 2 })),
+          originalPrice: parseFloat(faker.commerce.price({ min: 30, max: 250, dec: 2 })),
+          rating: parseFloat((Math.random() * (5 - 4) + 4).toFixed(1)),
+          reviews: faker.number.int({ min: 15, max: 120 }),
+          image: faker.image.urlLoremFlickr({ category: 'dog', width: 300, height: 300 }),
+          badge: Math.random() > 0.7 ? (Math.random() > 0.5 ? 'Bestseller' : 'Oferta') : null,
+          description: faker.lorem.sentence(),
+          inStock: Math.random() > 0.1
+        });
+      });
+    });
+
+    return products;
+  };
+
+  const products = generateProducts();
+
+  const filteredProducts = selectedCategory === 'all' 
+    ? products 
+    : products.filter(product => product.category === selectedCategory);
+
+  const addToCart = (productId: string) => {
+    setCartItems([...cartItems, productId]);
+  };
+
+  const benefits = [
+    {
+      icon: Truck,
+      title: 'Frete Grátis',
+      description: 'Acima de R$ 99'
+    },
+    {
+      icon: Shield,
+      title: 'Compra Segura',
+      description: '100% protegida'
+    },
+    {
+      icon: Award,
+      title: 'Produtos Premium',
+      description: 'Qualidade garantida'
+    },
+    {
+      icon: Package,
+      title: 'Entrega Rápida',
+      description: 'Em até 2 dias úteis'
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-surface">
+      <div className="text-center pt-16 pb-8">
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-4xl font-bold text-text-color-dark flex items-center justify-center space-x-3">
+          <span>Loja Premium</span>
+          <ShoppingBag className="h-8 w-8 text-primary" />
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-lg text-text-color mt-2">
+          Produtos naturais e acessórios de qualidade para seu pet
+        </motion.p>
+      </div>
+
+      <section className="bg-surface-dark border-y border-accent/20 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {benefits.map((benefit, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="flex items-center space-x-3"
+              >
+                <benefit.icon className="h-8 w-8 text-primary" />
+                <div>
+                  <p className="font-semibold text-text-color-dark text-sm">
+                    {benefit.title}
+                  </p>
+                  <p className="text-text-color text-xs">
+                    {benefit.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid lg:grid-cols-4 gap-8">
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-white rounded-xl p-6 shadow-sm border border-accent/20"
+            >
+              <div className="relative">
+                <Search className="h-5 w-5 text-text-color absolute left-3 top-1/2 transform -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Buscar produtos..."
+                  className="w-full pl-10 pr-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-xl p-6 shadow-sm border border-accent/20"
+            >
+              <h3 className="font-semibold text-text-color-dark mb-4 flex items-center">
+                <Filter className="h-5 w-5 mr-2" />
+                Categorias
+              </h3>
+              <div className="space-y-2">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`w-full text-left p-3 rounded-lg transition-colors ${
+                      selectedCategory === category.id
+                        ? 'bg-primary-light/50 text-primary-dark border border-primary/20'
+                        : 'hover:bg-surface-dark text-text-color'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{category.name}</span>
+                      <span className={`text-sm px-2 py-1 rounded-full ${
+                        selectedCategory === category.id
+                          ? 'bg-primary/20 text-primary-dark'
+                          : 'bg-surface-dark text-text-color'
+                      }`}>
+                        {category.count}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-xl p-6 shadow-sm border border-accent/20"
+            >
+              <h3 className="font-semibold text-text-color-dark mb-4 flex items-center">
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Carrinho ({cartItems.length})
+              </h3>
+              {cartItems.length > 0 ? (
+                <div className="space-y-2">
+                  <p className="text-text-color text-sm">
+                    {cartItems.length} {cartItems.length === 1 ? 'item' : 'itens'} adicionados
+                  </p>
+                  <button className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary-dark transition-colors">
+                    Ver Carrinho
+                  </button>
+                </div>
+              ) : (
+                <p className="text-text-color text-sm">
+                  Seu carrinho está vazio
+                </p>
+              )}
+            </motion.div>
+          </div>
+
+          <div className="lg:col-span-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center justify-between mb-6"
+            >
+              <h2 className="text-xl font-semibold text-text-color-dark">
+                {categories.find(c => c.id === selectedCategory)?.name} ({filteredProducts.length})
+              </h2>
+              <select className="border border-accent rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary">
+                <option>Mais Relevantes</option>
+                <option>Menor Preço</option>
+                <option>Maior Preço</option>
+                <option>Mais Vendidos</option>
+              </select>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProducts.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden border border-accent/20"
+                >
+                  <div className="relative">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-48 object-cover"
+                    />
+                    {product.badge && (
+                      <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium ${
+                        product.badge === 'Bestseller' 
+                          ? 'bg-status-success text-white' 
+                          : 'bg-status-danger text-white'
+                      }`}>
+                        {product.badge}
+                      </div>
+                    )}
+                    <button className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors">
+                      <Heart className="h-4 w-4 text-text-color" />
+                    </button>
+                  </div>
+
+                  <div className="p-4">
+                    <h3 className="font-semibold text-text-color-dark mb-2 line-clamp-2 h-12">
+                      {product.name}
+                    </h3>
+                    
+                    <div className="flex items-center space-x-1 mb-3">
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-4 w-4 ${
+                              i < Math.floor(product.rating)
+                                ? 'text-yellow-400 fill-current'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm font-medium text-text-color-dark">
+                        {product.rating}
+                      </span>
+                      <span className="text-sm text-text-color">
+                        ({product.reviews})
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg font-bold text-primary-dark">
+                            R$ {product.price.toFixed(2)}
+                          </span>
+                          {product.originalPrice > product.price && (
+                            <span className="text-sm text-text-color line-through">
+                              R$ {product.originalPrice.toFixed(2)}
+                            </span>
+                          )}
+                        </div>
+                        {product.originalPrice > product.price && (
+                          <span className="text-xs text-status-success font-medium">
+                            {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => addToCart(product.id)}
+                      disabled={!product.inStock}
+                      className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
+                        product.inStock
+                          ? 'bg-primary text-white hover:bg-primary-dark'
+                          : 'bg-gray-200 text-text-color cursor-not-allowed'
+                      }`}
+                    >
+                      {product.inStock ? 'Adicionar ao Carrinho' : 'Indisponível'}
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-text-color text-lg">
+                  Nenhum produto encontrado nesta categoria.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
