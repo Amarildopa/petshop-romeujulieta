@@ -21,57 +21,63 @@ import {
 } from 'lucide-react';
 import { LiveFeedModal } from '../components/LiveFeedModal';
 import { ServiceProgressBar } from '../components/ServiceProgressBar';
+import { useAuth } from '../contexts/AuthContext';
+import { useUserProfile } from '../hooks/useUserProfile';
+import { petsService, type Pet } from '../services/petsService';
+import { appointmentsService, type Appointment } from '../services/appointmentsService';
+import { useNavigate } from 'react-router-dom';
+import { getImageUrl } from '../config/images';
 
-export const Dashboard: React.FC = () => {
+const Dashboard: React.FC = () => {
   const [isLiveFeedOpen, setIsLiveFeedOpen] = useState(false);
   const [serviceProgress, setServiceProgress] = useState(0);
   const [checkedInPet, setCheckedInPet] = useState<string | null>(null);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuth();
+  const { profile } = useUserProfile();
+  const navigate = useNavigate();
 
-  const upcomingAppointments = [
-    {
-      id: 1,
-      service: 'Banho & Tosa',
-      pet: 'Luna',
-      date: '2025-01-15',
-      time: '14:30',
-      status: 'confirmado',
-      isToday: true
-    },
-    {
-      id: 2,
-      service: 'Check-up Veterinário',
-      pet: 'Thor',
-      date: '2025-01-18',
-      time: '10:00',
-      status: 'pendente',
-      isToday: false
+  // Check authentication and redirect if needed
+  useEffect(() => {
+    console.log('Dashboard - authLoading:', authLoading);
+    console.log('Dashboard - user:', user);
+    
+    if (!authLoading && !user) {
+      console.log('Dashboard - No user found, redirecting to login');
+      navigate('/login');
+    } else if (user) {
+      console.log('Dashboard - User found, loading dashboard');
     }
-  ];
+  }, [user, authLoading, navigate]);
 
-  const pets = [
-    {
-      id: 1,
-      name: 'Luna',
-      breed: 'Golden Retriever',
-      age: '2 anos',
-      image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=100&h=100&fit=crop&crop=face',
-      lastService: 'Banho & Tosa',
-      lastServiceDate: '2025-01-10',
-      inService: true,
-    },
-    {
-      id: 2,
-      name: 'Thor',
-      breed: 'Bulldog Francês',
-      age: '3 anos',
-      image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=100&h=100&fit=crop&crop=face',
-      lastService: 'Check-up',
-      lastServiceDate: '2025-01-08',
-      inService: false,
+  // Load data on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const [petsData, appointmentsData] = await Promise.all([
+          petsService.getPets(),
+          appointmentsService.getUpcomingAppointments()
+        ]);
+        
+        setPets(petsData);
+        setUpcomingAppointments(appointmentsData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      loadData();
     }
-  ];
-
-  const petInService = pets.find(p => p.inService);
+  }, [user]);
 
   // Simula o check-in e o progresso do serviço
   useEffect(() => {
@@ -111,6 +117,50 @@ export const Dashboard: React.FC = () => {
 
   const growthJourneyPhotos = Array.from({ length: 4 }, () => faker.image.urlLoremFlickr({ category: 'animals', width: 128, height: 128 }));
 
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-surface-dark pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if user is not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface-dark pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Carregando dados...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-surface-dark pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-surface-dark pt-8 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -130,7 +180,10 @@ export const Dashboard: React.FC = () => {
               </p>
             </div>
             <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-              <button className="relative p-2 text-text-color hover:text-primary transition-colors">
+              <button 
+                className="relative p-2 text-text-color hover:text-primary transition-colors"
+                title="Notificações"
+              >
                 <Bell className="h-6 w-6" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-status-danger rounded-full"></span>
               </button>
@@ -139,9 +192,9 @@ export const Dashboard: React.FC = () => {
                 className="flex items-center space-x-2 p-2 rounded-lg hover:bg-white transition-colors"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1494790108755-2616b169a1b5?w=40&h=40&fit=crop&crop=face"
+                  src={getImageUrl.userAvatar(profile?.avatar_url, 'medium')}
                   alt="Perfil"
-                  className="w-8 h-8 rounded-full"
+                  className="w-8 h-8 rounded-full object-cover"
                 />
               </Link>
             </div>
@@ -180,10 +233,10 @@ export const Dashboard: React.FC = () => {
                 </h2>
                 
                 <div 
-                  onClick={() => petInService && setIsLiveFeedOpen(true)}
-                  className={`aspect-video bg-black rounded-lg flex items-center justify-center text-white relative group ${petInService ? 'cursor-pointer' : 'cursor-default'}`}
+                  onClick={() => checkedInPet && setIsLiveFeedOpen(true)}
+                  className={`aspect-video bg-black rounded-lg flex items-center justify-center text-white relative group ${checkedInPet ? 'cursor-pointer' : 'cursor-default'}`}
                 >
-                  {petInService ? (
+                  {checkedInPet ? (
                     <>
                       <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
                         <Camera className="h-10 w-10 text-gray-500" />
@@ -198,7 +251,7 @@ export const Dashboard: React.FC = () => {
                         <span className="text-xs font-medium">LIVE</span>
                       </div>
                       <div className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded-md">
-                        <span className="text-xs font-medium">{petInService.name}</span>
+                        <span className="text-xs font-medium">{checkedInPet}</span>
                       </div>
                     </>
                   ) : (
@@ -237,16 +290,20 @@ export const Dashboard: React.FC = () => {
                     </div>
                     <div className="relative h-24 w-32 flex-shrink-0">
                       {growthJourneyPhotos.slice(0, 3).map((photo, index) => (
-                        <img
+                        <div
                           key={index}
-                          src={photo}
-                          alt={`Memória ${index + 1}`}
-                          className="absolute w-20 h-20 object-cover rounded-lg border-2 border-white shadow-lg"
-                          style={{
-                            transform: `rotate(${index * 10 - 10}deg) translate(${index * 15}px, ${index * 5}px)`,
-                            zIndex: index,
-                          }}
-                        />
+                          className={`absolute w-20 h-20 rounded-lg border-2 border-white shadow-lg overflow-hidden ${
+                            index === 0 ? 'rotate-[-10deg] translate-x-0 translate-y-0' :
+                            index === 1 ? 'rotate-[0deg] translate-x-[15px] translate-y-[5px]' :
+                            'rotate-[10deg] translate-x-[30px] translate-y-[10px]'
+                          }`}
+                        >
+                          <img
+                            src={photo}
+                            alt={`Memória ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -313,44 +370,70 @@ export const Dashboard: React.FC = () => {
                 </Link>
               </div>
               <div className="space-y-4">
-                {upcomingAppointments.map((appointment) => (
-                  <div
-                    key={appointment.id}
-                    className="bg-white rounded-xl p-6 shadow-sm border border-accent/20"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="bg-primary-light/50 p-3 rounded-lg">
-                          <Calendar className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-text-color-dark">
-                            {appointment.service}
-                          </h3>
-                          <p className="text-sm text-text-color">
-                            {appointment.pet} • {new Date(appointment.date).toLocaleDateString('pt-BR')} às {appointment.time}
-                          </p>
+                {upcomingAppointments.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-text-color">Nenhum agendamento encontrado</p>
+                    <Link
+                      to="/booking"
+                      className="inline-block mt-4 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors"
+                    >
+                      Agendar Serviço
+                    </Link>
+                  </div>
+                ) : (
+                  upcomingAppointments.map((appointment) => {
+                    const isToday = new Date(appointment.appointment_date).toDateString() === new Date().toDateString();
+                    const statusLabels = {
+                      pending: 'Pendente',
+                      confirmed: 'Confirmado',
+                      in_progress: 'Em Andamento',
+                      completed: 'Concluído',
+                      cancelled: 'Cancelado'
+                    };
+
+                    return (
+                      <div
+                        key={appointment.id}
+                        className="bg-white rounded-xl p-6 shadow-sm border border-accent/20"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="bg-primary-light/50 p-3 rounded-lg">
+                              <Calendar className="h-6 w-6 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="font-semibold text-text-color-dark">
+                                {appointment.service?.name || 'Serviço'}
+                              </h3>
+                              <p className="text-sm text-text-color">
+                                {appointment.pet?.name || 'Pet'} • {new Date(appointment.appointment_date).toLocaleDateString('pt-BR')} às {appointment.appointment_time}
+                              </p>
+                            </div>
+                          </div>
+                          {isToday && appointment.status === 'confirmed' ? (
+                            <Link
+                              to={`/check-in/${appointment.id}`}
+                              className="bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
+                            >
+                              Fazer Check-in
+                            </Link>
+                          ) : (
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              appointment.status === 'confirmed'
+                                ? 'bg-status-success-light text-status-success'
+                                : appointment.status === 'pending'
+                                ? 'bg-status-warning-light text-status-warning'
+                                : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {statusLabels[appointment.status]}
+                            </span>
+                          )}
                         </div>
                       </div>
-                      {appointment.isToday ? (
-                        <Link
-                          to={`/check-in/${appointment.id}`}
-                          className="bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-colors"
-                        >
-                          Fazer Check-in
-                        </Link>
-                      ) : (
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          appointment.status === 'confirmado'
-                            ? 'bg-status-success-light text-status-success'
-                            : 'bg-status-warning-light text-status-warning'
-                        }`}>
-                          {appointment.status === 'confirmado' ? 'Confirmado' : 'Pendente'}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                    );
+                  })
+                )}
               </div>
             </motion.div>
           </div>
@@ -376,28 +459,41 @@ export const Dashboard: React.FC = () => {
                 </Link>
               </div>
               <div className="space-y-4">
-                {pets.map((pet) => (
-                  <div
-                    key={pet.id}
-                    className="bg-white rounded-xl p-4 shadow-sm border border-accent/20"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <img
-                        src={pet.image}
-                        alt={pet.name}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-text-color-dark">{pet.name}</h3>
-                        <p className="text-sm text-text-color">{pet.breed} • {pet.age}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Último: {pet.lastService} ({new Date(pet.lastServiceDate).toLocaleDateString('pt-BR')})
-                        </p>
-                      </div>
-                      <Heart className="h-5 w-5 text-status-danger fill-current" />
-                    </div>
+                {pets.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Heart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-text-color mb-4">Nenhum pet cadastrado</p>
+                    <Link
+                      to="/pet-profile"
+                      className="inline-block bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors"
+                    >
+                      Adicionar Pet
+                    </Link>
                   </div>
-                ))}
+                ) : (
+                  pets.map((pet) => (
+                    <div
+                      key={pet.id}
+                      className="bg-white rounded-xl p-4 shadow-sm border border-accent/20"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={getImageUrl.petImage(pet.image_url, 'small')}
+                          alt={pet.name}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-text-color-dark">{pet.name}</h3>
+                          <p className="text-sm text-text-color">{pet.breed} • {pet.age}</p>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {pet.species} • {pet.gender}
+                          </p>
+                        </div>
+                        <Heart className="h-5 w-5 text-status-danger fill-current" />
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </motion.div>
 
@@ -471,8 +567,10 @@ export const Dashboard: React.FC = () => {
       <LiveFeedModal 
         isOpen={isLiveFeedOpen} 
         onClose={() => setIsLiveFeedOpen(false)} 
-        petName={petInService?.name || 'seu pet'}
+        petName={checkedInPet || 'seu pet'}
       />
     </div>
   );
 };
+
+export default Dashboard;

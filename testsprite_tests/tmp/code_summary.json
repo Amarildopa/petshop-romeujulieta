@@ -1,0 +1,106 @@
+{
+  "tech_stack": [
+    "TypeScript",
+    "React",
+    "Vite",
+    "Supabase",
+    "Framer Motion",
+    "React Router",
+    "Vitest",
+    "Lucide React",
+    "Faker.js",
+    "Sentry"
+  ],
+  "features": [
+    {
+      "name": "Authentication System",
+      "description": "Complete user authentication with login, register, and auth context management",
+      "files": ["src/contexts/AuthContext.tsx", "src/pages/Login.tsx", "src/pages/Register.tsx", "src/hooks/useAdminAuth.ts"]
+    },
+    {
+      "name": "Pet Management",
+      "description": "CRUD operations for pet profiles, including creation, editing, and viewing pet details",
+      "files": ["src/services/petsService.ts", "src/pages/PetProfile.tsx"]
+    },
+    {
+      "name": "Appointment Booking",
+      "description": "Service booking system with time slots, service selection, and appointment management",
+      "files": ["src/pages/Booking.tsx", "src/services/appointmentsService.ts", "src/services/availableSlotsService.ts", "src/services/servicesService.ts"]
+    },
+    {
+      "name": "Admin Dashboard",
+      "description": "Administrative interface for managing users, appointments, and system monitoring",
+      "files": ["src/pages/AdminDashboard.tsx", "src/pages/AdminUsers.tsx", "src/pages/AdminReports.tsx", "src/services/adminService.ts", "src/components/AdminLayout.tsx", "src/components/AdminSidebar.tsx"]
+    },
+    {
+      "name": "E-commerce Store",
+      "description": "Product catalog, shopping cart, and order management system",
+      "files": ["src/pages/Store.tsx", "src/services/productsService.ts", "src/services/cartService.ts", "src/services/ordersService.ts"]
+    },
+    {
+      "name": "User Dashboard",
+      "description": "User profile management and personal dashboard with pet overview",
+      "files": ["src/pages/Dashboard.tsx", "src/pages/Profile.tsx", "src/services/profileService.ts", "src/hooks/useUserProfile.ts"]
+    },
+    {
+      "name": "Subscription System",
+      "description": "Subscription plans management and user subscription handling",
+      "files": ["src/pages/Subscription.tsx", "src/services/subscriptionPlansService.ts", "src/services/userSubscriptionsService.ts"]
+    },
+    {
+      "name": "Notification System",
+      "description": "Real-time notifications and messaging system",
+      "files": ["src/services/notificationsService.ts", "src/services/chatService.ts"]
+    },
+    {
+      "name": "Help Center",
+      "description": "Customer support system with help articles and ticket management",
+      "files": ["src/pages/HelpCenter.tsx", "src/services/helpService.ts"]
+    },
+    {
+      "name": "Check-in System",
+      "description": "Pet check-in functionality for appointments and services",
+      "files": ["src/pages/CheckIn.tsx"]
+    },
+    {
+      "name": "Growth Journey",
+      "description": "Pet growth tracking and milestone recording system",
+      "files": ["src/pages/GrowthJourney.tsx"]
+    },
+    {
+      "name": "Monitoring System",
+      "description": "System monitoring and performance tracking",
+      "files": ["src/pages/Monitoring.tsx", "src/lib/metrics.ts", "src/hooks/usePerformance.ts"]
+    },
+    {
+      "name": "Care Extras",
+      "description": "Additional care services and extras management",
+      "files": ["src/services/careExtrasService.ts"]
+    },
+    {
+      "name": "Coupon System",
+      "description": "Discount coupons and promotional codes management",
+      "files": ["src/services/couponsService.ts", "src/config/discounts.ts"]
+    },
+    {
+      "name": "Address Management",
+      "description": "CEP lookup and address validation service",
+      "files": ["src/services/cepService.ts"]
+    },
+    {
+      "name": "UI Components",
+      "description": "Reusable UI components including header, loading spinner, and modals",
+      "files": ["src/components/Header.tsx", "src/components/LoadingSpinner.tsx", "src/components/LiveFeedModal.tsx", "src/components/OptimizedImage.tsx", "src/components/ServiceProgressBar.tsx"]
+    },
+    {
+      "name": "Error Handling",
+      "description": "Error boundary and logging system with Sentry integration",
+      "files": ["src/components/ErrorBoundary.tsx", "src/lib/logger.ts", "src/lib/sentry.ts"]
+    },
+    {
+      "name": "Testing Suite",
+      "description": "Comprehensive test suite with unit and integration tests",
+      "files": ["src/services/__tests__/petsService.test.ts", "src/services/__tests__/petsService.basic.test.ts", "src/services/__tests__/petsService.simple.test.ts", "src/components/__tests__/Header.basic.test.ts", "src/test/setup.ts"]
+    }
+  ]
+}

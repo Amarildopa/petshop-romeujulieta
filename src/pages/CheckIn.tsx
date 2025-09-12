@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PawPrint, MessageSquare } from 'lucide-react';
 
-export const CheckIn: React.FC = () => {
+const CheckIn: React.FC = () => {
   const { appointmentId } = useParams();
   const navigate = useNavigate();
 
@@ -69,3 +69,5 @@ export const CheckIn: React.FC = () => {
     </div>
   );
 };
+
+export default CheckIn;

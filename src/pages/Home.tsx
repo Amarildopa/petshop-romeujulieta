@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { faker } from '@faker-js/faker';
+import { APP_CONFIG } from '../constants/app';
+import Testimonials from '../components/Testimonials';
+import { IMAGE_CONFIG } from '../config/images';
 import { 
   ArrowRight,
   Dog,
@@ -9,11 +11,10 @@ import {
   Scissors,
   ShoppingBag,
   Sparkles,
-  Star,
   Stethoscope,
 } from 'lucide-react';
 
-export const Home: React.FC = () => {
+const Home: React.FC = () => {
   const services = [
     {
       icon: Scissors,
@@ -37,13 +38,7 @@ export const Home: React.FC = () => {
     },
   ];
 
-  const testimonials = Array.from({ length: 3 }, () => ({
-    name: faker.person.firstName(),
-    petName: faker.animal.dog(),
-    avatar: faker.image.avatar(),
-    text: faker.lorem.paragraph(),
-    rating: 5,
-  }));
+
 
   return (
     <div className="bg-surface text-text-color">
@@ -64,7 +59,7 @@ export const Home: React.FC = () => {
               Carinho e Confiança para o seu Pet
             </h1>
             <p className="mt-6 text-lg text-text-color max-w-xl mx-auto md:mx-0">
-              No PetShop Romeu & Julieta, oferecemos uma experiência premium com serviços de alta qualidade, acompanhamento em tempo real e um ambiente pensado para o bem-estar do seu melhor amigo.
+              No {APP_CONFIG.name}, oferecemos uma experiência premium com serviços de alta qualidade, acompanhamento em tempo real e um ambiente pensado para o bem-estar do seu melhor amigo.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link
@@ -89,7 +84,7 @@ export const Home: React.FC = () => {
             className="relative"
           >
             <img 
-              src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80" 
+              src={IMAGE_CONFIG.home.hero} 
               alt="Cachorro feliz"
               className="rounded-3xl shadow-2xl w-full h-auto object-cover"
             />
@@ -137,13 +132,13 @@ export const Home: React.FC = () => {
             viewport={{ once: true }}
           >
             <img 
-              src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=800&q=80"
+              src={IMAGE_CONFIG.home.about}
               alt="Veterinária cuidando de um cachorro"
               className="rounded-3xl shadow-2xl"
             />
           </motion.div>
           <div>
-            <h2 className="text-3xl font-bold text-text-color-dark font-serif">A Experiência Romeu & Julieta</h2>
+            <h2 className="text-3xl font-bold text-text-color-dark font-serif">A Experiência {APP_CONFIG.shortName}</h2>
             <p className="mt-4 text-lg text-text-color">
               Nossa missão é criar um ambiente seguro, confortável e feliz. Veja por que tutores e pets nos amam.
             </p>
@@ -172,46 +167,14 @@ export const Home: React.FC = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-secondary-light/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-text-color-dark font-serif">O que nossos clientes dizem</h2>
-          </div>
-          <div className="grid lg:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-surface p-8 rounded-2xl shadow-lg"
-              >
-                <div className="flex items-center mb-4">
-                  <img src={testimonial.avatar} alt={testimonial.name} className="w-12 h-12 rounded-full mr-4" />
-                  <div>
-                    <h4 className="font-semibold text-text-color-dark">{testimonial.name}</h4>
-                    <p className="text-sm text-text-color">Tutor(a) de {testimonial.petName}</p>
-                  </div>
-                </div>
-                <p className="text-text-color italic">"{testimonial.text}"</p>
-                <div className="flex mt-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Testimonials />
 
       {/* CTA Section */}
       <section className="py-20 bg-accent-light">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-text-color-dark font-serif">Pronto para dar ao seu pet o cuidado que ele merece?</h2>
           <p className="mt-4 text-lg text-text-color max-w-2xl mx-auto">
-            Junte-se à família Romeu & Julieta e descubra um novo padrão de cuidado e carinho para seu melhor amigo.
+            Junte-se à {APP_CONFIG.texts.family} e descubra um novo padrão de cuidado e carinho para seu melhor amigo.
           </p>
           <div className="mt-8">
             <Link
@@ -226,3 +189,5 @@ export const Home: React.FC = () => {
     </div>
   );
 };
+
+export default Home;

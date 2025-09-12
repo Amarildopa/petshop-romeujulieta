@@ -1,18 +1,125 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Phone, Mail, Chrome, Apple, PawPrint } from 'lucide-react';
+import { Eye, EyeOff, Mail, Chrome, Apple, PawPrint } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
-export const Login: React.FC = () => {
+const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
+  const [loginMethod, setLoginMethod] = useState<'email'>('email');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formKey, setFormKey] = useState(Date.now());
   const navigate = useNavigate();
+  const location = useLocation();
+  const { signIn } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Carregar email salvo e limpar campos quando o componente monta
+  useEffect(() => {
+    // Verificar se há email salvo no localStorage
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    const wasRemembered = localStorage.getItem('rememberMe') === 'true';
+    
+    if (savedEmail && wasRemembered) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    } else {
+      // Força limpeza completa dos campos
+      setEmail('');
+      setRememberMe(false);
+    }
+    
+    setPassword('');
+    setError(null);
+    setLoading(false);
+    
+    // Configurar atributos anti-autofill
+    if (typeof window !== 'undefined') {
+      // Aguardar um pouco para garantir que o DOM está pronto
+      setTimeout(() => {
+        const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+        const passwordInput = document.querySelector('input[type="password"]') as HTMLInputElement;
+        
+        if (emailInput) {
+          emailInput.setAttribute('autocomplete', 'off');
+          emailInput.setAttribute('data-form-type', 'other');
+          emailInput.setAttribute('data-lpignore', 'true');
+          emailInput.setAttribute('name', 'email-' + Date.now());
+          // Manter o valor do email se foi salvo
+          if (savedEmail && wasRemembered) {
+            emailInput.value = savedEmail;
+          }
+        }
+        if (passwordInput) {
+          passwordInput.value = '';
+          passwordInput.setAttribute('autocomplete', 'new-password');
+          passwordInput.setAttribute('data-form-type', 'other');
+          passwordInput.setAttribute('data-lpignore', 'true');
+          passwordInput.setAttribute('name', 'password-' + Date.now());
+        }
+      }, 100);
+    }
+  }, []);
+
+
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Em uma aplicação real, aqui ocorreria a autenticação.
-    // Por enquanto, apenas navegamos para o dashboard.
-    navigate('/dashboard');
+    setLoading(true);
+    setError(null);
+
+    // Validação de campos obrigatórios
+    if (!email) {
+      setError('Email é obrigatório');
+      setLoading(false);
+      return;
+    }
+
+    if (!password) {
+      setError('Senha é obrigatória');
+      setLoading(false);
+      return;
+    }
+
+    // Validação de email
+    if (!email.includes('@')) {
+      setError('Email inválido');
+      setLoading(false);
+      return;
+    }
+
+    // Validação de senha
+    if (password.length < 6) {
+      setError('Senha deve ter pelo menos 6 caracteres');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await signIn(email, password, rememberMe);
+      
+      if (error) {
+        setError(error.message);
+      } else {
+        // Salvar email se "Lembrar de mim" estiver marcado
+        if (rememberMe) {
+          localStorage.setItem('rememberedEmail', email);
+          localStorage.setItem('rememberMe', 'true');
+        } else {
+          localStorage.removeItem('rememberedEmail');
+          localStorage.removeItem('rememberMe');
+        }
+        
+        navigate('/dashboard');
+      }
+    } catch {
+      setError('Ocorreu um erro inesperado. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -33,56 +140,51 @@ export const Login: React.FC = () => {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-accent/20">
-          <div className="flex bg-surface-dark rounded-lg p-1 mb-6">
-            <button
-              onClick={() => setLoginMethod('email')}
-              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md transition-colors ${
-                loginMethod === 'email'
-                  ? 'bg-white text-primary-dark shadow-sm'
-                  : 'text-text-color'
-              }`}
-            >
-              <Mail className="h-4 w-4 mr-2" />
-              E-mail
-            </button>
-            <button
-              onClick={() => setLoginMethod('phone')}
-              className={`flex-1 flex items-center justify-center py-2 px-4 rounded-md transition-colors ${
-                loginMethod === 'phone'
-                  ? 'bg-white text-primary-dark shadow-sm'
-                  : 'text-text-color'
-              }`}
-            >
-              <Phone className="h-4 w-4 mr-2" />
-              WhatsApp
-            </button>
-          </div>
 
-          <form className="space-y-6" onSubmit={handleLogin}>
+
+          <form key={formKey} className="space-y-6" onSubmit={handleLogin}>
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+            )}
+
             <div>
-              <label className="block text-sm font-medium text-text-color mb-2">
-                {loginMethod === 'email' ? 'E-mail' : 'WhatsApp'}
+              <label htmlFor="email" className="block text-sm font-medium text-text-color mb-2">
+                E-mail
               </label>
               <input
-                type={loginMethod === 'email' ? 'email' : 'tel'}
-                placeholder={
-                  loginMethod === 'email' 
-                    ? 'seu@email.com' 
-                    : '(11) 99999-9999'
-                }
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seu@email.com"
                 className="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                autoComplete="off"
+                data-form-type="other"
+                data-lpignore="true"
+                name={`email-${formKey}`}
+                required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-text-color mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-text-color mb-2">
                 Senha
               </label>
               <div className="relative">
                 <input
+                  id="password"
                   type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Digite sua senha"
                   className="w-full px-4 py-3 border border-accent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-colors pr-12"
+                  autoComplete="new-password"
+                  data-form-type="other"
+                  data-lpignore="true"
+                  name={`password-${formKey}`}
+                  required
                 />
                 <button
                   type="button"
@@ -95,9 +197,12 @@ export const Login: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center">
+              <label htmlFor="remember" className="flex items-center">
                 <input
+                  id="remember"
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4 w-4 text-primary focus:ring-primary border-accent rounded"
                 />
                 <span className="ml-2 text-sm text-text-color">Lembrar de mim</span>
@@ -112,9 +217,14 @@ export const Login: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-dark hover:shadow-lg transition-all font-medium"
+              disabled={loading}
+              className={`w-full py-3 px-4 rounded-lg transition-all font-medium ${
+                loading
+                  ? 'bg-gray-400 text-white cursor-not-allowed'
+                  : 'bg-primary text-white hover:bg-primary-dark hover:shadow-lg'
+              }`}
             >
-              Entrar
+              {loading ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
 
@@ -154,3 +264,5 @@ export const Login: React.FC = () => {
     </div>
   );
 };
+
+export default Login;

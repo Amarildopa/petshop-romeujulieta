@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
@@ -8,60 +8,34 @@ import {
   Clock,
   Heart,
   Stethoscope,
-  Scissors,
-  Home,
-  GraduationCap,
   Truck,
   Award
 } from 'lucide-react';
+import { servicesService, type Service } from '../services/servicesService';
+import { getImageUrl } from '../config/images';
 
-export const Services: React.FC = () => {
-  const mainServices = [
-    {
-      icon: Scissors,
-      title: 'Banho & Tosa',
-      subtitle: 'Cuidado completo e estética',
-      description: 'Banho com produtos premium, tosa higiênica e estética personalizada para cada raça.',
-      features: ['Produtos hipoalergênicos', 'Tosa profissional', 'Perfume especial', 'Acompanhamento em tempo real'],
-      price: 'A partir de R$ 45',
-      duration: '2-3 horas',
-      image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop',
-      color: 'bg-secondary'
-    },
-    {
-      icon: Stethoscope,
-      title: 'Check-up Veterinário',
-      subtitle: 'Saúde em primeiro lugar',
-      description: 'Consulta completa com veterinário especializado, exames e orientações preventivas.',
-      features: ['Exame físico completo', 'Orientação nutricional', 'Cartão de vacinação', 'Relatório detalhado'],
-      price: 'A partir de R$ 120',
-      duration: '45 minutos',
-      image: 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=400&h=300&fit=crop',
-      color: 'bg-status-info'
-    },
-    {
-      icon: Home,
-      title: 'Daycare/Hotelzinho',
-      subtitle: 'Diversão e cuidado o dia todo',
-      description: 'Ambiente seguro e divertido para seu pet passar o dia ou ficar durante viagens.',
-      features: ['Monitoramento 24h', 'Atividades recreativas', 'Alimentação incluída', 'Câmeras ao vivo'],
-      price: 'A partir de R$ 80/dia',
-      duration: 'Flexível',
-      image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&h=300&fit=crop',
-      color: 'bg-accent-dark'
-    },
-    {
-      icon: GraduationCap,
-      title: 'Adestramento',
-      subtitle: 'Educação e comportamento',
-      description: 'Sessões de adestramento com profissionais certificados para melhorar o comportamento.',
-      features: ['Métodos positivos', 'Treinador certificado', 'Plano personalizado', 'Acompanhamento domiciliar'],
-      price: 'A partir de R$ 200',
-      duration: '1 hora',
-      image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop',
-      color: 'bg-primary-dark'
-    }
-  ];
+const Services: React.FC = () => {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load services data
+  useEffect(() => {
+    const loadServices = async () => {
+      try {
+        setLoading(true);
+        const servicesData = await servicesService.getServices();
+        setServices(servicesData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar serviços');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadServices();
+  }, []);
+
 
   const additionalServices = [
     {
@@ -109,6 +83,33 @@ export const Services: React.FC = () => {
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Carregando serviços...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-surface">
       <div className="text-center pt-16 pb-12">
@@ -142,7 +143,7 @@ export const Services: React.FC = () => {
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-8">
-            {mainServices.map((service, index) => (
+            {services.map((service, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -154,22 +155,22 @@ export const Services: React.FC = () => {
                 <div className="grid md:grid-cols-5">
                   <div className="md:col-span-2">
                     <img
-                      src={service.image}
-                      alt={service.title}
+                      src={getImageUrl.serviceImage(service.image_url)}
+                      alt={service.name}
                       className="w-full h-48 md:h-full object-cover"
                     />
                   </div>
                   <div className="md:col-span-3 p-6">
                     <div className="flex items-center space-x-3 mb-4">
-                      <div className={`${service.color} p-3 rounded-lg`}>
-                        <service.icon className="h-6 w-6 text-white" />
+                      <div className="bg-primary p-3 rounded-lg">
+                        <Stethoscope className="h-6 w-6 text-white" />
                       </div>
                       <div>
                         <h3 className="text-xl font-semibold text-text-color-dark">
-                          {service.title}
+                          {service.name}
                         </h3>
                         <p className="text-text-color text-sm">
-                          {service.subtitle}
+                          {service.category}
                         </p>
                       </div>
                     </div>
@@ -179,18 +180,24 @@ export const Services: React.FC = () => {
                     </p>
 
                     <div className="space-y-2 mb-4">
-                      {service.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center space-x-2">
-                          <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
-                          <span className="text-sm text-text-color">{feature}</span>
-                        </div>
-                      ))}
+                      <div className="flex items-center space-x-2">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                        <span className="text-sm text-text-color">Duração: {service.duration || '60 min'}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                        <span className="text-sm text-text-color">Avaliação: 4.8/5</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
+                        <span className="text-sm text-text-color">Categoria: {service.category}</span>
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-lg font-bold text-primary-dark">
-                          {service.price}
+                          R$ {service.price}
                         </span>
                         <p className="text-sm text-text-color">
                           Duração: {service.duration}
@@ -275,7 +282,7 @@ export const Services: React.FC = () => {
                 transition={{ delay: index * 0.1 }}
                 className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
               >
-                <service.icon className="h-10 w-10 text-primary mb-4" />
+                <Truck className="h-10 w-10 text-primary mb-4" />
                 <h3 className="font-semibold text-text-color-dark mb-2">
                   {service.title}
                 </h3>
@@ -290,3 +297,5 @@ export const Services: React.FC = () => {
     </div>
   );
 };
+
+export default Services;

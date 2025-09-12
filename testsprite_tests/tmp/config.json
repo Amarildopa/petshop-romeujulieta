@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5173",
+  "loginUser": "amarildo.albuquerque@gmail.com",
+  "loginPassword": "123456",
+  "executionArgs": {
+    "projectName": "PetShopRomeoJulieta",
+    "projectPath": "c:\\Projetos\\PetShopRomeoJulieta",
+    "testIds": [],
+    "additionalInstruction": "Execute todos os testes novamente agora que o servidor foi corrigido e está servindo conteúdo corretamente na porta 5173",
+    "envs": {
+      "API_KEY": "sk-user-vjiThhU1Oog_H8GIZ38RHtHYPQdzCvGZM0aRDLi9rT_oRAyYB9rRVk3PCodJ2pK4soM0QZeqwEj61E-X24gj7YaLI4FVQnhjN34q1smN_utGgwr7hoLfTl5EwczrQTU3dyc"
+    }
+  },
+  "proxy": "http://bbd59dd8-9781-41ad-849a-0e8cbd1c8492:JWUNYnUfG5daMn9ixaiqA39MRosRveGY@tun.testsprite.com:8080"
+}

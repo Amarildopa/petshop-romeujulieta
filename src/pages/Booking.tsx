@@ -1,91 +1,131 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, Heart, ChevronRight, Check, Sparkles, Scissors, Stethoscope } from 'lucide-react';
+import { Clock, Heart, ChevronRight, Check } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { servicesService, type Service } from '../services/servicesService';
+import { petsService, type Pet } from '../services/petsService';
+import { careExtrasService, type CareExtra } from '../services/careExtrasService';
+import { availableSlotsService, type AvailableSlot } from '../services/availableSlotsService';
+import { appointmentsService } from '../services/appointmentsService';
+import { getImageUrl } from '../config/images';
 
-export const Booking: React.FC = () => {
+const Booking: React.FC = () => {
   const [selectedService, setSelectedService] = useState('');
   const [selectedPet, setSelectedPet] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedExtras, setSelectedExtras] = useState<string[]>([]);
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
 
-  const services = [
-    {
-      id: 'banho-tosa',
-      name: 'Banho & Tosa',
-      description: 'Banho completo, tosa higiênica e estética',
-      duration: '2-3 horas',
-      price: 65,
-      image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=300&h=200&fit=crop'
-    },
-    {
-      id: 'veterinario',
-      name: 'Check-up Veterinário',
-      description: 'Consulta completa com veterinário especializado',
-      duration: '45 minutos',
-      price: 120,
-      image: 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=300&h=200&fit=crop'
-    },
-    {
-      id: 'daycare',
-      name: 'Daycare/Hotelzinho',
-      description: 'Cuidado e diversão o dia todo para seu pet',
-      duration: 'Dia inteiro',
-      price: 85,
-      image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=300&h=200&fit=crop'
-    },
-    {
-      id: 'adestramento',
-      name: 'Adestramento',
-      description: 'Sessão de adestramento com profissional certificado',
-      duration: '1 hora',
-      price: 200,
-      image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=200&fit=crop'
+  // Estados para dados reais
+  const [services, setServices] = useState<Service[]>([]);
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [careExtras, setCareExtras] = useState<CareExtra[]>([]);
+  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+
+  // Check authentication and redirect if needed
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login');
     }
-  ];
+  }, [user, authLoading, navigate]);
 
-  const extraCareOptions = [
-    { id: 'hidratacao', name: 'Hidratação Profunda', price: 30, icon: Sparkles },
-    { id: 'corte-unhas', name: 'Corte de Unhas', price: 15, icon: Scissors },
-    { id: 'limpeza-ouvidos', name: 'Limpeza de Ouvidos', price: 20, icon: Stethoscope },
-  ];
+  // Load data on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const [servicesData, petsData, careExtrasData] = await Promise.all([
+          servicesService.getServices(),
+          petsService.getPets(),
+          careExtrasService.getCareExtras()
+        ]);
 
-  const pets = [
-    {
-      id: 'luna',
-      name: 'Luna',
-      breed: 'Golden Retriever',
-      age: '2 anos',
-      image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=80&h=80&fit=crop&crop=face'
-    },
-    {
-      id: 'thor',
-      name: 'Thor',
-      breed: 'Bulldog Francês',
-      age: '3 anos',
-      image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=80&h=80&fit=crop&crop=face'
+        setServices(servicesData);
+        setPets(petsData);
+        setCareExtras(careExtrasData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      loadData();
     }
-  ];
+  }, [user]);
 
-  const availableTimes = [
-    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00'
-  ];
+  // Load available slots when service is selected
+  useEffect(() => {
+    const loadAvailableSlots = async () => {
+      if (!selectedService) return;
+      
+      try {
+        const slots = await availableSlotsService.getAvailableSlots(selectedService);
+        setAvailableSlots(slots);
+        
+        // Extract unique dates
+        const dates = [...new Set(slots.map(slot => slot.date))].sort();
+        setAvailableDates(dates);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar horários disponíveis');
+      }
+    };
 
-  const generateAvailableDates = () => {
-    const dates = [];
-    for (let i = 1; i <= 14; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() + i);
-      dates.push(date);
+    loadAvailableSlots();
+  }, [selectedService]);
+
+  // Load available times when date is selected
+  useEffect(() => {
+    if (!selectedService || !selectedDate) return;
+    
+    const slotsForDate = availableSlots.filter(slot => slot.date === selectedDate);
+    const times = slotsForDate.map(slot => slot.start_time).sort();
+    setAvailableTimes(times);
+  }, [selectedService, selectedDate, availableSlots]);
+
+  const handleBooking = async () => {
+    if (!selectedService || !selectedPet || !selectedDate || !selectedTime) {
+      setError('Por favor, preencha todos os campos obrigatórios');
+      return;
     }
-    return dates;
+
+    try {
+      
+      // Calculate total price
+      const selectedServiceData = services.find(s => s.id === selectedService);
+      const selectedExtrasData = careExtras.filter(extra => selectedExtras.includes(extra.id));
+      const totalPrice = (selectedServiceData?.price || 0) + selectedExtrasData.reduce((sum, extra) => sum + extra.price, 0);
+
+      // Create appointment
+      await appointmentsService.createAppointment({
+        pet_id: selectedPet,
+        service_id: selectedService,
+        appointment_date: selectedDate,
+        appointment_time: selectedTime,
+        notes: `Extras selecionados: ${selectedExtrasData.map(e => e.name).join(', ')}`,
+        total_price: totalPrice
+      });
+
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao criar agendamento');
+    } finally {
+      // Loading finished
+    }
   };
 
-  const availableDates = generateAvailableDates();
+
 
   const steps = [
     { number: 1, title: 'Serviço', completed: step > 1 },
@@ -113,16 +153,59 @@ export const Booking: React.FC = () => {
     );
   };
 
-  const handleConfirmBooking = () => {
-    // Lógica de confirmação aqui
-    navigate('/dashboard');
+  const handleConfirmBooking = async () => {
+    await handleBooking();
   };
 
   const selectedServiceData = services.find(s => s.id === selectedService);
   const selectedPetData = pets.find(p => p.id === selectedPet);
-  const selectedExtrasData = extraCareOptions.filter(extra => selectedExtras.includes(extra.id));
+  const selectedExtrasData = careExtras.filter(extra => selectedExtras.includes(extra.id));
   const extrasTotal = selectedExtrasData.reduce((sum, extra) => sum + extra.price, 0);
   const total = (selectedServiceData?.price || 0) + extrasTotal;
+
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if user is not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Carregando dados...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-surface pt-8 pb-12">
@@ -201,7 +284,7 @@ export const Booking: React.FC = () => {
                     }`}
                   >
                     <img
-                      src={service.image}
+                      src={getImageUrl.serviceImage(service.image_url)}
                       alt={service.name}
                       className="w-full h-32 object-cover rounded-t-xl"
                     />
@@ -249,7 +332,7 @@ export const Booking: React.FC = () => {
                   >
                     <div className="flex items-center space-x-4">
                       <img
-                        src={pet.image}
+                        src={getImageUrl.petImage(pet.image_url, 'small')}
                         alt={pet.name}
                         className="w-16 h-16 rounded-full object-cover"
                       />
@@ -273,7 +356,7 @@ export const Booking: React.FC = () => {
                   Que tal adicionar um cuidado extra?
                 </h3>
                 <div className="space-y-3">
-                  {extraCareOptions.map((extra) => (
+                  {careExtras.map((extra) => (
                     <div
                       key={extra.id}
                       onClick={() => handleToggleExtra(extra.id)}
@@ -284,10 +367,18 @@ export const Booking: React.FC = () => {
                       }`}
                     >
                       <div className="flex items-center space-x-3">
-                        <extra.icon className="h-6 w-6 text-secondary-dark" />
-                        <span className="font-medium text-text-color-dark">{extra.name}</span>
+                        <div className="w-6 h-6 bg-primary-light rounded-full flex items-center justify-center">
+                          <Heart className="h-4 w-4 text-primary" />
+                        </div>
+                        <div>
+                          <span className="font-medium text-text-color-dark">{extra.name}</span>
+                          <p className="text-sm text-text-color">{extra.description}</p>
+                        </div>
                       </div>
-                      <span className="font-semibold text-primary-dark">+ R$ {extra.price.toFixed(2)}</span>
+                      <div className="text-right">
+                        <span className="font-semibold text-primary-dark">+ R$ {extra.price.toFixed(2)}</span>
+                        <p className="text-xs text-text-color">{extra.duration_minutes} min</p>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -312,27 +403,27 @@ export const Booking: React.FC = () => {
                 </h3>
                 <div className="grid grid-cols-7 gap-2">
                   {availableDates.map((date, index) => {
-                    const dateStr = date.toISOString().split('T')[0];
-                    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                    const dateObj = new Date(date);
+                    const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
                     
                     return (
                       <button
                         key={index}
-                        onClick={() => setSelectedDate(dateStr)}
+                        onClick={() => setSelectedDate(date)}
                         disabled={isWeekend}
                         className={`p-3 rounded-lg text-center transition-colors ${
                           isWeekend
                             ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : selectedDate === dateStr
+                            : selectedDate === date
                             ? 'bg-primary text-white'
                             : 'bg-surface-dark text-text-color hover:bg-primary-light/50'
                         }`}
                       >
                         <div className="text-xs font-medium">
-                          {date.toLocaleDateString('pt-BR', { weekday: 'short' })}
+                          {dateObj.toLocaleDateString('pt-BR', { weekday: 'short' })}
                         </div>
                         <div className="text-lg font-bold">
-                          {date.getDate()}
+                          {dateObj.getDate()}
                         </div>
                       </button>
                     );
@@ -378,7 +469,7 @@ export const Booking: React.FC = () => {
               <div className="bg-surface-dark rounded-xl p-6 space-y-4">
                 <div className="flex items-center space-x-4">
                   <img
-                    src={selectedPetData?.image}
+                    src={getImageUrl.petImage(selectedPetData?.image_url, 'small')}
                     alt={selectedPetData?.name}
                     className="w-12 h-12 rounded-full object-cover"
                   />
@@ -486,3 +577,5 @@ export const Booking: React.FC = () => {
     </div>
   );
 };
+
+export default Booking;

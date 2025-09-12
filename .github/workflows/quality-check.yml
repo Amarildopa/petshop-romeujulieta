@@ -1,0 +1,57 @@
+name: 🔍 Quality Check
+
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+  push:
+    branches: [ develop, feature/* ]
+
+jobs:
+  quality-check:
+    name: 🧪 Run Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 🔍 Lint Check
+      run: npm run lint
+      
+    - name: 🧪 Run Tests
+      run: npm run test:run
+      
+    - name: 📊 Test Coverage
+      run: npm run test:coverage
+      
+    - name: 🏗️ Build Check
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      run: npm run build
+      
+    - name: 📈 Bundle Size Analysis
+      run: |
+        echo "📦 Analyzing bundle size..."
+        du -sh dist/
+        echo "📊 Asset breakdown:"
+        find dist -name "*.js" -exec du -h {} \; | sort -hr | head -10
+        find dist -name "*.css" -exec du -h {} \; | sort -hr | head -5
+        
+    - name: ✅ Quality Check Summary
+      run: |
+        echo "🎉 All quality checks passed!"
+        echo "✅ Linting: OK"
+        echo "✅ Tests: OK"
+        echo "✅ Build: OK"
+        echo "✅ Coverage: Generated"
+        echo "📋 Ready for merge!"

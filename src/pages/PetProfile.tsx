@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Heart, 
@@ -14,77 +15,86 @@ import {
   Award,
   Activity
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { petsService, type Pet } from '../services/petsService';
+import { getImageUrl } from '../config/images';
 
-export const PetProfile: React.FC = () => {
+const PetProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedPet, setSelectedPet] = useState('luna');
+  const [selectedPet, setSelectedPet] = useState('');
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
-  const pets = [
-    {
-      id: 'luna',
-      name: 'Luna',
-      breed: 'Golden Retriever',
-      age: '2 anos',
-      weight: '28 kg',
-      height: '58 cm',
-      color: 'Dourado',
-      gender: 'Fêmea',
-      image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=300&h=300&fit=crop&crop=face',
-      personality: ['Brincalhona', 'Carinhosa', 'Obediente'],
-      allergies: ['Frango', 'Corante vermelho'],
-      medications: [],
-      lastService: {
-        type: 'Banho & Tosa',
-        date: '2025-01-10',
-        rating: 5,
-        photos: 12
-      },
-      vaccinations: [
-        { name: 'Múltipla', date: '2024-12-15', nextDue: '2025-12-15' },
-        { name: 'Raiva', date: '2024-11-20', nextDue: '2025-11-20' },
-        { name: 'Gripe Canina', date: '2024-10-10', nextDue: '2025-10-10' }
-      ],
-      services: [
-        { date: '2025-01-10', type: 'Banho & Tosa', rating: 5 },
-        { date: '2024-12-20', type: 'Check-up', rating: 5 },
-        { date: '2024-12-05', type: 'Banho & Tosa', rating: 4 },
-        { date: '2024-11-15', type: 'Adestramento', rating: 5 }
-      ]
-    },
-    {
-      id: 'thor',
-      name: 'Thor',
-      breed: 'Bulldog Francês',
-      age: '3 anos',
-      weight: '12 kg',
-      height: '30 cm',
-      color: 'Tigrado',
-      gender: 'Macho',
-      image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=300&h=300&fit=crop&crop=face',
-      personality: ['Calmo', 'Protetor', 'Teimoso'],
-      allergies: ['Poeira', 'Pólen'],
-      medications: ['Anti-alérgico (2x/dia)'],
-      lastService: {
-        type: 'Check-up',
-        date: '2025-01-08',
-        rating: 5,
-        photos: 8
-      },
-      vaccinations: [
-        { name: 'Múltipla', date: '2024-12-10', nextDue: '2025-12-10' },
-        { name: 'Raiva', date: '2024-11-15', nextDue: '2025-11-15' }
-      ],
-      services: [
-        { date: '2025-01-08', type: 'Check-up', rating: 5 },
-        { date: '2024-12-25', type: 'Banho & Tosa', rating: 4 },
-        { date: '2024-12-01', type: 'Daycare', rating: 5 }
-      ]
+  // Check authentication and redirect if needed
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login');
     }
-  ];
+  }, [user, authLoading, navigate]);
+
+  // Load pets data
+  useEffect(() => {
+    const loadPets = async () => {
+      if (!user) return;
+      
+      try {
+        setLoading(true);
+        const petsData = await petsService.getPets();
+        setPets(petsData);
+        if (petsData.length > 0 && !selectedPet) {
+          setSelectedPet(petsData[0].id);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar pets');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      loadPets();
+    }
+  }, [user, selectedPet]);
+
+  const handleSavePet = async () => {
+    if (!selectedPet) return;
+    
+    try {
+      setSaving(true);
+      const petToUpdate = pets.find(pet => pet.id === selectedPet);
+      if (petToUpdate) {
+        await petsService.updatePet(selectedPet, {
+          name: petToUpdate.name,
+          breed: petToUpdate.breed,
+          age: petToUpdate.age,
+          weight: petToUpdate.weight,
+          height: petToUpdate.height,
+          color: petToUpdate.color,
+          gender: petToUpdate.gender,
+          personality: petToUpdate.personality,
+          allergies: petToUpdate.allergies,
+          medications: petToUpdate.medications
+        });
+        setIsEditing(false);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao salvar pet');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const currentPet = pets.find(pet => pet.id === selectedPet) || pets[0];
 
   const getNextVaccination = () => {
+    if (!currentPet || !currentPet.vaccinations) {
+      return null;
+    }
+    
     const upcoming = currentPet.vaccinations
       .map(vacc => ({
         ...vacc,
@@ -97,11 +107,86 @@ export const PetProfile: React.FC = () => {
   };
 
   const getAverageRating = () => {
+    if (!currentPet || !currentPet.services || currentPet.services.length === 0) {
+      return '0.0';
+    }
+    
     const total = currentPet.services.reduce((sum, service) => sum + service.rating, 0);
     return (total / currentPet.services.length).toFixed(1);
   };
 
   const nextVaccination = getNextVaccination();
+
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if user is not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
+
+  // Don't render if no pets available
+  if (!currentPet) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Nenhum pet encontrado...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Carregando pets...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (pets.length === 0) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-text-color-dark mb-2">Nenhum pet cadastrado</h2>
+          <p className="text-text-color mb-6">Comece adicionando seu primeiro pet!</p>
+          <button className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition-colors">
+            Adicionar Pet
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-surface pt-8 pb-12">
@@ -133,7 +218,7 @@ export const PetProfile: React.FC = () => {
                 }`}
               >
                 <img
-                  src={pet.image}
+                  src={getImageUrl.petImage(pet.image_url, 'small')}
                   alt={pet.name}
                   className="w-12 h-12 rounded-full object-cover"
                 />
@@ -157,8 +242,10 @@ export const PetProfile: React.FC = () => {
                 Informações Básicas
               </h2>
               <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="p-2 text-text-color hover:text-primary transition-colors"
+                onClick={isEditing ? handleSavePet : () => setIsEditing(true)}
+                disabled={saving}
+                className="p-2 text-text-color hover:text-primary transition-colors disabled:opacity-50"
+                title={isEditing ? 'Salvar alterações' : 'Editar pet'}
               >
                 {isEditing ? <Save className="h-5 w-5" /> : <Edit className="h-5 w-5" />}
               </button>
@@ -167,11 +254,14 @@ export const PetProfile: React.FC = () => {
             <div className="text-center mb-6">
               <div className="relative inline-block">
                 <img
-                  src={currentPet.image}
+                  src={getImageUrl.petImage(currentPet.image_url, 'medium')}
                   alt={currentPet.name}
                   className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-primary-light"
                 />
-                <button className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary-dark transition-colors">
+                <button 
+                  className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary-dark transition-colors"
+                  title="Alterar foto do pet"
+                >
                   <Camera className="h-4 w-4" />
                 </button>
               </div>
@@ -429,3 +519,5 @@ export const PetProfile: React.FC = () => {
     </div>
   );
 };
+
+export default PetProfile;

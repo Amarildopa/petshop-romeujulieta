@@ -1,396 +1,511 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Award, 
   Check, 
-  Star, 
   Calendar,
   Heart,
-  ShoppingBag,
-  Camera,
   Crown,
   Gift,
   CreditCard,
   TrendingUp
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { subscriptionPlansService, type SubscriptionPlan } from '../services/subscriptionPlansService';
+import { userSubscriptionsService, type UserSubscription } from '../services/userSubscriptionsService';
 
-export const Subscription: React.FC = () => {
-  const [selectedPlan, setSelectedPlan] = useState('premium');
+const Subscription: React.FC = () => {
+  const [selectedPlan, setSelectedPlan] = useState('');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
-  const plans = [
-    {
-      id: 'basic',
-      name: 'Básico',
-      icon: Heart,
-      color: 'secondary',
-      monthlyPrice: 89,
-      yearlyPrice: 890,
-      description: 'Perfeito para quem quer experimentar nossos serviços premium',
-      features: [
-        '2 banhos por mês',
-        '1 tosa por mês', 
-        'Fotos durante os serviços',
-        'Agendamento prioritário',
-        '10% desconto na loja',
-        'Suporte por WhatsApp'
-      ],
-      popular: false
-    },
-    {
-      id: 'premium',
-      name: 'Premium',
-      icon: Crown,
-      color: 'primary',
-      monthlyPrice: 149,
-      yearlyPrice: 1490,
-      description: 'Plano mais popular! Cuidado completo para seu pet',
-      features: [
-        '4 banhos por mês',
-        '2 tosas por mês',
-        '1 check-up veterinário',
-        'Fotos e vídeos em tempo real',
-        'Entrega grátis de ração',
-        '20% desconto na loja',
-        'Suporte prioritário 24/7',
-        'Daycare: 2 dias grátis/mês'
-      ],
-      popular: true
-    },
-    {
-      id: 'vip',
-      name: 'VIP',
-      icon: Award,
-      color: 'accent',
-      monthlyPrice: 249,
-      yearlyPrice: 2490,
-      description: 'Experiência exclusiva e luxuosa para pets especiais',
-      features: [
-        'Serviços ilimitados',
-        'Check-ups mensais',
-        'Adestramento personalizado',
-        'Câmeras ao vivo dedicadas',
-        'Delivery premium diário',
-        '30% desconto na loja',
-        'Concierge pessoal',
-        'Spa e tratamentos especiais',
-        'Transporte premium',
-        'Ensaio fotográfico mensal'
-      ],
-      popular: false
-    }
-  ];
+  // Estados para dados reais
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
+  const [currentSubscription, setCurrentSubscription] = useState<UserSubscription | null>(null);
+  const [subscriptionStats, setSubscriptionStats] = useState<{
+    totalSubscriptions: number;
+    activeSubscriptions: number;
+    totalSpent: number;
+    averageMonthlySpend: number;
+  } | null>(null);
 
-  const currentSubscription = {
-    plan: 'premium',
-    status: 'active',
-    nextBilling: '2025-02-15',
-    servicesUsed: 3,
-    servicesLimit: 7,
-    cashback: 45.20,
-    totalSaved: 234.50
-  };
+  // Load data on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
-  const benefits = [
-    {
-      icon: Camera,
-      title: 'Acompanhamento Visual',
-      description: 'Fotos e vídeos em tempo real de todos os serviços'
-    },
-    {
-      icon: Calendar,
-      title: 'Agendamento Prioritário',
-      description: 'Acesso exclusivo a horários premium'
-    },
-    {
-      icon: ShoppingBag,
-      title: 'Descontos Exclusivos',
-      description: 'Economia garantida em produtos e serviços'
-    },
-    {
-      icon: Gift,
-      title: 'Benefícios Especiais',
-      description: 'Surpresas e mimos mensais para seu pet'
-    }
-  ];
+      try {
+        setLoading(true);
+        const [plansData, currentSub, stats] = await Promise.all([
+          subscriptionPlansService.getActivePlans(),
+          userSubscriptionsService.getActiveSubscription(user.id),
+          userSubscriptionsService.getSubscriptionStats(user.id)
+        ]);
 
-  const getColorClasses = (color: string, selected: boolean = false) => {
-    const colorMap = {
-      secondary: {
-        bg: selected ? 'bg-secondary-light/50' : 'bg-white',
-        border: selected ? 'border-secondary' : 'border-accent/20',
-        accent: 'text-secondary-dark',
-        button: 'bg-secondary text-white'
-      },
-      primary: {
-        bg: selected ? 'bg-primary-light/50' : 'bg-white',
-        border: selected ? 'border-primary' : 'border-accent/20',
-        accent: 'text-primary-dark',
-        button: 'bg-primary text-white'
-      },
-      accent: {
-        bg: selected ? 'bg-accent-light/50' : 'bg-white',
-        border: selected ? 'border-accent-dark' : 'border-accent/20',
-        accent: 'text-accent-dark',
-        button: 'bg-accent-dark text-white'
+        setPlans(plansData);
+        setCurrentSubscription(currentSub);
+        setSubscriptionStats(stats);
+
+        // Set selected plan to current subscription or first plan
+        if (currentSub) {
+          setSelectedPlan(currentSub.plan_id);
+        } else if (plansData.length > 0) {
+          setSelectedPlan(plansData[0].id);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+      } finally {
+        setLoading(false);
       }
     };
-    return colorMap[color as keyof typeof colorMap] || colorMap.primary;
+
+    loadData();
+  }, [user]);
+
+  // Filter plans by billing cycle
+  const filteredPlans = plans.filter(plan => plan.billing_cycle === billingCycle);
+
+  // Get plan icon based on name
+  const getPlanIcon = (planName: string) => {
+    switch (planName.toLowerCase()) {
+      case 'básico':
+        return Heart;
+      case 'premium':
+        return Crown;
+      case 'família':
+        return Gift;
+      default:
+        return Award;
+    }
   };
 
-  const getPrice = (plan: any) => {
-    return billingCycle === 'monthly' ? plan.monthlyPrice : Math.round(plan.yearlyPrice / 12);
+  // Get plan color based on name
+  const getPlanColor = (planName: string) => {
+    switch (planName.toLowerCase()) {
+      case 'básico':
+        return 'secondary';
+      case 'premium':
+        return 'primary';
+      case 'família':
+        return 'accent';
+      default:
+        return 'primary';
+    }
   };
 
-  const getSavings = (plan: any) => {
-    return billingCycle === 'yearly' ? Math.round(((plan.monthlyPrice * 12 - plan.yearlyPrice) / (plan.monthlyPrice * 12)) * 100) : 0;
+  const handleSubscribe = async (planId: string) => {
+    if (!user) {
+      setError('Você precisa estar logado para assinar um plano');
+      return;
+    }
+
+    try {
+      await userSubscriptionsService.createSubscription({
+        user_id: user.id,
+        plan_id: planId,
+        billing_cycle: billingCycle,
+        price: plans.find(p => p.id === planId)?.price || 0,
+        status: 'active',
+        auto_renew: true
+      });
+
+      // Reload data
+      const [currentSub, stats] = await Promise.all([
+        userSubscriptionsService.getActiveSubscription(user.id),
+        userSubscriptionsService.getSubscriptionStats(user.id)
+      ]);
+
+      setCurrentSubscription(currentSub);
+      setSubscriptionStats(stats);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao assinar plano');
+    }
   };
+
+  const handleCancelSubscription = async () => {
+    if (!currentSubscription) return;
+
+    try {
+      await userSubscriptionsService.cancelSubscription(currentSubscription.id, 'Cancelado pelo usuário');
+      
+      // Reload data
+      const [currentSub, stats] = await Promise.all([
+        userSubscriptionsService.getActiveSubscription(user!.id),
+        userSubscriptionsService.getSubscriptionStats(user!.id)
+      ]);
+
+      setCurrentSubscription(currentSub);
+      setSubscriptionStats(stats);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao cancelar assinatura');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Carregando planos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-surface">
-      <div className="text-center pt-16 pb-12">
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-        >
-            <div className="flex items-center justify-center space-x-2">
-              <Crown className="h-8 w-8 text-primary" />
-              <h1 className="text-4xl md:text-5xl font-bold text-text-color-dark">
-                Planos Premium
-              </h1>
-            </div>
-            <p className="text-xl text-text-color max-w-3xl mx-auto mt-4">
-              Escolha o plano ideal para garantir o melhor cuidado para seu pet.
-            </p>
-        </motion.div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-surface pt-8 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border border-accent/20 p-6 mb-12"
+          className="text-center mb-12"
         >
-          <div className="grid md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="bg-status-success-light w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Award className="h-8 w-8 text-status-success" />
-              </div>
-              <h3 className="font-semibold text-text-color-dark">Plano Atual</h3>
-              <p className="text-status-success font-medium">Premium Ativo</p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-status-info-light w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Calendar className="h-8 w-8 text-status-info" />
-              </div>
-              <h3 className="font-semibold text-text-color-dark">Próxima Cobrança</h3>
-              <p className="text-text-color">{new Date(currentSubscription.nextBilling).toLocaleDateString('pt-BR')}</p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-accent-light w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <TrendingUp className="h-8 w-8 text-accent-dark" />
-              </div>
-              <h3 className="font-semibold text-text-color-dark">Serviços Utilizados</h3>
-              <p className="text-text-color">{currentSubscription.servicesUsed}/{currentSubscription.servicesLimit} este mês</p>
-            </div>
-
-            <div className="text-center">
-              <div className="bg-status-warning-light w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Gift className="h-8 w-8 text-status-warning" />
-              </div>
-              <h3 className="font-semibold text-text-color-dark">Cashback Acumulado</h3>
-              <p className="text-status-success font-medium">R$ {currentSubscription.cashback.toFixed(2)}</p>
-            </div>
-          </div>
+          <h1 className="text-4xl font-extrabold text-text-color-dark mb-4">
+            Planos de Assinatura
+          </h1>
+          <p className="text-text-color text-lg max-w-3xl mx-auto">
+            Escolha o plano perfeito para dar o melhor cuidado ao seu pet. 
+            Todos os planos incluem acesso completo aos nossos serviços.
+          </p>
         </motion.div>
 
+        {/* Billing Cycle Toggle */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-center mb-12"
+          className="flex justify-center mb-8"
         >
-          <div className="inline-flex bg-surface-dark rounded-lg p-1">
+          <div className="bg-white rounded-xl p-1 shadow-sm border border-accent/20">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`px-6 py-2 rounded-md transition-colors ${
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 billingCycle === 'monthly'
-                  ? 'bg-white text-text-color-dark shadow-sm'
-                  : 'text-text-color'
+                  ? 'bg-primary text-white'
+                  : 'text-text-color hover:bg-surface-dark'
               }`}
             >
               Mensal
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
-              className={`px-6 py-2 rounded-md transition-colors ${
+              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 billingCycle === 'yearly'
-                  ? 'bg-white text-text-color-dark shadow-sm'
-                  : 'text-text-color'
+                  ? 'bg-primary text-white'
+                  : 'text-text-color hover:bg-surface-dark'
               }`}
             >
               Anual
-              <span className="ml-2 bg-status-success text-white text-xs px-2 py-1 rounded-full">
-                Economize até 25%
+              <span className="ml-2 text-xs bg-status-success text-white px-2 py-1 rounded-full">
+                -20%
               </span>
             </button>
           </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-16">
-          {plans.map((plan, index) => {
-            const colors = getColorClasses(plan.color, selectedPlan === plan.id);
-            const savings = getSavings(plan);
-            
+        {/* Current Subscription */}
+        {currentSubscription && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-gradient-to-r from-primary to-primary-dark rounded-2xl p-6 mb-8 text-white"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold mb-2">
+                  Assinatura Ativa: {(currentSubscription as any).subscription_plans_pet?.name || 'Plano Ativo'}
+                </h3>
+                <p className="text-primary-light">
+                  Próxima cobrança: {currentSubscription.next_billing_date 
+                    ? new Date(currentSubscription.next_billing_date).toLocaleDateString('pt-BR')
+                    : 'N/A'
+                  }
+                </p>
+              </div>
+              <button
+                onClick={handleCancelSubscription}
+                className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Subscription Stats */}
+        {subscriptionStats && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8"
+          >
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-accent/20">
+              <div className="flex items-center">
+                <TrendingUp className="h-8 w-8 text-primary mr-3" />
+                <div>
+                  <p className="text-sm text-text-color">Total Gasto</p>
+                  <p className="text-xl font-bold text-text-color-dark">
+                    R$ {subscriptionStats.totalSpent.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-accent/20">
+              <div className="flex items-center">
+                <Calendar className="h-8 w-8 text-accent mr-3" />
+                <div>
+                  <p className="text-sm text-text-color">Assinaturas Ativas</p>
+                  <p className="text-xl font-bold text-text-color-dark">
+                    {subscriptionStats.activeSubscriptions}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-accent/20">
+              <div className="flex items-center">
+                <CreditCard className="h-8 w-8 text-status-success mr-3" />
+                <div>
+                  <p className="text-sm text-text-color">Gasto Médio Mensal</p>
+                  <p className="text-xl font-bold text-text-color-dark">
+                    R$ {subscriptionStats.averageMonthlySpend.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-accent/20">
+              <div className="flex items-center">
+                <Award className="h-8 w-8 text-status-warning mr-3" />
+                <div>
+                  <p className="text-sm text-text-color">Total de Assinaturas</p>
+                  <p className="text-xl font-bold text-text-color-dark">
+                    {subscriptionStats.totalSubscriptions}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Plans Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
+        >
+          {filteredPlans.map((plan, index) => {
+            const Icon = getPlanIcon(plan.name);
+            const color = getPlanColor(plan.name);
+            const isSelected = selectedPlan === plan.id;
+            const isCurrentPlan = currentSubscription?.plan_id === plan.id;
+
             return (
               <motion.div
                 key={plan.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.1 }}
-                className={`relative rounded-2xl border-2 p-8 transition-all duration-300 hover:shadow-lg ${colors.bg} ${colors.border}`}
+                transition={{ delay: 0.1 * index }}
+                className={`relative bg-white rounded-2xl shadow-lg border-2 transition-all duration-300 ${
+                  isSelected
+                    ? 'border-primary shadow-primary/20'
+                    : 'border-accent/20 hover:border-primary/50'
+                } ${isCurrentPlan ? 'ring-2 ring-primary/20' : ''}`}
               >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <div className="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium flex items-center space-x-1">
-                      <Star className="h-4 w-4 fill-current" />
-                      <span>Mais Popular</span>
-                    </div>
+                {isCurrentPlan && (
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-primary text-white px-4 py-1 rounded-full text-sm font-medium">
+                      Plano Atual
+                    </span>
                   </div>
                 )}
 
-                <div className="text-center mb-6">
-                  <plan.icon className={`h-12 w-12 mx-auto mb-4 ${colors.accent}`} />
-                  <h3 className="text-2xl font-bold text-text-color-dark">{plan.name}</h3>
-                  <p className="text-text-color mt-2">{plan.description}</p>
-                </div>
-
-                <div className="text-center mb-6">
-                  <div className="flex items-baseline justify-center">
-                    <span className="text-4xl font-bold text-text-color-dark">
-                      R$ {getPrice(plan)}
-                    </span>
-                    <span className="text-text-color ml-1">/mês</span>
-                  </div>
-                  {billingCycle === 'yearly' && savings > 0 && (
-                    <div className="mt-2">
-                      <span className="text-status-success font-medium text-sm">
-                        Economize {savings}% pagando anualmente
-                      </span>
+                <div className="p-6">
+                  <div className="flex items-center mb-4">
+                    <div className={`p-3 rounded-xl ${
+                      color === 'primary' ? 'bg-primary/10' :
+                      color === 'secondary' ? 'bg-secondary/10' :
+                      'bg-accent/10'
+                    }`}>
+                      <Icon className={`h-6 w-6 ${
+                        color === 'primary' ? 'text-primary' :
+                        color === 'secondary' ? 'text-secondary' :
+                        'text-accent'
+                      }`} />
+                    </div>
+                    <div className="ml-4">
+                      <h3 className="text-xl font-bold text-text-color-dark">
+                        {plan.name}
+                      </h3>
                       <p className="text-text-color text-sm">
-                        R$ {plan.yearlyPrice} cobrado anualmente
+                        {plan.description}
                       </p>
                     </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <div className="flex items-baseline">
+                      <span className="text-4xl font-bold text-text-color-dark">
+                        R$ {plan.price.toFixed(2)}
+                      </span>
+                      <span className="text-text-color ml-2">
+                        /{plan.billing_cycle === 'monthly' ? 'mês' : 'ano'}
+                      </span>
+                    </div>
+                    {plan.billing_cycle === 'yearly' && (
+                      <p className="text-sm text-status-success mt-1">
+                        Economize 20% comparado ao plano mensal
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-3 mb-6">
+                    {Array.isArray(plan.features) && plan.features.map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-center">
+                        <Check className="h-5 w-5 text-status-success mr-3 flex-shrink-0" />
+                        <span className="text-text-color">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-2 mb-6 text-sm text-text-color">
+                    <div className="flex justify-between">
+                      <span>Máximo de pets:</span>
+                      <span className="font-medium">{plan.max_pets}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Agendamentos:</span>
+                      <span className="font-medium">
+                        {plan.max_appointments === 999 ? 'Ilimitados' : plan.max_appointments}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Desconto em produtos:</span>
+                      <span className="font-medium">{plan.max_products_discount}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Frete grátis:</span>
+                      <span className="font-medium">
+                        {plan.free_delivery ? 'Sim' : 'Não'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {!isCurrentPlan && (
+                    <button
+                      onClick={() => handleSubscribe(plan.id)}
+                      className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+                        color === 'primary'
+                          ? 'bg-primary text-white hover:bg-primary-dark'
+                          : color === 'secondary'
+                          ? 'bg-secondary text-white hover:bg-secondary-dark'
+                          : 'bg-accent text-white hover:bg-accent-dark'
+                      }`}
+                    >
+                      {currentSubscription ? 'Trocar Plano' : 'Assinar Agora'}
+                    </button>
                   )}
                 </div>
-
-                <div className="space-y-3 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-start space-x-3">
-                      <Check className="h-5 w-5 text-status-success flex-shrink-0 mt-0.5" />
-                      <span className="text-text-color text-sm">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() => setSelectedPlan(plan.id)}
-                  className={`w-full py-3 px-6 rounded-lg font-semibold transition-colors ${
-                    selectedPlan === plan.id
-                      ? `${colors.button}`
-                      : 'bg-surface-dark text-text-color-dark hover:bg-accent/20'
-                  }`}
-                >
-                  {currentSubscription.plan === plan.id ? 'Plano Atual' : 'Escolher Plano'}
-                </button>
               </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
+        {/* Features Comparison */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white rounded-2xl shadow-sm border border-accent/20 p-8 mb-12"
+          transition={{ delay: 0.5 }}
+          className="bg-white rounded-2xl shadow-lg p-8"
         >
-          <h2 className="text-2xl font-bold text-text-color-dark text-center mb-8">
-            Benefícios Inclusos em Todos os Planos
-          </h2>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="text-center">
-                <div className="bg-primary-light/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <benefit.icon className="h-8 w-8 text-primary" />
-                </div>
-                <h3 className="font-semibold text-text-color-dark mb-2">{benefit.title}</h3>
-                <p className="text-text-color text-sm">{benefit.description}</p>
-              </div>
-            ))}
+          <h3 className="text-2xl font-bold text-text-color-dark mb-6 text-center">
+            Comparação de Recursos
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-accent/20">
+                  <th className="text-left py-3 px-4 font-medium text-text-color-dark">
+                    Recursos
+                  </th>
+                  {filteredPlans.map(plan => (
+                    <th key={plan.id} className="text-center py-3 px-4 font-medium text-text-color-dark">
+                      {plan.name}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-accent/10">
+                  <td className="py-3 px-4 text-text-color">Máximo de pets</td>
+                  {filteredPlans.map(plan => (
+                    <td key={plan.id} className="text-center py-3 px-4">
+                      {plan.max_pets}
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b border-accent/10">
+                  <td className="py-3 px-4 text-text-color">Agendamentos</td>
+                  {filteredPlans.map(plan => (
+                    <td key={plan.id} className="text-center py-3 px-4">
+                      {plan.max_appointments === 999 ? 'Ilimitados' : plan.max_appointments}
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b border-accent/10">
+                  <td className="py-3 px-4 text-text-color">Desconto em produtos</td>
+                  {filteredPlans.map(plan => (
+                    <td key={plan.id} className="text-center py-3 px-4">
+                      {plan.max_products_discount}%
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b border-accent/10">
+                  <td className="py-3 px-4 text-text-color">Frete grátis</td>
+                  {filteredPlans.map(plan => (
+                    <td key={plan.id} className="text-center py-3 px-4">
+                      {plan.free_delivery ? '✓' : '✗'}
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 text-text-color">Suporte prioritário</td>
+                  {filteredPlans.map(plan => (
+                    <td key={plan.id} className="text-center py-3 px-4">
+                      {plan.priority_support ? '✓' : '✗'}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
           </div>
         </motion.div>
-
-        {selectedPlan !== currentSubscription.plan && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white rounded-2xl shadow-sm border border-accent/20 p-8"
-          >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-text-color-dark">
-                Alterar Plano
-              </h2>
-              <CreditCard className="h-6 w-6 text-text-color" />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="font-semibold text-text-color-dark mb-4">Resumo da Mudança</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-text-color">Plano atual:</span>
-                    <span className="font-medium">Premium</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-text-color">Novo plano:</span>
-                    <span className="font-medium">{plans.find(p => p.id === selectedPlan)?.name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-text-color">Ciclo de cobrança:</span>
-                    <span className="font-medium">{billingCycle === 'monthly' ? 'Mensal' : 'Anual'}</span>
-                  </div>
-                  <div className="border-t border-accent/20 pt-3">
-                    <div className="flex justify-between">
-                      <span className="font-semibold text-text-color-dark">Novo valor:</span>
-                      <span className="font-bold text-primary-dark">
-                        R$ {getPrice(plans.find(p => p.id === selectedPlan)!)}/mês
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-text-color-dark mb-4">Próximos Passos</h3>
-                <div className="space-y-3 text-sm text-text-color">
-                  <p>• A mudança será efetivada na próxima cobrança</p>
-                  <p>• Você manterá os benefícios atuais até lá</p>
-                  <p>• Cashback será creditado automaticamente</p>
-                  <p>• Confirmação será enviada por e-mail</p>
-                </div>
-
-                <button className="w-full mt-6 bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary-dark transition-colors font-semibold">
-                  Confirmar Mudança de Plano
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
       </div>
     </div>
   );
 };
+
+export default Subscription;

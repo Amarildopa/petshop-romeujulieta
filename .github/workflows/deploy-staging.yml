@@ -1,0 +1,72 @@
+name: 🧪 Deploy to Hostinger Staging
+
+on:
+  push:
+    branches: [ develop, staging ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  deploy-staging:
+    name: 🏗️ Build and Deploy to Staging
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 🧪 Run Tests
+      run: npm run test:run
+      
+    - name: 🔍 Lint Code
+      run: npm run lint
+      
+    - name: 🏗️ Build Application
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      run: npm run build
+      
+    - name: 🔧 Generate .htaccess for Staging
+      run: |
+        cat > dist/.htaccess << 'EOF'
+        # PetShop Romeo & Julieta - Staging Environment
+        
+        # Handle React Router (SPA)
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule . /index.html [L]
+        
+        # Security Headers
+        <IfModule mod_headers.c>
+            Header always set X-Content-Type-Options nosniff
+            Header always set X-Frame-Options DENY
+            Header always set X-Robots-Tag "noindex, nofollow"
+        </IfModule>
+        EOF
+        
+    - name: 🚀 Deploy to Staging
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./dist/
+        server-dir: /public_html/staging/
+        
+    - name: 🎯 Staging Deploy Complete
+      run: |
+        echo "✅ Staging deploy completed!"
+        echo "🧪 Staging URL: https://seu-dominio.com/staging"
+        echo "📅 Deploy time: $(date)"
+        echo "🔍 Test the staging environment before merging to main"

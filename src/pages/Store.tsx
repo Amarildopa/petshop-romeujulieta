@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   ShoppingCart, 
@@ -12,60 +13,121 @@ import {
   Package,
   ShoppingBag
 } from 'lucide-react';
-import { faker } from '@faker-js/faker';
+import { useAuth } from '../contexts/AuthContext';
+import { productsService, type Product } from '../services/productsService';
+import { cartService } from '../services/cartService';
+import { getImageUrl } from '../config/images';
 
-export const Store: React.FC = () => {
+const Store: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [cartItems, setCartItems] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
-  const categories = [
-    { id: 'all', name: 'Todos os Produtos', count: 45 },
-    { id: 'food', name: 'Ração Premium', count: 12 },
-    { id: 'treats', name: 'Petiscos Naturais', count: 8 },
-    { id: 'accessories', name: 'Acessórios', count: 15 },
-    { id: 'toys', name: 'Brinquedos', count: 10 }
-  ];
+  // Estados para dados reais
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [cartItemCount, setCartItemCount] = useState(0);
 
-  const generateProducts = () => {
-    const productTypes = [
-      { type: 'food', names: ['Ração Premium para Cães', 'Ração Hipoalergênica', 'Ração Natural Orgânica', 'Ração para Filhotes'] },
-      { type: 'treats', names: ['Petisco Natural de Frango', 'Osso Natural', 'Biscoito Integral', 'Snack Funcional'] },
-      { type: 'accessories', names: ['Coleira Premium', 'Cama Ortopédica', 'Bebedouro Automático', 'Transportadora'] },
-      { type: 'toys', names: ['Brinquedo Interativo', 'Mordedor Natural', 'Bolinha Resistente', 'Corda para Brincar'] }
-    ];
+  // Check authentication and redirect if needed
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login');
+    }
+  }, [user, authLoading, navigate]);
 
-    const products = [];
-    
-    productTypes.forEach(category => {
-      category.names.forEach((name, index) => {
-        products.push({
-          id: `${category.type}-${index}`,
-          name,
-          category: category.type,
-          price: parseFloat(faker.commerce.price({ min: 25, max: 200, dec: 2 })),
-          originalPrice: parseFloat(faker.commerce.price({ min: 30, max: 250, dec: 2 })),
-          rating: parseFloat((Math.random() * (5 - 4) + 4).toFixed(1)),
-          reviews: faker.number.int({ min: 15, max: 120 }),
-          image: faker.image.urlLoremFlickr({ category: 'dog', width: 300, height: 300 }),
-          badge: Math.random() > 0.7 ? (Math.random() > 0.5 ? 'Bestseller' : 'Oferta') : null,
-          description: faker.lorem.sentence(),
-          inStock: Math.random() > 0.1
-        });
-      });
-    });
+  // Load data on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const productsData = await productsService.getProducts();
+        setProducts(productsData);
+        
+        // Extract unique categories
+        const uniqueCategories = [...new Set(productsData.map(product => product.category))];
+        setCategories(['all', ...uniqueCategories]);
 
-    return products;
+        // Load cart item count if user is logged in
+        if (user) {
+          const count = await cartService.getCartItemCount(user.id);
+          setCartItemCount(count);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [user]);
+
+  // Filter products
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    return matchesCategory;
+  });
+
+  const handleAddToCart = async (productId: string) => {
+    if (!user) {
+      setError('Você precisa estar logado para adicionar itens ao carrinho');
+      return;
+    }
+
+    try {
+      await cartService.addToCart(user.id, productId, 1);
+      const count = await cartService.getCartItemCount(user.id);
+      setCartItemCount(count);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao adicionar ao carrinho');
+    }
   };
 
-  const products = generateProducts();
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category === selectedCategory);
+  // Don't render anything if user is not authenticated (will redirect)
+  if (!user) {
+    return null;
+  }
 
-  const addToCart = (productId: string) => {
-    setCartItems([...cartItems, productId]);
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-text-color">Carregando produtos...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const benefits = [
     {
@@ -164,28 +226,36 @@ export const Store: React.FC = () => {
                 Categorias
               </h3>
               <div className="space-y-2">
-                {categories.map((category) => (
+                {categories.map((category) => {
+                  const count = category === 'all' 
+                    ? products.length 
+                    : products.filter(p => p.category === category).length;
+                  
+                  return (
                   <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
                     className={`w-full text-left p-3 rounded-lg transition-colors ${
-                      selectedCategory === category.id
+                        selectedCategory === category
                         ? 'bg-primary-light/50 text-primary-dark border border-primary/20'
                         : 'hover:bg-surface-dark text-text-color'
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{category.name}</span>
+                        <span className="font-medium">
+                          {category === 'all' ? 'Todos os Produtos' : category}
+                        </span>
                       <span className={`text-sm px-2 py-1 rounded-full ${
-                        selectedCategory === category.id
+                          selectedCategory === category
                           ? 'bg-primary/20 text-primary-dark'
                           : 'bg-surface-dark text-text-color'
                       }`}>
-                        {category.count}
+                          {count}
                       </span>
                     </div>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </motion.div>
 
@@ -197,12 +267,12 @@ export const Store: React.FC = () => {
             >
               <h3 className="font-semibold text-text-color-dark mb-4 flex items-center">
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Carrinho ({cartItems.length})
+                Carrinho ({cartItemCount})
               </h3>
-              {cartItems.length > 0 ? (
+              {cartItemCount > 0 ? (
                 <div className="space-y-2">
                   <p className="text-text-color text-sm">
-                    {cartItems.length} {cartItems.length === 1 ? 'item' : 'itens'} adicionados
+                    {cartItemCount} {cartItemCount === 1 ? 'item' : 'itens'} adicionados
                   </p>
                   <button className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary-dark transition-colors">
                     Ver Carrinho
@@ -223,9 +293,13 @@ export const Store: React.FC = () => {
               className="flex items-center justify-between mb-6"
             >
               <h2 className="text-xl font-semibold text-text-color-dark">
-                {categories.find(c => c.id === selectedCategory)?.name} ({filteredProducts.length})
+                {selectedCategory === 'all' ? 'Todos os Produtos' : selectedCategory} ({filteredProducts.length})
               </h2>
-              <select className="border border-accent rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary">
+              <select 
+                className="border border-accent rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary"
+                title="Ordenar produtos"
+                aria-label="Ordenar produtos"
+              >
                 <option>Mais Relevantes</option>
                 <option>Menor Preço</option>
                 <option>Maior Preço</option>
@@ -244,7 +318,7 @@ export const Store: React.FC = () => {
                 >
                   <div className="relative">
                     <img
-                      src={product.image}
+                      src={getImageUrl.productImage(product.image_url)}
                       alt={product.name}
                       className="w-full h-48 object-cover"
                     />
@@ -257,7 +331,10 @@ export const Store: React.FC = () => {
                         {product.badge}
                       </div>
                     )}
-                    <button className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors">
+                    <button 
+                      className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors"
+                      title="Adicionar aos favoritos"
+                    >
                       <Heart className="h-4 w-4 text-text-color" />
                     </button>
                   </div>
@@ -284,7 +361,7 @@ export const Store: React.FC = () => {
                         {product.rating}
                       </span>
                       <span className="text-sm text-text-color">
-                        ({product.reviews})
+                        (Disponível)
                       </span>
                     </div>
 
@@ -294,30 +371,30 @@ export const Store: React.FC = () => {
                           <span className="text-lg font-bold text-primary-dark">
                             R$ {product.price.toFixed(2)}
                           </span>
-                          {product.originalPrice > product.price && (
-                            <span className="text-sm text-text-color line-through">
-                              R$ {product.originalPrice.toFixed(2)}
+                          {!product.in_stock && (
+                            <span className="text-sm text-red-500 font-medium">
+                              Fora de estoque
                             </span>
                           )}
                         </div>
-                        {product.originalPrice > product.price && (
+                        {product.original_price && product.original_price > product.price && (
                           <span className="text-xs text-status-success font-medium">
-                            {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                            {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
                           </span>
                         )}
                       </div>
                     </div>
 
                     <button
-                      onClick={() => addToCart(product.id)}
-                      disabled={!product.inStock}
+                      onClick={() => handleAddToCart(product.id)}
+                      disabled={!product.in_stock}
                       className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-                        product.inStock
+                        product.in_stock
                           ? 'bg-primary text-white hover:bg-primary-dark'
                           : 'bg-gray-200 text-text-color cursor-not-allowed'
                       }`}
                     >
-                      {product.inStock ? 'Adicionar ao Carrinho' : 'Indisponível'}
+                      {product.in_stock ? 'Adicionar ao Carrinho' : 'Indisponível'}
                     </button>
                   </div>
                 </motion.div>
@@ -337,3 +414,5 @@ export const Store: React.FC = () => {
     </div>
   );
 };
+
+export default Store;

@@ -3,18 +3,19 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { faker } from '@faker-js/faker';
 import { Camera, PawPrint, Star, ArrowLeft, Cake, Award } from 'lucide-react';
+import { IMAGE_CONFIG } from '../config/images';
 
 // Mock data for pets, assuming we don't fetch it
 const pets = [
   {
     id: 'luna',
     name: 'Luna',
-    image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=100&h=100&fit=crop&crop=face',
+    image: IMAGE_CONFIG.growthJourney.pet1,
   },
   {
     id: 'thor',
     name: 'Thor',
-    image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=100&h=100&fit=crop&crop=face',
+    image: IMAGE_CONFIG.growthJourney.pet2,
   }
 ];
 
@@ -58,7 +59,7 @@ const generateJourneyEvents = () => {
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
-export const GrowthJourney: React.FC = () => {
+const GrowthJourney: React.FC = () => {
   const { petId } = useParams<{ petId: string }>();
   const pet = pets.find(p => p.id === petId);
   const journeyEvents = generateJourneyEvents();
@@ -151,3 +152,5 @@ export const GrowthJourney: React.FC = () => {
     </div>
   );
 };
+
+export default GrowthJourney;

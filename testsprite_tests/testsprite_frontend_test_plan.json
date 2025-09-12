@@ -1,0 +1,686 @@
+[
+  {
+    "id": "TC001",
+    "title": "User Registration Successful",
+    "description": "Verify that a new user can register successfully with valid email, password, and required details, and that email confirmation is sent.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to registration page"
+      },
+      {
+        "type": "action",
+        "description": "Fill in valid email, password, and required fields"
+      },
+      {
+        "type": "action",
+        "description": "Submit registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Registration should succeed with confirmation message"
+      },
+      {
+        "type": "assertion",
+        "description": "Email confirmation should be sent to the provided email"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "User Login Success with Valid Credentials",
+    "description": "Check login is successful when a registered user inputs correct email and password.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login page"
+      },
+      {
+        "type": "action",
+        "description": "Input valid email and correct password"
+      },
+      {
+        "type": "action",
+        "description": "Click login button"
+      },
+      {
+        "type": "assertion",
+        "description": "User is logged in and redirected to user dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Login Failure with Invalid Credentials",
+    "description": "Verify that login fails with appropriate error message when inputting incorrect email or password.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login page"
+      },
+      {
+        "type": "action",
+        "description": "Input non-existing email or wrong password"
+      },
+      {
+        "type": "action",
+        "description": "Click login button"
+      },
+      {
+        "type": "assertion",
+        "description": "Login attempt is rejected with an error message"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Password Recovery Flow",
+    "description": "Verify that a user can request password recovery and receive recovery instructions via email.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to password recovery page"
+      },
+      {
+        "type": "action",
+        "description": "Input registered email address"
+      },
+      {
+        "type": "action",
+        "description": "Submit recovery request"
+      },
+      {
+        "type": "assertion",
+        "description": "System sends password recovery instructions to email"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Create New Pet Profile Successfully",
+    "description": "Verify that users can create a pet profile with valid data including health, personality, and growth information.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to pet profile creation page"
+      },
+      {
+        "type": "action",
+        "description": "Fill in valid pet details (name, type, birthdate, health info)"
+      },
+      {
+        "type": "action",
+        "description": "Submit the pet profile form"
+      },
+      {
+        "type": "assertion",
+        "description": "Pet profile is created and visible in user pet list"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Pet Profile Creation Validation Errors",
+    "description": "Verify that creating a pet profile with invalid or missing required fields triggers appropriate validation messages.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to pet profile creation page"
+      },
+      {
+        "type": "action",
+        "description": "Submit empty form or invalid fields (e.g., future birthdate)"
+      },
+      {
+        "type": "assertion",
+        "description": "Form displays validation errors indicating required or invalid fields"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Edit Pet Profile Successfully",
+    "description": "Verify that users can edit existing pet profiles and changes persist correctly.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to existing pet profile"
+      },
+      {
+        "type": "action",
+        "description": "Modify pet details such as health notes or personality traits"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Changes are saved and reflected in the pet profile display"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Delete Pet Profile Successfully",
+    "description": "Verify that users can delete a pet profile and it no longer appears in their pets list.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to pet profile page"
+      },
+      {
+        "type": "action",
+        "description": "Initiate delete pet profile action and confirm"
+      },
+      {
+        "type": "assertion",
+        "description": "Pet profile is removed from user pet list"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Book Appointment Full Flow",
+    "description": "Verify that users can complete the multi-step appointment booking: select service, pet, time slot, extras and confirm.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and open appointment booking page"
+      },
+      {
+        "type": "action",
+        "description": "Select one or more services"
+      },
+      {
+        "type": "action",
+        "description": "Select one or more pets"
+      },
+      {
+        "type": "action",
+        "description": "Pick an available date and time slot"
+      },
+      {
+        "type": "action",
+        "description": "Optionally select care extras"
+      },
+      {
+        "type": "action",
+        "description": "Review and confirm appointment"
+      },
+      {
+        "type": "assertion",
+        "description": "Appointment is created successfully and user receives confirmation notification"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Appointment Booking Availability Enforcement",
+    "description": "Verify that booking system prevents double-booking or selecting unavailable time slots.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Select a date and time slot that is already booked"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to confirm appointment"
+      },
+      {
+        "type": "assertion",
+        "description": "System prevents booking and displays an error indicating slot unavailability"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Browse and Filter Product Catalog",
+    "description": "Verify users can view product catalog and apply filters (e.g., categories, price ranges) and search terms to find items.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the store product catalog page"
+      },
+      {
+        "type": "action",
+        "description": "Apply category and price filters"
+      },
+      {
+        "type": "action",
+        "description": "Perform product search by keyword"
+      },
+      {
+        "type": "assertion",
+        "description": "Product list updates correctly reflecting filters and search terms"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Add and Remove Products in Shopping Cart",
+    "description": "Verify users can add products to shopping cart with correct quantity and remove or update quantities as desired.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "From product catalog, add a product to cart"
+      },
+      {
+        "type": "action",
+        "description": "Change the quantity of product in cart"
+      },
+      {
+        "type": "action",
+        "description": "Remove a product from cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Cart updates totals and contents accurately"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Apply Valid Coupon and Discounts at Checkout",
+    "description": "Verify that valid coupons can be applied to the shopping cart resulting in correct discount calculation.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Add products to cart"
+      },
+      {
+        "type": "action",
+        "description": "Input a valid coupon code"
+      },
+      {
+        "type": "action",
+        "description": "Observe discount applied to cart total"
+      },
+      {
+        "type": "assertion",
+        "description": "Final price reflects discount accurately"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Reject Invalid or Expired Coupon Codes",
+    "description": "Verify the system rejects invalid or expired coupon codes with proper user feedback during checkout.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Add products to cart"
+      },
+      {
+        "type": "action",
+        "description": "Input an invalid or expired coupon code"
+      },
+      {
+        "type": "assertion",
+        "description": "System shows an error message and does not apply discount"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Complete Secure Checkout Process",
+    "description": "Verify that users can successfully complete the checkout with valid payment methods and correct order summary.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Proceed to checkout page with items in cart"
+      },
+      {
+        "type": "action",
+        "description": "Fill shipping and billing address with CEP lookup and validation"
+      },
+      {
+        "type": "action",
+        "description": "Input valid payment details"
+      },
+      {
+        "type": "action",
+        "description": "Submit order"
+      },
+      {
+        "type": "assertion",
+        "description": "Order is confirmed with order summary and payment success message"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "Checkout Validation Errors for Invalid Inputs",
+    "description": "Verify form validations prevent submission of checkout form when required fields are missing or invalid (e.g., invalid CEP, payment info).",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to checkout"
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid CEP and payment details"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to submit order"
+      },
+      {
+        "type": "assertion",
+        "description": "Display appropriate validation errors preventing form submission"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "User Profile Update",
+    "description": "Verify that users can update their personal info, notification preferences, and payment methods in their profile settings.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to profile settings"
+      },
+      {
+        "type": "action",
+        "description": "Update user details, notification preferences, and add/edit payment methods"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Profile updates are persisted and displayed correctly"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Subscription Plan Purchase and Activation",
+    "description": "Verify that users can view available subscription plans, purchase a plan, and activate benefits such as discounts and priority services.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to subscription page"
+      },
+      {
+        "type": "action",
+        "description": "Select a subscription plan and purchase it"
+      },
+      {
+        "type": "assertion",
+        "description": "Subscription is activated and benefits are applied to user account"
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Receive Real-Time Notifications on Appointment Updates",
+    "description": "Verify users receive real-time notifications via multiple channels (email, push, WhatsApp, in-app) for updates such as appointment confirmations or reminders.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Book an appointment or update appointment status"
+      },
+      {
+        "type": "assertion",
+        "description": "User receives notification on all enabled channels about the appointment status"
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "User Admin Login and Access Control",
+    "description": "Verify that admin users can login successfully and access admin dashboard features while regular users cannot access admin pages.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login with admin credentials"
+      },
+      {
+        "type": "assertion",
+        "description": "Admin dashboard and management features are accessible"
+      },
+      {
+        "type": "action",
+        "description": "Login with standard user credentials and attempt to access admin page"
+      },
+      {
+        "type": "assertion",
+        "description": "Access denied or redirected to user dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC021",
+    "title": "Admin Manage Users and Appointments",
+    "description": "Verify that admins can view, edit, and delete users and appointments via the admin dashboard features.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as admin and navigate to user management"
+      },
+      {
+        "type": "action",
+        "description": "Edit user details and save"
+      },
+      {
+        "type": "assertion",
+        "description": "User changes are persisted"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to appointment management"
+      },
+      {
+        "type": "action",
+        "description": "Modify appointment status and delete appointment"
+      },
+      {
+        "type": "assertion",
+        "description": "Appointment changes are saved and appointment is removed after deletion"
+      }
+    ]
+  },
+  {
+    "id": "TC022",
+    "title": "Error Handling and Sentry Logging",
+    "description": "Verify that client and server errors are correctly captured and logged by Sentry and user-friendly feedback is provided.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Trigger an application error (e.g., force an API failure)"
+      },
+      {
+        "type": "assertion",
+        "description": "Error is logged in Sentry dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "User sees appropriate error feedback with retry or alternative option"
+      }
+    ]
+  },
+  {
+    "id": "TC023",
+    "title": "Real-Time Check-in Process for Appointments",
+    "description": "Verify that service providers and users can perform real-time check-in for appointments, and status updates flow correctly.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "User or provider opens check-in page for an upcoming appointment"
+      },
+      {
+        "type": "action",
+        "description": "Perform check-in action"
+      },
+      {
+        "type": "assertion",
+        "description": "Appointment status updates to checked-in and users receive confirmation notification"
+      }
+    ]
+  },
+  {
+    "id": "TC024",
+    "title": "Pet Growth Journey Milestones Tracking",
+    "description": "Verify users can create and view milestones in pet growth journey with proper data persistence.",
+    "category": "functional",
+    "priority": "Low",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to pet growth journey page"
+      },
+      {
+        "type": "action",
+        "description": "Add new milestone with description and date"
+      },
+      {
+        "type": "assertion",
+        "description": "Milestone appears in growth journey list and persists after reload"
+      }
+    ]
+  },
+  {
+    "id": "TC025",
+    "title": "Responsive UI Across Devices",
+    "description": "Verify UI renders correctly and is fully functional on mobile, tablet, and desktop with load times under 3 seconds.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open the application on mobile, tablet, and desktop browsers"
+      },
+      {
+        "type": "assertion",
+        "description": "UI adapts layout and controls correctly for each device"
+      },
+      {
+        "type": "assertion",
+        "description": "All critical pages load in under 3 seconds"
+      }
+    ]
+  },
+  {
+    "id": "TC026",
+    "title": "Input Validation of CPF, CEP, and Phone Formats",
+    "description": "Verify that input fields for CPF, CEP, and phone accept only valid formats and provide error messages for invalid input.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to forms containing CPF, CEP, and phone inputs"
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid and incomplete values into each field"
+      },
+      {
+        "type": "assertion",
+        "description": "Validation errors appear and form submission is prevented"
+      },
+      {
+        "type": "action",
+        "description": "Enter valid CPF, CEP, and phone values"
+      },
+      {
+        "type": "assertion",
+        "description": "Validation passes and form accepts values"
+      }
+    ]
+  },
+  {
+    "id": "TC027",
+    "title": "Admin Report Generation and Monitoring",
+    "description": "Verify admins can successfully generate reports and monitor system metrics via the dashboard.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as admin and navigate to reports and monitoring pages"
+      },
+      {
+        "type": "action",
+        "description": "Select report parameters and generate report"
+      },
+      {
+        "type": "assertion",
+        "description": "Reports generate with accurate data and system metrics update in real-time"
+      }
+    ]
+  },
+  {
+    "id": "TC028",
+    "title": "Help Center Ticket Submission and Support Response",
+    "description": "Verify that users can create support tickets and receive responses via the help center ticket system.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to Help Center and submit a new support ticket with details"
+      },
+      {
+        "type": "assertion",
+        "description": "Ticket is created and visible in user support ticket list"
+      },
+      {
+        "type": "action",
+        "description": "Admin responds to ticket"
+      },
+      {
+        "type": "assertion",
+        "description": "User receives notification of support response"
+      }
+    ]
+  }
+]
