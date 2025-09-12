@@ -9,10 +9,8 @@ import {
   Plus,
   Calendar,
   Weight,
-  Ruler,
   AlertCircle,
   Star,
-  Award,
   Activity
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
