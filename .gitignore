@@ -1,1 +1,14 @@
 node_modules/
+
+# Firebase credentials
+petshop-romeujulieta-firebase-adminsdk-key.json
+*.json
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Build outputs
+dist/
+build/
