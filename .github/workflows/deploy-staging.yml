@@ -1,10 +1,11 @@
-name: 🧪 Deploy to Hostinger Staging
+name: 🧪 Deploy to Hostinger Staging (DISABLED)
 
-on:
-  push:
-    branches: [ develop, staging ]
-  pull_request:
-    branches: [ main, master ]
+# Temporariamente desabilitado - apenas ambiente de produção ativo
+# on:
+#   push:
+#     branches: [ develop, staging ]
+#   pull_request:
+#     branches: [ main, master ]
 
 jobs:
   deploy-staging:
