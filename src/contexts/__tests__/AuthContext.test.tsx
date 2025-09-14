@@ -65,7 +65,7 @@ describe('AuthContext', () => {
       </AuthProvider>
     )
 
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 
   it('should handle sign in successfully', async () => {

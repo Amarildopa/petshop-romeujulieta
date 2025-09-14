@@ -81,7 +81,7 @@ describe('UserSubscriptionsService', () => {
         }
       ]
 
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
           data: mockSubscriptions,
           error: null
         })
@@ -93,7 +93,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should throw error when database query fails', async () => {
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
         data: null,
         error: { message: 'Database error' }
       })
@@ -102,7 +102,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should return empty array when no subscriptions found', async () => {
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
           data: null,
           error: null
         })
@@ -124,7 +124,7 @@ describe('UserSubscriptionsService', () => {
         }
       }
 
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
         data: mockSubscription,
         error: null
       })
@@ -136,7 +136,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should return null when no active subscription found', async () => {
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
         data: null,
         error: { code: 'PGRST116' }
       })
@@ -146,7 +146,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should throw error for other database errors', async () => {
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
         data: null,
         error: { message: 'Database error', code: 'OTHER' }
       })
@@ -175,7 +175,7 @@ describe('UserSubscriptionsService', () => {
         }
       }
 
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: mockCreatedSubscription,
           error: null
         })
@@ -187,7 +187,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should throw error when creation fails', async () => {
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: null,
           error: { message: 'Creation failed' }
         })
@@ -210,7 +210,7 @@ describe('UserSubscriptionsService', () => {
         }
       }
 
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: mockUpdatedSubscription,
           error: null
         })
@@ -222,7 +222,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should throw error when update fails', async () => {
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: null,
           error: { message: 'Update failed' }
         })
@@ -241,7 +241,7 @@ describe('UserSubscriptionsService', () => {
         auto_renew: false
       }
 
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: mockCancelledSubscription,
           error: null
         })
@@ -261,7 +261,7 @@ describe('UserSubscriptionsService', () => {
         auto_renew: false
       }
 
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: mockCancelledSubscription,
           error: null
         })
@@ -281,7 +281,7 @@ describe('UserSubscriptionsService', () => {
         auto_renew: false
       }
 
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: mockPausedSubscription,
           error: null
         })
@@ -301,7 +301,7 @@ describe('UserSubscriptionsService', () => {
         auto_renew: true
       }
 
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: mockResumedSubscription,
           error: null
         })
@@ -409,7 +409,7 @@ describe('UserSubscriptionsService', () => {
         }
       }
 
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: mockSubscription,
           error: null
         })
@@ -455,7 +455,7 @@ describe('UserSubscriptionsService', () => {
         }
       ]
 
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
         data: mockSubscriptions,
         error: null
       })
@@ -467,7 +467,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should throw error when query fails', async () => {
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
           data: null,
           error: { message: 'Query failed' }
         })
@@ -476,7 +476,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should return empty array when no subscriptions found', async () => {
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
           data: null,
           error: null
         })
@@ -503,7 +503,7 @@ describe('UserSubscriptionsService', () => {
         }
       ]
 
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
           data: mockExpiringSubscriptions,
           error: null
         })
@@ -515,7 +515,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should use default 7 days when no parameter provided', async () => {
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
           data: [],
           error: null
         })
@@ -526,7 +526,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should throw error when query fails', async () => {
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
           data: null,
           error: { message: 'Query failed' }
         })
@@ -601,7 +601,7 @@ describe('UserSubscriptionsService', () => {
       vi.spyOn(userSubscriptionsService, 'getActiveSubscription').mockResolvedValue(mockActiveSubscription)
 
       // Mock para contar pets e appointments
-        mockQueryBuilder.eq.mockResolvedValueOnce({
+        mockSupabase.from().eq.mockResolvedValueOnce({
           count: 1,
           error: null
         }).mockResolvedValueOnce({
@@ -646,7 +646,7 @@ describe('UserSubscriptionsService', () => {
       vi.spyOn(userSubscriptionsService, 'getActiveSubscription').mockResolvedValue(mockActiveSubscription)
 
       // Mock para contar pets (no limite) e appointments (acima do limite)
-        mockQueryBuilder.eq.mockResolvedValueOnce({
+        mockSupabase.from().eq.mockResolvedValueOnce({
           count: 2,
           error: null
         }).mockResolvedValueOnce({
@@ -684,7 +684,7 @@ describe('UserSubscriptionsService', () => {
       vi.spyOn(userSubscriptionsService, 'getSubscriptionById').mockResolvedValue(mockSubscription)
 
       // Mock updateSubscription
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: mockRenewedSubscription,
           error: null
         })
@@ -711,7 +711,7 @@ describe('UserSubscriptionsService', () => {
 
       vi.spyOn(userSubscriptionsService, 'getSubscriptionById').mockResolvedValue(mockSubscription)
 
-      mockQueryBuilder.single.mockResolvedValue({
+      mockSupabase.from().single.mockResolvedValue({
           data: mockRenewedSubscription,
           error: null
         })
@@ -748,7 +748,7 @@ describe('UserSubscriptionsService', () => {
         }
       ]
 
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
           data: mockHistory,
           error: null
         })
@@ -760,7 +760,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should throw error when query fails', async () => {
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
           data: null,
           error: { message: 'Query failed' }
         })
@@ -769,7 +769,7 @@ describe('UserSubscriptionsService', () => {
     })
 
     it('should return empty array when no subscriptions found', async () => {
-      mockQueryBuilder.order.mockResolvedValue({
+      mockSupabase.from().order.mockResolvedValue({
         data: null,
         error: null
       })

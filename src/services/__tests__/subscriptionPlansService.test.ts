@@ -47,9 +47,15 @@ describe('SubscriptionPlansService', () => {
         }
       ]
 
-      mockSupabase.from().select().eq().order.mockResolvedValue({
-        data: mockPlans,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: mockPlans,
+              error: null
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getActivePlans()
@@ -59,18 +65,30 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when database query fails', async () => {
-      mockSupabase.from().select().eq().order.mockResolvedValue({
-        data: null,
-        error: { message: 'Database error' }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Database error' }
+            })
+          })
+        })
       })
 
       await expect(subscriptionPlansService.getActivePlans()).rejects.toThrow('Erro ao buscar planos de assinatura: Database error')
     })
 
     it('should return empty array when no plans found', async () => {
-      mockSupabase.from().select().eq().order.mockResolvedValue({
-        data: null,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: null,
+              error: null
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getActivePlans()
@@ -87,9 +105,15 @@ describe('SubscriptionPlansService', () => {
         billing_cycle: 'monthly'
       }
 
-      mockSupabase.from().select().eq().single.mockResolvedValue({
-        data: mockPlan,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockPlan,
+              error: null
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getPlanById('plan1')
@@ -99,9 +123,15 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should return null when plan not found', async () => {
-      mockSupabase.from().select().eq().single.mockResolvedValue({
-        data: null,
-        error: { code: 'PGRST116' }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { code: 'PGRST116' }
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getPlanById('nonexistent')
@@ -109,9 +139,15 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error for other database errors', async () => {
-      mockSupabase.from().select().eq().single.mockResolvedValue({
-        data: null,
-        error: { message: 'Database error', code: 'OTHER' }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Database error', code: 'OTHER' }
+            })
+          })
+        })
       })
 
       await expect(subscriptionPlansService.getPlanById('plan1')).rejects.toThrow('Erro ao buscar plano de assinatura: Database error')
@@ -135,9 +171,17 @@ describe('SubscriptionPlansService', () => {
         }
       ]
 
-      mockSupabase.from().select().eq().eq().order.mockResolvedValue({
-        data: mockPlans,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: mockPlans,
+                error: null
+              })
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getPlansByBillingCycle('monthly')
@@ -147,18 +191,34 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when query fails', async () => {
-      mockSupabase.from().select().eq().eq().order.mockResolvedValue({
-        data: null,
-        error: { message: 'Query failed' }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Query failed' }
+              })
+            })
+          })
+        })
       })
 
       await expect(subscriptionPlansService.getPlansByBillingCycle('monthly')).rejects.toThrow('Erro ao buscar planos por ciclo de cobrança: Query failed')
     })
 
     it('should return empty array when no plans found for billing cycle', async () => {
-      mockSupabase.from().select().eq().eq().order.mockResolvedValue({
-        data: null,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: null,
+                error: null
+              })
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getPlansByBillingCycle('yearly')
@@ -181,9 +241,15 @@ describe('SubscriptionPlansService', () => {
         created_at: '2024-01-01T10:00:00Z'
       }
 
-      mockSupabase.from().insert().select().single.mockResolvedValue({
-        data: mockCreatedPlan,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockCreatedPlan,
+              error: null
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.createPlan(planData)
@@ -193,9 +259,15 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when creation fails', async () => {
-      mockSupabase.from().insert().select().single.mockResolvedValue({
-        data: null,
-        error: { message: 'Creation failed' }
+      mockSupabase.from.mockReturnValue({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Creation failed' }
+            })
+          })
+        })
       })
 
       await expect(subscriptionPlansService.createPlan({})).rejects.toThrow('Erro ao criar plano de assinatura: Creation failed')
@@ -212,9 +284,17 @@ describe('SubscriptionPlansService', () => {
         billing_cycle: 'monthly'
       }
 
-      mockSupabase.from().update().eq().select().single.mockResolvedValue({
-        data: mockUpdatedPlan,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        update: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockUpdatedPlan,
+                error: null
+              })
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.updatePlan('plan1', updates)
@@ -224,9 +304,17 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when update fails', async () => {
-      mockSupabase.from().update().eq().select().single.mockResolvedValue({
-        data: null,
-        error: { message: 'Update failed' }
+      mockSupabase.from.mockReturnValue({
+        update: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Update failed' }
+              })
+            })
+          })
+        })
       })
 
       await expect(subscriptionPlansService.updatePlan('plan1', {})).rejects.toThrow('Erro ao atualizar plano de assinatura: Update failed')
@@ -235,8 +323,12 @@ describe('SubscriptionPlansService', () => {
 
   describe('deletePlan', () => {
     it('should delete subscription plan', async () => {
-      mockSupabase.from().delete().eq.mockResolvedValue({
-        error: null
+      mockSupabase.from.mockReturnValue({
+        delete: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({
+            error: null
+          })
+        })
       })
 
       await subscriptionPlansService.deletePlan('plan1')
@@ -245,8 +337,12 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when deletion fails', async () => {
-      mockSupabase.from().delete().eq.mockResolvedValue({
-        error: { message: 'Deletion failed' }
+      mockSupabase.from.mockReturnValue({
+        delete: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({
+            error: { message: 'Deletion failed' }
+          })
+        })
       })
 
       await expect(subscriptionPlansService.deletePlan('plan1')).rejects.toThrow('Erro ao deletar plano de assinatura: Deletion failed')
@@ -263,16 +359,29 @@ describe('SubscriptionPlansService', () => {
       }
 
       // Mock current status fetch
-      mockSupabase.from().select().eq().single.mockResolvedValueOnce({
-        data: currentPlan,
-        error: null
+      const mockSelect = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValueOnce({
+            data: currentPlan,
+            error: null
+          })
+        })
       })
 
       // Mock status update
-      mockSupabase.from().update().eq().select().single.mockResolvedValueOnce({
-        data: updatedPlan,
-        error: null
+      const mockUpdate = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValueOnce({
+              data: updatedPlan,
+              error: null
+            })
+          })
+        })
       })
+
+      mockSupabase.from.mockReturnValueOnce({ select: mockSelect })
+      mockSupabase.from.mockReturnValueOnce({ update: mockUpdate })
 
       const result = await subscriptionPlansService.togglePlanStatus('plan1')
 
@@ -288,16 +397,29 @@ describe('SubscriptionPlansService', () => {
       }
 
       // Mock current status fetch
-      mockSupabase.from().select().eq().single.mockResolvedValueOnce({
-        data: currentPlan,
-        error: null
+      const mockSelect2 = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValueOnce({
+            data: currentPlan,
+            error: null
+          })
+        })
       })
 
       // Mock status update
-      mockSupabase.from().update().eq().select().single.mockResolvedValueOnce({
-        data: updatedPlan,
-        error: null
+      const mockUpdate2 = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValueOnce({
+              data: updatedPlan,
+              error: null
+            })
+          })
+        })
       })
+
+      mockSupabase.from.mockReturnValueOnce({ select: mockSelect2 })
+      mockSupabase.from.mockReturnValueOnce({ update: mockUpdate2 })
 
       const result = await subscriptionPlansService.togglePlanStatus('plan1')
 
@@ -305,9 +427,15 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when fetching current status fails', async () => {
-      mockSupabase.from().select().eq().single.mockResolvedValue({
-        data: null,
-        error: { message: 'Fetch failed' }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Fetch failed' }
+            })
+          })
+        })
       })
 
       await expect(subscriptionPlansService.togglePlanStatus('plan1')).rejects.toThrow('Erro ao buscar status do plano: Fetch failed')
@@ -315,16 +443,29 @@ describe('SubscriptionPlansService', () => {
 
     it('should throw error when updating status fails', async () => {
       // Mock successful fetch
-      mockSupabase.from().select().eq().single.mockResolvedValueOnce({
-        data: { is_active: true },
-        error: null
+      const mockSelect3 = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValueOnce({
+            data: { is_active: true },
+            error: null
+          })
+        })
       })
 
       // Mock failed update
-      mockSupabase.from().update().eq().select().single.mockResolvedValueOnce({
-        data: null,
-        error: { message: 'Update failed' }
+      const mockUpdate3 = vi.fn().mockReturnValue({
+        eq: vi.fn().mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValueOnce({
+              data: null,
+              error: { message: 'Update failed' }
+            })
+          })
+        })
       })
+
+      mockSupabase.from.mockReturnValueOnce({ select: mockSelect3 })
+      mockSupabase.from.mockReturnValueOnce({ update: mockUpdate3 })
 
       await expect(subscriptionPlansService.togglePlanStatus('plan1')).rejects.toThrow('Erro ao alterar status do plano: Update failed')
     })
@@ -338,9 +479,15 @@ describe('SubscriptionPlansService', () => {
         features: ['Feature 1', 'Feature 2', 'Feature 3']
       }
 
-      mockSupabase.from().select().eq().single.mockResolvedValue({
-        data: mockPlan,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockPlan,
+              error: null
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getPlanFeatures('plan1')
@@ -355,9 +502,15 @@ describe('SubscriptionPlansService', () => {
         features: null
       }
 
-      mockSupabase.from().select().eq().single.mockResolvedValue({
-        data: mockPlan,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockPlan,
+              error: null
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getPlanFeatures('plan1')
@@ -366,9 +519,15 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when plan not found', async () => {
-      mockSupabase.from().select().eq().single.mockResolvedValue({
-        data: null,
-        error: { code: 'PGRST116' }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { code: 'PGRST116' }
+            })
+          })
+        })
       })
 
       await expect(subscriptionPlansService.getPlanFeatures('nonexistent')).rejects.toThrow('Plano não encontrado')
@@ -390,9 +549,17 @@ describe('SubscriptionPlansService', () => {
         }
       ]
 
-      mockSupabase.from().select().in().eq().order.mockResolvedValue({
-        data: mockPlans,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          in: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: mockPlans,
+                error: null
+              })
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.comparePlans(['plan1', 'plan2'])
@@ -402,18 +569,34 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when comparison fails', async () => {
-      mockSupabase.from().select().in().eq().order.mockResolvedValue({
-        data: null,
-        error: { message: 'Comparison failed' }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          in: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Comparison failed' }
+              })
+            })
+          })
+        })
       })
 
       await expect(subscriptionPlansService.comparePlans(['plan1', 'plan2'])).rejects.toThrow('Erro ao comparar planos: Comparison failed')
     })
 
     it('should return empty array when no plans match', async () => {
-      mockSupabase.from().select().in().eq().order.mockResolvedValue({
-        data: null,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          in: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: null,
+                error: null
+              })
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.comparePlans(['nonexistent1', 'nonexistent2'])
@@ -447,9 +630,15 @@ describe('SubscriptionPlansService', () => {
         }
       ]
 
-      mockSupabase.from().select().eq().order.mockResolvedValue({
-        data: mockPlans,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: mockPlans,
+              error: null
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getRecommendedPlan(2, 5)
@@ -468,9 +657,15 @@ describe('SubscriptionPlansService', () => {
         }
       ]
 
-      mockSupabase.from().select().eq().order.mockResolvedValue({
-        data: mockPlans,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: mockPlans,
+              error: null
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getRecommendedPlan(5, 10)
@@ -496,9 +691,15 @@ describe('SubscriptionPlansService', () => {
         }
       ]
 
-      mockSupabase.from().select().eq().order.mockResolvedValue({
-        data: mockPlans,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: mockPlans,
+              error: null
+            })
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getRecommendedPlan(2, 5)
@@ -528,9 +729,13 @@ describe('SubscriptionPlansService', () => {
         }
       ]
 
-      mockSupabase.from().select().eq.mockResolvedValue({
-        data: mockSubscriptions,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({
+            data: mockSubscriptions,
+            error: null
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getPlanStats('plan1')
@@ -541,9 +746,13 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should return zero stats when no subscriptions found', async () => {
-      mockSupabase.from().select().eq.mockResolvedValue({
-        data: null,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({
+            data: null,
+            error: null
+          })
+        })
       })
 
       const result = await subscriptionPlansService.getPlanStats('plan1')
@@ -556,9 +765,13 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when fetching stats fails', async () => {
-      mockSupabase.from().select().eq.mockResolvedValue({
-        data: null,
-        error: { message: 'Stats failed' }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockResolvedValue({
+            data: null,
+            error: { message: 'Stats failed' }
+          })
+        })
       })
 
       await expect(subscriptionPlansService.getPlanStats('plan1')).rejects.toThrow('Erro ao buscar estatísticas do plano: Stats failed')
@@ -593,9 +806,13 @@ describe('SubscriptionPlansService', () => {
         }
       ]
 
-      mockSupabase.from().insert().select.mockResolvedValue({
-        data: mockCreatedPlans,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockResolvedValue({
+            data: mockCreatedPlans,
+            error: null
+          })
+        })
       })
 
       const result = await subscriptionPlansService.createBulkPlans(plansData)
@@ -605,18 +822,26 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when bulk creation fails', async () => {
-      mockSupabase.from().insert().select.mockResolvedValue({
-        data: null,
-        error: { message: 'Bulk creation failed' }
+      mockSupabase.from.mockReturnValue({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockResolvedValue({
+            data: null,
+            error: { message: 'Bulk creation failed' }
+          })
+        })
       })
 
       await expect(subscriptionPlansService.createBulkPlans([])).rejects.toThrow('Erro ao criar planos em lote: Bulk creation failed')
     })
 
     it('should return empty array when no plans created', async () => {
-      mockSupabase.from().insert().select.mockResolvedValue({
-        data: null,
-        error: null
+      mockSupabase.from.mockReturnValue({
+        insert: vi.fn().mockReturnValue({
+          select: vi.fn().mockResolvedValue({
+            data: null,
+            error: null
+          })
+        })
       })
 
       const result = await subscriptionPlansService.createBulkPlans([])
@@ -658,17 +883,28 @@ describe('SubscriptionPlansService', () => {
         sort_order: 2
       }
 
-      // Mock original plan fetch
-      mockSupabase.from().select().eq().single.mockResolvedValueOnce({
-        data: originalPlan,
-        error: null
-      })
-
-      // Mock plan creation
-      mockSupabase.from().insert().select().single.mockResolvedValueOnce({
-        data: duplicatedPlan,
-        error: null
-      })
+      // Mock original plan fetch then plan creation
+      mockSupabase.from
+        .mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: originalPlan,
+                error: null
+              })
+            })
+          })
+        })
+        .mockReturnValueOnce({
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: duplicatedPlan,
+                error: null
+              })
+            })
+          })
+        })
 
       const result = await subscriptionPlansService.duplicatePlan('plan1', 'Duplicated Plan')
 
@@ -678,9 +914,15 @@ describe('SubscriptionPlansService', () => {
     })
 
     it('should throw error when original plan not found', async () => {
-      mockSupabase.from().select().eq().single.mockResolvedValue({
-        data: null,
-        error: { code: 'PGRST116' }
+      mockSupabase.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { code: 'PGRST116' }
+            })
+          })
+        })
       })
 
       await expect(subscriptionPlansService.duplicatePlan('nonexistent', 'New Name')).rejects.toThrow('Plano original não encontrado')
@@ -694,17 +936,28 @@ describe('SubscriptionPlansService', () => {
         price: 29.99
       }
 
-      // Mock successful original plan fetch
-      mockSupabase.from().select().eq().single.mockResolvedValueOnce({
-        data: originalPlan,
-        error: null
-      })
-
-      // Mock failed plan creation
-      mockSupabase.from().insert().select().single.mockResolvedValueOnce({
-        data: null,
-        error: { message: 'Creation failed' }
-      })
+      // Mock successful original plan fetch then failed plan creation
+      mockSupabase.from
+        .mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: originalPlan,
+                error: null
+              })
+            })
+          })
+        })
+        .mockReturnValueOnce({
+          insert: vi.fn().mockReturnValue({
+            select: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Creation failed' }
+              })
+            })
+          })
+        })
 
       await expect(subscriptionPlansService.duplicatePlan('plan1', 'New Name')).rejects.toThrow('Erro ao criar plano de assinatura: Creation failed')
     })

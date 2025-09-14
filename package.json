@@ -15,7 +15,7 @@
     "test:watch": "vitest --watch",
     "update-app-name": "node scripts/update-app-name.js",
     "deploy:local": "node scripts/deploy-hostinger.js",
-    "deploy:build": "npm run build && node scripts/generate-htaccess.js",
+    "deploy:build": "npm run build && node scripts/generate-htaccess.cjs",
     "deploy:check": "npm run lint && npm run test:run && npm run build",
     "deploy:staging": "echo 'Push to develop branch for staging deploy'",
     "deploy:production": "echo 'Push to main branch for production deploy'"

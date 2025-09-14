@@ -3,39 +3,31 @@ import { helpService } from '../helpService'
 import { supabase } from '../../lib/supabase'
 
 // Mock do Supabase
-const mockSelect = vi.fn().mockReturnThis()
-const mockInsert = vi.fn().mockReturnThis()
-const mockUpdate = vi.fn().mockReturnThis()
-const mockDelete = vi.fn().mockReturnThis()
-const mockEq = vi.fn().mockReturnThis()
-const mockNeq = vi.fn().mockReturnThis()
-const mockNot = vi.fn().mockReturnThis()
-const mockOr = vi.fn().mockReturnThis()
-const mockOrder = vi.fn().mockReturnThis()
-const mockLimit = vi.fn().mockReturnThis()
-const mockSingle = vi.fn()
-
-vi.mock('../../lib/supabase', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: mockSelect,
-      insert: mockInsert,
-      update: mockUpdate,
-      delete: mockDelete,
-      eq: mockEq,
-      neq: mockNeq,
-      not: mockNot,
-      or: mockOr,
-      order: mockOrder,
-      limit: mockLimit,
-      single: mockSingle,
-      then: vi.fn()
-    })),
+vi.mock('../../lib/supabase', () => {
+  const mockQueryBuilder = {
+    select: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
+    delete: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    neq: vi.fn().mockReturnThis(),
+    not: vi.fn().mockReturnThis(),
+    or: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
+    single: vi.fn().mockReturnThis()
+  }
+  
+  return {
+    supabase: {
+      from: vi.fn(() => mockQueryBuilder)
+    },
     raw: vi.fn((sql) => ({ sql }))
   }
-}))
+})
 
 const mockSupabase = supabase as any
+const mockQueryBuilder = mockSupabase.from()
 
 describe('HelpService', () => {
   beforeEach(() => {

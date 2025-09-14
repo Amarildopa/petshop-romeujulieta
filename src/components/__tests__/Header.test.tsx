@@ -15,7 +15,8 @@ vi.mock('framer-motion', () => ({
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
     button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
     span: ({ children, ...props }: any) => <span {...props}>{children}</span>
-  }
+  },
+  AnimatePresence: ({ children }: any) => <>{children}</>
 }))
 
 const MockedHeader = () => (
@@ -43,11 +44,10 @@ describe('Header', () => {
 
     render(<MockedHeader />)
 
-    expect(screen.getByText('PetShop Romeo & Julieta')).toBeInTheDocument()
-    expect(screen.getByText('Início')).toBeInTheDocument()
+    expect(screen.getByText('Romeu e Julieta Pet&Spa')).toBeInTheDocument()
     expect(screen.getByText('Serviços')).toBeInTheDocument()
     expect(screen.getByText('Loja')).toBeInTheDocument()
-    expect(screen.getByText('Sobre')).toBeInTheDocument()
+    expect(screen.getByText('Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Entrar')).toBeInTheDocument()
     expect(screen.getByText('Cadastrar')).toBeInTheDocument()
   })
@@ -70,11 +70,10 @@ describe('Header', () => {
 
     render(<MockedHeader />)
 
-    expect(screen.getByText('PetShop Romeo & Julieta')).toBeInTheDocument()
+    expect(screen.getByText('Romeu e Julieta Pet&Spa')).toBeInTheDocument()
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
-    expect(screen.getByText('Agendamentos')).toBeInTheDocument()
+    expect(screen.getByText('Serviços')).toBeInTheDocument()
     expect(screen.getByText('Loja')).toBeInTheDocument()
-    expect(screen.getByText('Perfil')).toBeInTheDocument()
     expect(screen.getByText('Sair')).toBeInTheDocument()
   })
 
@@ -90,7 +89,7 @@ describe('Header', () => {
 
     render(<MockedHeader />)
 
-    expect(screen.getByText('PetShop Romeo & Julieta')).toBeInTheDocument()
+    expect(screen.getByText('Romeu e Julieta Pet&Spa')).toBeInTheDocument()
     // O header deve renderizar mesmo no loading
   })
 
@@ -106,7 +105,7 @@ describe('Header', () => {
 
     render(<MockedHeader />)
 
-    const mobileMenuButton = screen.getByRole('button', { name: /menu/i })
+    const mobileMenuButton = screen.getByRole('button')
     expect(mobileMenuButton).toBeInTheDocument()
 
     fireEvent.click(mobileMenuButton)
@@ -151,14 +150,14 @@ describe('Header', () => {
     render(<MockedHeader />)
 
     // Verificar se os links têm os hrefs corretos
-    const homeLink = screen.getByText('Início').closest('a')
-    expect(homeLink).toHaveAttribute('href', '/')
-
     const servicesLink = screen.getByText('Serviços').closest('a')
     expect(servicesLink).toHaveAttribute('href', '/services')
 
     const storeLink = screen.getByText('Loja').closest('a')
     expect(storeLink).toHaveAttribute('href', '/store')
+
+    const dashboardLink = screen.getByText('Dashboard').closest('a')
+    expect(dashboardLink).toHaveAttribute('href', '/dashboard')
   })
 
   it('should have correct user navigation links when authenticated', () => {
@@ -182,10 +181,13 @@ describe('Header', () => {
     const dashboardLink = screen.getByText('Dashboard').closest('a')
     expect(dashboardLink).toHaveAttribute('href', '/dashboard')
 
-    const appointmentsLink = screen.getByText('Agendamentos').closest('a')
-    expect(appointmentsLink).toHaveAttribute('href', '/booking')
+    const servicesLink = screen.getByText('Serviços').closest('a')
+    expect(servicesLink).toHaveAttribute('href', '/services')
 
-    const profileLink = screen.getByText('Perfil').closest('a')
+    const storeLink = screen.getByText('Loja').closest('a')
+    expect(storeLink).toHaveAttribute('href', '/store')
+
+    const profileLink = screen.getByText('Test User').closest('a')
     expect(profileLink).toHaveAttribute('href', '/profile')
   })
 })

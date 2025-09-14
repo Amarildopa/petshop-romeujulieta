@@ -1,33 +1,30 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// Mock simples do Supabase
-const mockSupabase = {
-  from: vi.fn(() => ({
-    select: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        order: vi.fn(() => Promise.resolve({ data: [], error: null }))
-      }))
-    })),
-    insert: vi.fn(() => ({
-      select: vi.fn(() => ({
-        single: vi.fn(() => Promise.resolve({ data: null, error: null }))
-      }))
-    })),
-    update: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        select: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: null, error: null }))
-        }))
-      }))
-    })),
-    delete: vi.fn(() => ({
-      eq: vi.fn(() => Promise.resolve({ error: null }))
-    }))
-  })),
-  auth: {
-    getUser: vi.fn(() => Promise.resolve({ data: { user: { id: 'test-user' } }, error: null }))
+// Mock do Supabase
+vi.mock('../../lib/supabase', () => {
+  const mockQueryBuilder = {
+    select: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
+    delete: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    single: vi.fn().mockReturnThis()
   }
-}
+  
+  return {
+    supabase: {
+      from: vi.fn(() => mockQueryBuilder),
+      auth: {
+        getUser: vi.fn(() => Promise.resolve({ data: { user: { id: 'test-user' } }, error: null }))
+      }
+    }
+  }
+})
+
+import { supabase } from '../../lib/supabase'
+const mockSupabase = supabase as any
+const mockQueryBuilder = mockSupabase.from()
 
 // Mock do módulo supabase
 vi.mock('../../lib/supabase', () => ({

@@ -1,11 +1,20 @@
 name: 🧪 Deploy to Hostinger Staging (DISABLED)
 
 # Temporariamente desabilitado - apenas ambiente de produção ativo
-# on:
-#   push:
-#     branches: [ develop, staging ]
-#   pull_request:
-#     branches: [ main, master ]
+# Pode ser executado manualmente se necessário
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Motivo para executar o deploy de staging'
+        required: true
+        default: 'Deploy manual de staging'
+
+# Gatilhos automáticos desabilitados:
+# push:
+#   branches: [ develop, staging ]
+# pull_request:
+#   branches: [ main, master ]
 
 jobs:
   deploy-staging:

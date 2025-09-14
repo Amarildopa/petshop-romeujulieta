@@ -3,26 +3,31 @@ import { chatService } from '../chatService'
 import { supabase } from '../../lib/supabase'
 
 // Mock do Supabase
-vi.mock('../../lib/supabase', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockReturnThis(),
-      update: vi.fn().mockReturnThis(),
-      delete: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      neq: vi.fn().mockReturnThis(),
-      gt: vi.fn().mockReturnThis(),
-      ilike: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      range: vi.fn().mockReturnThis(),
-      single: vi.fn().mockReturnThis(),
-      then: vi.fn()
-    }))
+vi.mock('../../lib/supabase', () => {
+  const mockQueryBuilder = {
+    select: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
+    delete: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    neq: vi.fn().mockReturnThis(),
+    gt: vi.fn().mockReturnThis(),
+    ilike: vi.fn().mockReturnThis(),
+    order: vi.fn().mockReturnThis(),
+    range: vi.fn().mockReturnThis(),
+    single: vi.fn().mockReturnThis(),
+    then: vi.fn()
   }
-}))
+  
+  return {
+    supabase: {
+      from: vi.fn(() => mockQueryBuilder)
+    }
+  }
+})
 
 const mockSupabase = supabase as any
+const mockQueryBuilder = mockSupabase.from()
 
 describe('ChatService', () => {
   beforeEach(() => {
