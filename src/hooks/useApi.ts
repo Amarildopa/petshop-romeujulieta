@@ -23,7 +23,7 @@ interface CacheEntry<T> {
 }
 
 // Cache global para requisições
-const apiCache = new Map<string, CacheEntry<any>>()
+const apiCache = new Map<string, CacheEntry<unknown>>()
 
 export const useApi = <T>(
   apiCall: () => Promise<T>,
@@ -187,9 +187,8 @@ export const useApi = <T>(
 }
 
 // Hook para múltiplas chamadas de API
-export const useMultipleApi = <T extends Record<string, any>>(
-  apiCalls: { [K in keyof T]: () => Promise<T[K]> },
-  options: ApiOptions = {}
+export const useMultipleApi = <T extends Record<string, unknown>>(
+  apiCalls: { [K in keyof T]: () => Promise<T[K]> }
 ) => {
   const [state, setState] = useState<{
     data: Partial<T> | null

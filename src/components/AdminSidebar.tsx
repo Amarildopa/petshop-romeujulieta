@@ -4,7 +4,6 @@ import { motion } from 'framer-motion'
 import { 
   BarChart3, 
   Users, 
-  FileText, 
   Settings, 
   Shield, 
   MessageSquare,

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { profileService } from '../services/profileService';
+import { profileService, Profile } from '../services/profileService';
 
 export const useUserProfile = () => {
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 

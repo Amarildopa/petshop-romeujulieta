@@ -20,7 +20,7 @@ export const useDebounce = <T>(value: T, delay: number): T => {
 }
 
 // Hook para throttle
-export const useThrottle = <T extends (...args: any[]) => any>(
+export const useThrottle = <T extends (...args: unknown[]) => unknown>(
   callback: T,
   delay: number
 ): T => {
@@ -159,10 +159,11 @@ export const useDataCache = <T>(
 }
 
 // Hook para otimizar re-renders
-export const useOptimizedCallback = <T extends (...args: any[]) => any>(
+export const useOptimizedCallback = <T extends (...args: unknown[]) => unknown>(
   callback: T,
   deps: React.DependencyList
 ): T => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useCallback(callback, deps)
 }
 
@@ -170,6 +171,7 @@ export const useOptimizedMemo = <T>(
   factory: () => T,
   deps: React.DependencyList
 ): T => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return useMemo(factory, deps)
 }
 
@@ -229,7 +231,7 @@ export const useApiPerformance = () => {
       return result
     } catch (error) {
       const duration = performance.now() - startTime
-      const statusCode = (error as any)?.status || 500
+      const statusCode = (error as { status?: number })?.status || 500
       
       metrics.apiError(name, 'GET', statusCode, (error as Error).message)
       logger.error(`API call failed: ${name}`, error as Error, { duration }, 'API')

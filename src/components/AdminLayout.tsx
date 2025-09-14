@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import AdminSidebar from './AdminSidebar'
 import AdminRouteGuard from './AdminRouteGuard'
-import { Bell, User, LogOut, Menu, X } from 'lucide-react'
+import { Bell, User, LogOut, Menu } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useAdminAuth } from '../hooks/useAdminAuth'
 
@@ -11,7 +11,7 @@ const AdminLayout: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { user, signOut } = useAuth()
-  const { adminUser, isSuperAdmin } = useAdminAuth()
+  const { adminUser } = useAdminAuth()
 
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed)

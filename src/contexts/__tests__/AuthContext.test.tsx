@@ -52,7 +52,7 @@ describe('AuthContext', () => {
       signUp: mockSignUp,
       signOut: mockSignOut,
       onAuthStateChange: mockOnAuthStateChange
-    } as any
+    } as typeof supabase.auth
   })
 
   it('should provide initial loading state', () => {

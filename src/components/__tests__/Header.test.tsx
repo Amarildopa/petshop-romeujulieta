@@ -12,11 +12,11 @@ vi.mock('../../contexts/AuthContext', () => ({
 // Mock do Framer Motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>
+    div: ({ children, ...props }: React.ComponentProps<'div'>) => <div {...props}>{children}</div>,
+    button: ({ children, ...props }: React.ComponentProps<'button'>) => <button {...props}>{children}</button>,
+    span: ({ children, ...props }: React.ComponentProps<'span'>) => <span {...props}>{children}</span>
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>
 }))
 
 const MockedHeader = () => (

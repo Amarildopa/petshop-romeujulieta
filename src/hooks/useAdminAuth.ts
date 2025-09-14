@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { adminService, AdminUser } from '../services/adminService'
+import { AdminUser } from '../services/adminService'
 import { supabase } from '../lib/supabase'
 import { logger } from '../lib/logger'
 
@@ -133,7 +133,7 @@ export const useAdminPermission = (permission: keyof AdminPermissions): boolean 
 
 // Hook para verificar se pode acessar uma rota
 export const useCanAccessRoute = (route: string): boolean => {
-  const { isAdmin, isSuperAdmin, isManager } = useAdminAuth()
+  const { isAdmin, isSuperAdmin, permissions } = useAdminAuth()
   
   if (!isAdmin) return false
   
@@ -154,7 +154,24 @@ export const useCanAccessRoute = (route: string): boolean => {
   const requiredPermission = routePermissions[route]
   if (!requiredPermission) return false
   
-  const { permissions } = useAdminAuth()
+  return permissions[requiredPermission] === true || permissions.all === true
+}
+
+// Função utilitária para verificar permissões fora de componentes React
+export const createHasAdminPermission = (permissions: AdminPermissions) => (route: string): boolean => {
+  const routePermissions: Record<string, keyof AdminPermissions> = {
+    '/admin': 'all',
+    '/admin/users': 'users',
+    '/admin/reports': 'reports',
+    '/admin/settings': 'settings',
+    '/admin/tickets': 'tickets',
+    '/admin/logs': 'logs',
+    '/admin/security': 'security'
+  }
+  
+  const requiredPermission = routePermissions[route]
+  if (!requiredPermission) return false
+  
   return permissions[requiredPermission] === true || permissions.all === true
 }
 

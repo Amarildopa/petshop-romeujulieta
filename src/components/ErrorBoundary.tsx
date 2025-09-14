@@ -14,6 +14,8 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
+  static displayName = 'ErrorBoundary'
+  
   constructor(props: Props) {
     super(props)
     this.state = { hasError: false }
@@ -137,7 +139,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
 // Hook para usar o Error Boundary em componentes funcionais
 export const useErrorHandler = () => {
-  const handleError = (error: Error, errorInfo?: any) => {
+  const handleError = (error: Error, errorInfo?: React.ErrorInfo) => {
     logger.error('Unhandled error in component', error, errorInfo)
   }
 

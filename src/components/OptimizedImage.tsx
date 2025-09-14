@@ -11,7 +11,6 @@ interface OptimizedImageProps {
   className?: string
   placeholder?: string
   lazy?: boolean
-  quality?: number
   onLoad?: () => void
   onError?: () => void
 }
@@ -24,7 +23,6 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   className = '',
   placeholder,
   lazy = true,
-  quality = 80,
   onLoad,
   onError
 }) => {

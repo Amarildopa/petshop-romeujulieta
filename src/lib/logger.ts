@@ -31,7 +31,7 @@ class Logger {
     timestamp: string
     level: string
     message: string
-    data?: any
+    data?: unknown
     source?: string
   }> = []
 
@@ -44,7 +44,7 @@ class Logger {
     return level >= this.config.level
   }
 
-  private formatMessage(level: string, message: string, data?: any, source?: string): string {
+  private formatMessage(level: string, message: string, data?: unknown, source?: string): string {
     const timestamp = new Date().toISOString()
     const sourceStr = source ? `[${source}]` : ''
     return `${timestamp} ${level} ${sourceStr} ${message}`
@@ -80,7 +80,7 @@ class Logger {
     }
   }
 
-  private log(level: LogLevel, levelName: string, message: string, data?: any, source?: string) {
+  private log(level: LogLevel, levelName: string, message: string, data?: unknown, source?: string) {
     if (!this.shouldLog(level)) return
 
     const logEntry = {
@@ -137,25 +137,25 @@ class Logger {
     this.log(LogLevel.DEBUG, 'DEBUG', message, data, source)
   }
 
-  info(message: string, data?: any, source?: string) {
+  info(message: string, data?: unknown, source?: string) {
     this.log(LogLevel.INFO, 'INFO', message, data, source)
   }
 
-  warn(message: string, data?: any, source?: string) {
+  warn(message: string, data?: unknown, source?: string) {
     this.log(LogLevel.WARN, 'WARN', message, data, source)
   }
 
-  error(message: string, error?: Error, data?: any, source?: string) {
+  error(message: string, error?: Error, data?: unknown, source?: string) {
     this.log(LogLevel.ERROR, 'ERROR', message, { error, ...data }, source)
   }
 
   // Métodos específicos para diferentes contextos
   api = {
-    request: (method: string, url: string, data?: any) => {
+    request: (method: string, url: string, data?: unknown) => {
       this.info(`API Request: ${method} ${url}`, data, 'API')
     },
     
-    response: (method: string, url: string, status: number, data?: any) => {
+    response: (method: string, url: string, status: number, data?: unknown) => {
       const level = status >= 400 ? LogLevel.ERROR : LogLevel.INFO
       this.log(level, level === LogLevel.ERROR ? 'ERROR' : 'INFO', 
         `API Response: ${method} ${url} - ${status}`, data, 'API')
@@ -175,7 +175,7 @@ class Logger {
       this.info(`User logout: ${userId}`, { userId }, 'USER')
     },
     
-    action: (action: string, userId: string, data?: any) => {
+    action: (action: string, userId: string, data?: unknown) => {
       this.info(`User action: ${action}`, { userId, action, ...data }, 'USER')
     }
   }
@@ -205,13 +205,13 @@ class Logger {
       return startTime
     },
     
-    end: (operation: string, startTime: number, data?: any) => {
+    end: (operation: string, startTime: number, data?: unknown) => {
       const duration = performance.now() - startTime
       this.info(`Performance end: ${operation}`, { duration, ...data }, 'PERFORMANCE')
       return duration
     },
     
-    measure: async <T>(operation: string, fn: () => Promise<T>, data?: any): Promise<T> => {
+    measure: async <T>(operation: string, fn: () => Promise<T>, data?: unknown): Promise<T> => {
       const startTime = this.performance.start(operation)
       try {
         const result = await fn()
