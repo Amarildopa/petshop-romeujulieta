@@ -26,7 +26,24 @@ vi.mock('../../lib/supabase', () => {
   }
 })
 
-const mockSupabase = supabase as any
+// Interfaces para tipagem dos mocks
+interface MockQueryBuilder {
+  select: ReturnType<typeof vi.fn>
+  insert: ReturnType<typeof vi.fn>
+  update: ReturnType<typeof vi.fn>
+  delete: ReturnType<typeof vi.fn>
+  eq: ReturnType<typeof vi.fn>
+  in: ReturnType<typeof vi.fn>
+  order: ReturnType<typeof vi.fn>
+  single: ReturnType<typeof vi.fn>
+  then: ReturnType<typeof vi.fn>
+}
+
+interface MockSupabaseClient {
+  from: ReturnType<typeof vi.fn>
+}
+
+const mockSupabase = supabase as MockSupabaseClient
 const mockQueryBuilder = mockSupabase.from()
 
 describe('ChatService', () => {

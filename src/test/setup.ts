@@ -1,5 +1,12 @@
 import '@testing-library/jest-dom'
 import { vi } from 'vitest'
+import React from 'react'
+
+interface ComponentProps {
+  children?: React.ReactNode
+  to?: string
+  [key: string]: unknown
+}
 
 // Mock do Supabase - Versão simplificada e funcional
 vi.mock('../lib/supabase', () => ({
@@ -62,8 +69,7 @@ vi.mock('react-router-dom', () => ({
   BrowserRouter: ({ children }: { children: React.ReactNode }) => children,
   Routes: ({ children }: { children: React.ReactNode }) => children,
   Route: ({ children }: { children: React.ReactNode }) => children,
-  Link: ({ children, to, ...props }: any) => {
-    const React = require('react')
+  Link: ({ children, to, ...props }: ComponentProps) => {
     return React.createElement('a', { href: to, ...props }, children)
   }
 }))
@@ -71,101 +77,72 @@ vi.mock('react-router-dom', () => ({
 // Mock do Framer Motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => {
-      const React = require('react')
+    div: ({ children, ...props }: ComponentProps) => {
       return React.createElement('div', props, children)
     },
-    button: ({ children, ...props }: any) => {
-      const React = require('react')
+    button: ({ children, ...props }: ComponentProps) => {
       return React.createElement('button', props, children)
     },
-    span: ({ children, ...props }: any) => {
-      const React = require('react')
+    span: ({ children, ...props }: ComponentProps) => {
       return React.createElement('span', props, children)
     },
-    img: ({ children, ...props }: any) => {
-      const React = require('react')
+    img: ({ children, ...props }: ComponentProps) => {
       return React.createElement('img', props, children)
     },
-    h1: ({ children, ...props }: any) => {
-      const React = require('react')
+    h1: ({ children, ...props }: ComponentProps) => {
       return React.createElement('h1', props, children)
     },
-    h2: ({ children, ...props }: any) => {
-      const React = require('react')
+    h2: ({ children, ...props }: ComponentProps) => {
       return React.createElement('h2', props, children)
     },
-    h3: ({ children, ...props }: any) => {
-      const React = require('react')
+    h3: ({ children, ...props }: ComponentProps) => {
       return React.createElement('h3', props, children)
     },
-    p: ({ children, ...props }: any) => {
-      const React = require('react')
+    p: ({ children, ...props }: ComponentProps) => {
       return React.createElement('p', props, children)
     },
-    section: ({ children, ...props }: any) => {
-      const React = require('react')
+    section: ({ children, ...props }: ComponentProps) => {
       return React.createElement('section', props, children)
     },
-    article: ({ children, ...props }: any) => {
-      const React = require('react')
+    article: ({ children, ...props }: ComponentProps) => {
       return React.createElement('article', props, children)
     },
-    header: ({ children, ...props }: any) => {
-      const React = require('react')
+    header: ({ children, ...props }: ComponentProps) => {
       return React.createElement('header', props, children)
     },
-    main: ({ children, ...props }: any) => {
-      const React = require('react')
+    main: ({ children, ...props }: ComponentProps) => {
       return React.createElement('main', props, children)
     },
-    footer: ({ children, ...props }: any) => {
-      const React = require('react')
+    footer: ({ children, ...props }: ComponentProps) => {
       return React.createElement('footer', props, children)
     },
-    nav: ({ children, ...props }: any) => {
-      const React = require('react')
+    nav: ({ children, ...props }: ComponentProps) => {
       return React.createElement('nav', props, children)
     },
-    ul: ({ children, ...props }: any) => {
-      const React = require('react')
+    ul: ({ children, ...props }: ComponentProps) => {
       return React.createElement('ul', props, children)
     },
-    li: ({ children, ...props }: any) => {
-      const React = require('react')
+    li: ({ children, ...props }: ComponentProps) => {
       return React.createElement('li', props, children)
     },
-    a: ({ children, ...props }: any) => {
-      const React = require('react')
-      return React.createElement('a', props, children)
-    },
-    form: ({ children, ...props }: any) => {
-      const React = require('react')
-      return React.createElement('form', props, children)
-    },
-    input: ({ children, ...props }: any) => {
-      const React = require('react')
+    input: ({ children, ...props }: ComponentProps) => {
       return React.createElement('input', props, children)
     },
-    label: ({ children, ...props }: any) => {
-      const React = require('react')
+    label: ({ children, ...props }: ComponentProps) => {
       return React.createElement('label', props, children)
     },
-    select: ({ children, ...props }: any) => {
-      const React = require('react')
+    select: ({ children, ...props }: ComponentProps) => {
       return React.createElement('select', props, children)
     },
-    option: ({ children, ...props }: any) => {
-      const React = require('react')
+    option: ({ children, ...props }: ComponentProps) => {
       return React.createElement('option', props, children)
     },
-    textarea: ({ children, ...props }: any) => {
-      const React = require('react')
+    textarea: ({ children, ...props }: ComponentProps) => {
       return React.createElement('textarea', props, children)
-    }
+    },
+
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => {
-    const React = require('react')
     return React.createElement('div', {}, children)
   },
   useAnimation: () => ({
@@ -178,8 +155,8 @@ vi.mock('framer-motion', () => ({
     finish: vi.fn(),
     cancel: vi.fn()
   }),
-  useMotionValue: (value: any) => ({ get: () => value, set: vi.fn() }),
-  useTransform: (value: any, transform: any) => ({ get: () => transform(value.get()) })
+  useMotionValue: (value: unknown) => ({ get: () => value, set: vi.fn() }),
+  useTransform: (value: unknown, transform: (val: unknown) => unknown) => ({ get: () => transform(value.get()) })
 }))
 
 // Mock do window.matchMedia
