@@ -3,45 +3,27 @@ import { helpService } from '../helpService'
 import { supabase } from '../../lib/supabase'
 
 // Mock do Supabase
-vi.mock('../../lib/supabase', () => {
-  const mockQueryBuilder = {
-    select: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    neq: vi.fn().mockReturnThis(),
-    not: vi.fn().mockReturnThis(),
-    or: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockReturnThis(),
-    single: vi.fn().mockReturnThis()
+vi.mock('../../lib/supabase', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      select: vi.fn().mockReturnThis(),
+      insert: vi.fn().mockReturnThis(),
+      update: vi.fn().mockReturnThis(),
+      delete: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      in: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      single: vi.fn().mockReturnThis(),
+      then: vi.fn()
+    }))
   }
-  
-  return {
-    supabase: {
-      from: vi.fn(() => mockQueryBuilder)
-    },
-    raw: vi.fn((sql) => ({ sql }))
-  }
-})
+}))
 
 const mockSupabase = supabase as any
-const mockQueryBuilder = mockSupabase.from()
 
 describe('HelpService', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockSelect.mockReturnThis()
-    mockInsert.mockReturnThis()
-    mockUpdate.mockReturnThis()
-    mockDelete.mockReturnThis()
-    mockEq.mockReturnThis()
-    mockNeq.mockReturnThis()
-    mockNot.mockReturnThis()
-    mockOr.mockReturnThis()
-    mockOrder.mockReturnThis()
-    mockLimit.mockReturnThis()
   })
 
   describe('FAQ Methods', () => {
@@ -58,9 +40,15 @@ describe('HelpService', () => {
           }
         ]
 
-        mockOrder.mockResolvedValue({
-          data: mockFAQs,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: mockFAQs,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.getFAQs()
@@ -78,9 +66,17 @@ describe('HelpService', () => {
           }
         ]
 
-        mockSupabase.from().select().eq().order().eq.mockResolvedValue({
-          data: mockFAQs,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                eq: vi.fn().mockResolvedValue({
+                  data: mockFAQs,
+                  error: null
+                })
+              })
+            })
+          })
         })
 
         const result = await helpService.getFAQs('appointments')
@@ -88,18 +84,30 @@ describe('HelpService', () => {
       })
 
       it('should throw error when database query fails', async () => {
-        mockOrder.mockResolvedValue({
-          data: null,
-          error: { message: 'Database error' }
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Database error' }
+              })
+            })
+          })
         })
 
         await expect(helpService.getFAQs()).rejects.toThrow('Erro ao buscar FAQ: Database error')
       })
 
       it('should return empty array when no FAQs found', async () => {
-        mockSupabase.from().select().eq().order.mockResolvedValue({
-          data: null,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: null,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.getFAQs()
@@ -115,9 +123,15 @@ describe('HelpService', () => {
           answer: 'You can book through our app'
         }
 
-        mockSingle.mockResolvedValue({
-          data: mockFAQ,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockFAQ,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.getFAQById('faq1')
@@ -125,9 +139,15 @@ describe('HelpService', () => {
       })
 
       it('should return null when FAQ not found', async () => {
-        mockSingle.mockResolvedValue({
-          data: null,
-          error: { code: 'PGRST116' }
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { code: 'PGRST116' }
+              })
+            })
+          })
         })
 
         const result = await helpService.getFAQById('nonexistent')
@@ -135,9 +155,15 @@ describe('HelpService', () => {
       })
 
       it('should throw error for other database errors', async () => {
-        mockSingle.mockResolvedValue({
-          data: null,
-          error: { message: 'Database error', code: 'OTHER' }
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Database error', code: 'OTHER' }
+              })
+            })
+          })
         })
 
         await expect(helpService.getFAQById('faq1')).rejects.toThrow('Erro ao buscar FAQ: Database error')
@@ -158,9 +184,13 @@ describe('HelpService', () => {
           created_at: '2024-01-01T10:00:00Z'
         }
 
-        mockSingle.mockResolvedValue({
-          data: mockCreatedFAQ,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockCreatedFAQ,
+              error: null
+            })
+          })
         })
 
         const result = await helpService.createFAQ(faqData)
@@ -168,9 +198,13 @@ describe('HelpService', () => {
       })
 
       it('should throw error when creation fails', async () => {
-        mockSingle.mockResolvedValue({
-          data: null,
-          error: { message: 'Creation failed' }
+        mockSupabase.from.mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Creation failed' }
+            })
+          })
         })
 
         await expect(helpService.createFAQ({})).rejects.toThrow('Erro ao criar FAQ: Creation failed')
@@ -186,9 +220,15 @@ describe('HelpService', () => {
           answer: 'Updated answer'
         }
 
-        mockSingle.mockResolvedValue({
-          data: mockUpdatedFAQ,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockUpdatedFAQ,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.updateFAQ('faq1', updates)
@@ -196,9 +236,15 @@ describe('HelpService', () => {
       })
 
       it('should throw error when update fails', async () => {
-        mockSingle.mockResolvedValue({
-          data: null,
-          error: { message: 'Update failed' }
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Update failed' }
+              })
+            })
+          })
         })
 
         await expect(helpService.updateFAQ('faq1', {})).rejects.toThrow('Erro ao atualizar FAQ: Update failed')
@@ -207,8 +253,12 @@ describe('HelpService', () => {
 
     describe('deleteFAQ', () => {
       it('should delete FAQ', async () => {
-        mockEq.mockResolvedValue({
-          error: null
+        mockSupabase.from.mockReturnValue({
+          delete: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              error: null
+            })
+          })
         })
 
         await helpService.deleteFAQ('faq1')
@@ -216,8 +266,12 @@ describe('HelpService', () => {
       })
 
       it('should throw error when deletion fails', async () => {
-        mockEq.mockResolvedValue({
-          error: { message: 'Deletion failed' }
+        mockSupabase.from.mockReturnValue({
+          delete: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              error: { message: 'Deletion failed' }
+            })
+          })
         })
 
         await expect(helpService.deleteFAQ('faq1')).rejects.toThrow('Erro ao deletar FAQ: Deletion failed')
@@ -226,8 +280,12 @@ describe('HelpService', () => {
 
     describe('incrementFAQViewCount', () => {
       it('should increment FAQ view count', async () => {
-        mockEq.mockResolvedValue({
-          error: null
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              error: null
+            })
+          })
         })
 
         await helpService.incrementFAQViewCount('faq1')
@@ -235,8 +293,12 @@ describe('HelpService', () => {
       })
 
       it('should throw error when increment fails', async () => {
-        mockEq.mockResolvedValue({
-          error: { message: 'Increment failed' }
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              error: { message: 'Increment failed' }
+            })
+          })
         })
 
         await expect(helpService.incrementFAQViewCount('faq1')).rejects.toThrow('Erro ao incrementar visualizações: Increment failed')
@@ -245,8 +307,12 @@ describe('HelpService', () => {
 
     describe('markFAQAsHelpful', () => {
       it('should mark FAQ as helpful', async () => {
-        mockSupabase.from().update().eq.mockResolvedValue({
-          error: null
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              error: null
+            })
+          })
         })
 
         await helpService.markFAQAsHelpful('faq1')
@@ -254,8 +320,12 @@ describe('HelpService', () => {
       })
 
       it('should throw error when marking fails', async () => {
-        mockEq.mockResolvedValue({
-          error: { message: 'Mark failed' }
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockResolvedValue({
+              error: { message: 'Mark failed' }
+            })
+          })
         })
 
         await expect(helpService.markFAQAsHelpful('faq1')).rejects.toThrow('Erro ao marcar FAQ como útil: Mark failed')
@@ -272,9 +342,17 @@ describe('HelpService', () => {
           }
         ]
 
-        mockOrder.mockResolvedValue({
-          data: mockFAQs,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              or: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({
+                  data: mockFAQs,
+                  error: null
+                })
+              })
+            })
+          })
         })
 
         const result = await helpService.searchFAQs('appointment')
@@ -282,9 +360,17 @@ describe('HelpService', () => {
       })
 
       it('should throw error when search fails', async () => {
-        mockOrder.mockResolvedValue({
-          data: null,
-          error: { message: 'Search failed' }
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              or: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({
+                  data: null,
+                  error: { message: 'Search failed' }
+                })
+              })
+            })
+          })
         })
 
         await expect(helpService.searchFAQs('test')).rejects.toThrow('Erro ao buscar FAQ: Search failed')
@@ -300,9 +386,15 @@ describe('HelpService', () => {
           { category: 'general' }
         ]
 
-        mockNot.mockResolvedValue({
-          data: mockData,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              not: vi.fn().mockResolvedValue({
+                data: mockData,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.getFAQCategories()
@@ -310,9 +402,15 @@ describe('HelpService', () => {
       })
 
       it('should throw error when fetching categories fails', async () => {
-        mockNot.mockResolvedValue({
-          data: null,
-          error: { message: 'Fetch failed' }
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              not: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Fetch failed' }
+              })
+            })
+          })
         })
 
         await expect(helpService.getFAQCategories()).rejects.toThrow('Erro ao buscar categorias de FAQ: Fetch failed')
@@ -332,9 +430,15 @@ describe('HelpService', () => {
           }
         ]
 
-        mockOrder.mockResolvedValue({
-          data: mockArticles,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: mockArticles,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.getHelpArticles()
@@ -342,9 +446,15 @@ describe('HelpService', () => {
       })
 
       it('should filter articles by category', async () => {
-        mockEq.mockResolvedValue({
-          data: [],
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: [],
+                error: null
+              })
+            })
+          })
         })
 
         await helpService.getHelpArticles('tutorials')
@@ -352,9 +462,13 @@ describe('HelpService', () => {
       })
 
       it('should include unpublished articles when requested', async () => {
-        mockOrder.mockResolvedValue({
-          data: [],
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            order: vi.fn().mockResolvedValue({
+              data: [],
+              error: null
+            })
+          })
         })
 
         await helpService.getHelpArticles(undefined, false)
@@ -362,9 +476,15 @@ describe('HelpService', () => {
       })
 
       it('should throw error when fetching fails', async () => {
-        mockOrder.mockResolvedValue({
-          data: null,
-          error: { message: 'Fetch failed' }
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Fetch failed' }
+              })
+            })
+          })
         })
 
         await expect(helpService.getHelpArticles()).rejects.toThrow('Erro ao buscar artigos de ajuda: Fetch failed')
@@ -380,9 +500,15 @@ describe('HelpService', () => {
           content: 'Content'
         }
 
-        mockSingle.mockResolvedValue({
-          data: mockArticle,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockArticle,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.getHelpArticleBySlug('test-article')
@@ -390,9 +516,15 @@ describe('HelpService', () => {
       })
 
       it('should return null when article not found', async () => {
-        mockSingle.mockResolvedValue({
-          data: null,
-          error: { code: 'PGRST116' }
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: null,
+                error: { code: 'PGRST116' }
+              })
+            })
+          })
         })
 
         const result = await helpService.getHelpArticleBySlug('nonexistent')
@@ -414,9 +546,13 @@ describe('HelpService', () => {
           created_at: '2024-01-01T10:00:00Z'
         }
 
-        mockSingle.mockResolvedValue({
-          data: mockCreatedArticle,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockCreatedArticle,
+              error: null
+            })
+          })
         })
 
         const result = await helpService.createHelpArticle(articleData)
@@ -424,9 +560,13 @@ describe('HelpService', () => {
       })
 
       it('should throw error when creation fails', async () => {
-        mockSingle.mockResolvedValue({
-          data: null,
-          error: { message: 'Creation failed' }
+        mockSupabase.from.mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Creation failed' }
+            })
+          })
         })
 
         await expect(helpService.createHelpArticle({})).rejects.toThrow('Erro ao criar artigo de ajuda: Creation failed')
@@ -442,9 +582,15 @@ describe('HelpService', () => {
           published_at: expect.any(String)
         }
 
-        mockSingle.mockResolvedValue({
-          data: mockPublishedArticle,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockPublishedArticle,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.publishHelpArticle('article1')
@@ -461,9 +607,15 @@ describe('HelpService', () => {
           published_at: null
         }
 
-        mockSingle.mockResolvedValue({
-          data: mockUnpublishedArticle,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockUnpublishedArticle,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.unpublishHelpArticle('article1')
@@ -481,9 +633,17 @@ describe('HelpService', () => {
           }
         ]
 
-        mockOrder.mockResolvedValue({
-          data: mockArticles,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              or: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({
+                  data: mockArticles,
+                  error: null
+                })
+              })
+            })
+          })
         })
 
         const result = await helpService.searchHelpArticles('appointment')
@@ -504,9 +664,15 @@ describe('HelpService', () => {
           }
         ]
 
-        mockOrder.mockResolvedValue({
-          data: mockFeedback,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: mockFeedback,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.getFeedback('user1')
@@ -514,9 +680,15 @@ describe('HelpService', () => {
       })
 
       it('should throw error when fetching fails', async () => {
-        mockOrder.mockResolvedValue({
-          data: null,
-          error: { message: 'Fetch failed' }
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: null,
+                error: { message: 'Fetch failed' }
+              })
+            })
+          })
         })
 
         await expect(helpService.getFeedback('user1')).rejects.toThrow('Erro ao buscar feedback: Fetch failed')
@@ -537,9 +709,13 @@ describe('HelpService', () => {
           created_at: '2024-01-01T10:00:00Z'
         }
 
-        mockSingle.mockResolvedValue({
-          data: mockCreatedFeedback,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: mockCreatedFeedback,
+              error: null
+            })
+          })
         })
 
         const result = await helpService.createFeedback(feedbackData)
@@ -547,9 +723,13 @@ describe('HelpService', () => {
       })
 
       it('should throw error when creation fails', async () => {
-        mockSingle.mockResolvedValue({
-          data: null,
-          error: { message: 'Creation failed' }
+        mockSupabase.from.mockReturnValue({
+          insert: vi.fn().mockReturnValue({
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'Creation failed' }
+            })
+          })
         })
 
         await expect(helpService.createFeedback({})).rejects.toThrow('Erro ao criar feedback: Creation failed')
@@ -565,9 +745,15 @@ describe('HelpService', () => {
           resolved_at: expect.any(String)
         }
 
-        mockSingle.mockResolvedValue({
-          data: mockResolvedFeedback,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          update: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              single: vi.fn().mockResolvedValue({
+                data: mockResolvedFeedback,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.resolveFeedback('feedback1', 'Fixed the bug', 'admin1')
@@ -585,9 +771,15 @@ describe('HelpService', () => {
           }
         ]
 
-        mockOrder.mockResolvedValue({
-          data: mockFeedback,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockResolvedValue({
+                data: mockFeedback,
+                error: null
+              })
+            })
+          })
         })
 
         const result = await helpService.getFeedbackByStatus('pending')
@@ -605,9 +797,11 @@ describe('HelpService', () => {
           { status: 'closed' }
         ]
 
-        mockSelect.mockResolvedValue({
-          data: mockFeedbackData,
-          error: null
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockResolvedValue({
+            data: mockFeedbackData,
+            error: null
+          })
         })
 
         const result = await helpService.getFeedbackStats()
@@ -622,9 +816,11 @@ describe('HelpService', () => {
       })
 
       it('should throw error when fetching stats fails', async () => {
-        mockSelect.mockResolvedValue({
-          data: null,
-          error: { message: 'Stats failed' }
+        mockSupabase.from.mockReturnValue({
+          select: vi.fn().mockResolvedValue({
+            data: null,
+            error: { message: 'Stats failed' }
+          })
         })
 
         await expect(helpService.getFeedbackStats()).rejects.toThrow('Erro ao buscar estatísticas de feedback: Stats failed')
@@ -639,15 +835,31 @@ describe('HelpService', () => {
         const mockArticles = [{ id: 'article1', title: 'Test Article' }]
 
         // Mock FAQ search
-        mockOrder.mockResolvedValueOnce({
-          data: mockFAQs,
-          error: null
+        mockSupabase.from.mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              or: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({
+                  data: mockFAQs,
+                  error: null
+                })
+              })
+            })
+          })
         })
 
         // Mock article search
-        mockOrder.mockResolvedValueOnce({
-          data: mockArticles,
-          error: null
+        mockSupabase.from.mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              or: vi.fn().mockReturnValue({
+                order: vi.fn().mockResolvedValue({
+                  data: mockArticles,
+                  error: null
+                })
+              })
+            })
+          })
         })
 
         const result = await helpService.searchAll('test')
@@ -665,15 +877,31 @@ describe('HelpService', () => {
         const mockPopularArticles = [{ id: 'article1', helpful_count: 15 }]
 
         // Mock popular FAQs
-        mockLimit.mockResolvedValueOnce({
-          data: mockPopularFAQs,
-          error: null
+        mockSupabase.from.mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                limit: vi.fn().mockResolvedValue({
+                  data: mockPopularFAQs,
+                  error: null
+                })
+              })
+            })
+          })
         })
 
         // Mock popular articles
-        mockLimit.mockResolvedValueOnce({
-          data: mockPopularArticles,
-          error: null
+        mockSupabase.from.mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                limit: vi.fn().mockResolvedValue({
+                  data: mockPopularArticles,
+                  error: null
+                })
+              })
+            })
+          })
         })
 
         const result = await helpService.getPopularContent()
@@ -685,9 +913,17 @@ describe('HelpService', () => {
       })
 
       it('should throw error when fetching popular FAQs fails', async () => {
-        mockLimit.mockResolvedValueOnce({
-          data: null,
-          error: { message: 'FAQ fetch failed' }
+        mockSupabase.from.mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                limit: vi.fn().mockResolvedValue({
+                  data: null,
+                  error: { message: 'FAQ fetch failed' }
+                })
+              })
+            })
+          })
         })
 
         await expect(helpService.getPopularContent()).rejects.toThrow('Erro ao buscar FAQs populares: FAQ fetch failed')
@@ -695,15 +931,31 @@ describe('HelpService', () => {
 
       it('should throw error when fetching popular articles fails', async () => {
         // Mock successful FAQ fetch
-        mockLimit.mockResolvedValueOnce({
-          data: [],
-          error: null
+        mockSupabase.from.mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                limit: vi.fn().mockResolvedValue({
+                  data: [],
+                  error: null
+                })
+              })
+            })
+          })
         })
 
         // Mock failed article fetch
-        mockLimit.mockResolvedValueOnce({
-          data: null,
-          error: { message: 'Article fetch failed' }
+        mockSupabase.from.mockReturnValueOnce({
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              order: vi.fn().mockReturnValue({
+                limit: vi.fn().mockResolvedValue({
+                  data: null,
+                  error: { message: 'Article fetch failed' }
+                })
+              })
+            })
+          })
         })
 
         await expect(helpService.getPopularContent()).rejects.toThrow('Erro ao buscar artigos populares: Article fetch failed')
