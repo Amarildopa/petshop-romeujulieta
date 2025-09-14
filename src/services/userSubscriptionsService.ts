@@ -311,7 +311,7 @@ export class UserSubscriptionsService {
       };
     }
 
-    const plan = activeSubscription.subscription_plans_pet as any;
+    const plan = activeSubscription.subscription_plans_pet as unknown;
     
     // Buscar contagem atual de pets do usuário
     const { count: petsCount } = await supabase

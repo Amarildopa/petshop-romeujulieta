@@ -197,9 +197,9 @@ export class OrdersService {
 
   async createOrderFromCart(
     userId: string, 
-    cartItems: any[], 
-    shippingAddress: any, 
-    billingAddress?: any,
+    cartItems: unknown[], 
+    shippingAddress: unknown, 
+    billingAddress?: unknown,
     couponCode?: string
   ): Promise<Order> {
     // Validar itens do carrinho

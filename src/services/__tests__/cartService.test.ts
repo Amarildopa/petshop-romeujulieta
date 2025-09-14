@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { cartService } from '../cartService'
-import { supabase } from '../../lib/supabase'
 
 // Mock do Supabase
 vi.mock('../../lib/supabase', () => {
@@ -33,10 +32,7 @@ const {
   mockSelect,
   mockEq,
   mockOrder,
-  mockInsert,
-  mockUpdate,
-  mockDelete,
-  mockSingle
+  mockDelete
 } = vi.mocked(await import('../../lib/supabase'))
 
 describe('cartService', () => {

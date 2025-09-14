@@ -1,6 +1,5 @@
 import { supabase } from '../lib/supabase'
 import { logger } from '../lib/logger'
-import { metrics } from '../lib/metrics'
 
 // Tipos para o serviço administrativo
 export interface AdminUser {
@@ -24,7 +23,7 @@ export interface AdminLog {
   action: string
   resource_type: string
   resource_id: string | null
-  details: Record<string, any>
+  details: Record<string, unknown>
   ip_address: string | null
   user_agent: string | null
   created_at: string
@@ -39,7 +38,7 @@ export interface AdminLog {
 export interface SystemSetting {
   id: string
   key: string
-  value: any
+  value: unknown
   description: string | null
   category: string
   is_public: boolean
@@ -51,8 +50,8 @@ export interface AdminReport {
   id: string
   name: string
   type: 'revenue' | 'users' | 'appointments' | 'products' | 'orders'
-  parameters: Record<string, any>
-  data: Record<string, any>
+  parameters: Record<string, unknown>
+  data: Record<string, unknown>
   generated_by: string | null
   generated_at: string
   expires_at: string | null
@@ -67,7 +66,7 @@ export interface AdminNotification {
   is_read: boolean
   admin_id: string
   action_url: string | null
-  metadata: Record<string, any>
+  metadata: Record<string, unknown>
   created_at: string
   read_at: string | null
 }
@@ -104,7 +103,7 @@ export interface SupportMessage {
   sender_id: string
   sender_type: 'user' | 'admin'
   message: string
-  attachments: any[]
+  attachments: unknown[]
   is_internal: boolean
   created_at: string
   profiles_pet?: {
@@ -279,7 +278,7 @@ export const adminService = {
     action: string,
     resourceType: string,
     resourceId: string | null,
-    details: Record<string, any> = {}
+    details: Record<string, unknown> = {}
   ): Promise<void> {
     try {
       // Obter ID do admin atual
@@ -334,7 +333,7 @@ export const adminService = {
     }
   },
 
-  async updateSystemSetting(key: string, value: any): Promise<SystemSetting> {
+  async updateSystemSetting(key: string, value: unknown): Promise<SystemSetting> {
     try {
       const { data, error } = await supabase
         .from('system_settings_pet')
@@ -363,7 +362,7 @@ export const adminService = {
   async generateReport(
     name: string,
     type: string,
-    parameters: Record<string, any> = {}
+    parameters: Record<string, unknown> = {}
   ): Promise<AdminReport> {
     try {
       // Obter ID do admin atual
@@ -379,7 +378,7 @@ export const adminService = {
       if (!adminUser) throw new Error('User is not an admin')
 
       // Gerar dados do relatório baseado no tipo
-      let reportData: Record<string, any> = {}
+      let reportData: Record<string, unknown> = {}
 
       switch (type) {
         case 'revenue':
@@ -568,7 +567,7 @@ export const adminService = {
   // MÉTODOS PRIVADOS PARA GERAÇÃO DE RELATÓRIOS
   // =============================================
 
-  async generateRevenueReport(parameters: Record<string, any>): Promise<Record<string, any>> {
+  async generateRevenueReport(parameters: Record<string, unknown>): Promise<Record<string, unknown>> {
     const { startDate, endDate } = parameters
     const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
     const end = endDate || new Date().toISOString()
@@ -599,7 +598,7 @@ export const adminService = {
     }
   },
 
-  async generateUsersReport(parameters: Record<string, any>): Promise<Record<string, any>> {
+  async generateUsersReport(parameters: Record<string, unknown>): Promise<Record<string, unknown>> {
     const { startDate, endDate } = parameters
     const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
     const end = endDate || new Date().toISOString()
@@ -622,7 +621,7 @@ export const adminService = {
     }
   },
 
-  async generateAppointmentsReport(parameters: Record<string, any>): Promise<Record<string, any>> {
+  async generateAppointmentsReport(parameters: Record<string, unknown>): Promise<Record<string, unknown>> {
     const { startDate, endDate } = parameters
     const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
     const end = endDate || new Date().toISOString()
@@ -649,7 +648,7 @@ export const adminService = {
     }
   },
 
-  async generateProductsReport(parameters: Record<string, any>): Promise<Record<string, any>> {
+  async generateProductsReport(): Promise<Record<string, unknown>> {
     const { data: products } = await supabase
       .from('products_pet')
       .select('name, price, stock, is_active')
@@ -667,7 +666,7 @@ export const adminService = {
     }
   },
 
-  async generateOrdersReport(parameters: Record<string, any>): Promise<Record<string, any>> {
+  async generateOrdersReport(parameters: Record<string, unknown>): Promise<Record<string, unknown>> {
     const { startDate, endDate } = parameters
     const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
     const end = endDate || new Date().toISOString()

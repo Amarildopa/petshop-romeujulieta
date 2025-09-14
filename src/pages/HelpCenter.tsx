@@ -5,11 +5,8 @@ import {
   HelpCircle, 
   BookOpen, 
   MessageCircle, 
-  Star, 
   ChevronDown, 
   ChevronUp,
-  Filter,
-  Clock,
   ThumbsUp,
   Eye
 } from 'lucide-react';
@@ -22,7 +19,7 @@ const HelpCenter: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
-  const { user } = useAuth();
+  useAuth();
 
   // Estados para dados
   const [faqs, setFaqs] = useState<FAQ[]>([]);

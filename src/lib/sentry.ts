@@ -3,15 +3,15 @@ import * as Sentry from '@sentry/react'
 // Configuração do Sentry
 export const initSentry = () => {
   Sentry.init({
-    dsn: (import.meta as any).env.VITE_SENTRY_DSN || '',
-    environment: (import.meta as any).env.MODE || 'development',
+    dsn: (import.meta as unknown as { env: { VITE_SENTRY_DSN?: string } }).env.VITE_SENTRY_DSN || '',
+    environment: (import.meta as unknown as { env: { MODE?: string } }).env.MODE || 'development',
     integrations: [
       // Integrações básicas do Sentry
     ],
     // Performance Monitoring
-    tracesSampleRate: (import.meta as any).env.MODE === 'production' ? 0.1 : 1.0,
+    tracesSampleRate: (import.meta as unknown as { env: { MODE?: string } }).env.MODE === 'production' ? 0.1 : 1.0,
     // Session Replay
-    replaysSessionSampleRate: (import.meta as any).env.MODE === 'production' ? 0.1 : 0.1,
+    replaysSessionSampleRate: (import.meta as unknown as { env: { MODE?: string } }).env.MODE === 'production' ? 0.1 : 0.1,
     replaysOnErrorSampleRate: 1.0,
     // Profiling (desabilitado para evitar problemas de build)
     // profilesSampleRate: import.meta.env.MODE === 'production' ? 0.1 : 1.0,
@@ -52,7 +52,7 @@ export const initSentry = () => {
 
 // Utilitários para logging customizado
 export const logger = {
-  info: (message: string, extra?: any) => {
+  info: (message: string, extra?: unknown) => {
     console.log(`[INFO] ${message}`, extra)
     Sentry.addBreadcrumb({
       message,
@@ -61,7 +61,7 @@ export const logger = {
     })
   },
   
-  warn: (message: string, extra?: any) => {
+  warn: (message: string, extra?: unknown) => {
     console.warn(`[WARN] ${message}`, extra)
     Sentry.addBreadcrumb({
       message,
@@ -70,7 +70,7 @@ export const logger = {
     })
   },
   
-  error: (message: string, error?: Error, extra?: any) => {
+  error: (message: string, error?: Error, extra?: unknown) => {
     console.error(`[ERROR] ${message}`, error, extra)
     Sentry.captureException(error || new Error(message), {
       extra,
@@ -80,8 +80,8 @@ export const logger = {
     })
   },
   
-  debug: (message: string, extra?: any) => {
-    if ((import.meta as any).env?.MODE === 'development') {
+  debug: (message: string, extra?: unknown) => {
+    if ((import.meta as unknown as { env?: { MODE?: string } }).env?.MODE === 'development') {
       console.debug(`[DEBUG] ${message}`, extra)
       Sentry.addBreadcrumb({
         message,
@@ -94,7 +94,7 @@ export const logger = {
 
 // Hook para capturar erros de componentes React
 export const useErrorBoundary = () => {
-  const captureException = (error: Error, errorInfo?: any) => {
+  const captureException = (error: Error, errorInfo?: unknown) => {
     Sentry.captureException(error, {
       contexts: {
         react: {
@@ -142,7 +142,7 @@ export const performanceTracker = {
 
 // Utilitário para capturar eventos de negócio
 export const businessTracker = {
-  userAction: (action: string, properties?: Record<string, any>) => {
+  userAction: (action: string, properties?: Record<string, unknown>) => {
     Sentry.addBreadcrumb({
       message: `User Action: ${action}`,
       level: 'info',
@@ -184,7 +184,7 @@ export const businessTracker = {
 }
 
 // Configuração de tags padrão
-export const setUserContext = (user: any) => {
+export const setUserContext = (user: { id: string; email: string; user_metadata?: { full_name?: string } }) => {
   Sentry.setUser({
     id: user.id,
     email: user.email,
@@ -196,7 +196,7 @@ export const setCustomTags = (tags: Record<string, string>) => {
   Sentry.setTags(tags)
 }
 
-export const setCustomContext = (key: string, context: any) => {
+export const setCustomContext = (key: string, context: unknown) => {
   Sentry.setContext(key, context)
 }
 

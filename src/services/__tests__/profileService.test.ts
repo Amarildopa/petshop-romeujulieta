@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { profileService } from '../profileService'
-import { supabase } from '../../lib/supabase'
 
 // Mock do Supabase
 vi.mock('../../lib/supabase', () => {
@@ -330,7 +329,7 @@ describe('profileService', () => {
       })
       
       // Mock the updateProfile method
-      vi.spyOn(profileService, 'updateProfile').mockResolvedValue({} as any)
+      vi.spyOn(profileService, 'updateProfile').mockResolvedValue({} as unknown)
 
       const result = await profileService.uploadAvatar(mockFile)
 
@@ -356,7 +355,7 @@ describe('profileService', () => {
       })
       
       // Mock the updateProfile method
-      vi.spyOn(profileService, 'updateProfile').mockResolvedValue({} as any)
+      vi.spyOn(profileService, 'updateProfile').mockResolvedValue({} as unknown)
 
       const result = await profileService.uploadAvatar(mockFile)
 

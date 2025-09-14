@@ -154,7 +154,7 @@ export class NotificationsService {
     userId: string,
     title: string,
     message: string,
-    promotionData: any
+    promotionData: unknown
   ): Promise<Notification> {
     return this.createNotification({
       user_id: userId,
@@ -170,7 +170,7 @@ export class NotificationsService {
     userId: string,
     title: string,
     message: string,
-    systemData: any
+    systemData: unknown
   ): Promise<Notification> {
     return this.createNotification({
       user_id: userId,

@@ -3,9 +3,6 @@ import { motion } from 'framer-motion'
 import { 
   BarChart3, 
   Download, 
-  Calendar, 
-  Filter, 
-  TrendingUp, 
   DollarSign, 
   Users, 
   ShoppingBag,
@@ -136,12 +133,7 @@ const AdminReports: React.FC = () => {
     logger.info('Report downloaded', { reportId: report.id }, 'ADMIN')
   }
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value)
-  }
+
 
   const getReportIcon = (type: string) => {
     const template = reportTemplates.find(t => t.type === type)

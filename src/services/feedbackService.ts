@@ -18,7 +18,7 @@ interface DatabaseFeedback {
   assigned_to: string | null;
   resolved_at: string | null;
   resolution: string | null;
-  metadata: any;
+  metadata: unknown;
 }
 
 // Função para converter feedback do banco para o formato da aplicação

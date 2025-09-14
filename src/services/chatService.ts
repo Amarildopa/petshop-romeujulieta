@@ -356,7 +356,7 @@ export class ChatService {
 
     // Verificar se existe sala com ambos os usuários
     const existingPrivateRoom = existingRoom?.find(room => {
-      const participants = room.chat_room_participants_pet as any[];
+      const participants = room.chat_room_participants_pet as unknown[];
       const userIds = participants.map(p => p.user_id);
       return userIds.includes(userId1) && userIds.includes(userId2);
     });

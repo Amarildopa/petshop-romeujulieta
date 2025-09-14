@@ -17,7 +17,7 @@ import {
   Download,
   RefreshCw
 } from 'lucide-react'
-import { adminService, AdminUser, AdminNotification, SupportTicket } from '../services/adminService'
+import { adminService, AdminNotification, SupportTicket } from '../services/adminService'
 import { logger } from '../lib/logger'
 import { metrics } from '../lib/metrics'
 

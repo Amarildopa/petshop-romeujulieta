@@ -52,7 +52,7 @@ export class CartService {
     }
 
     // Verificar se o item já existe no carrinho
-    const { data: existingItem, error: existingError } = await supabase
+    const { data: existingItem } = await supabase
       .from('cart_items_pet')
       .select('*')
       .eq('user_id', userId)
@@ -156,7 +156,7 @@ export class CartService {
     const errors: string[] = [];
 
     for (const item of cartItems) {
-      const product = item.products_pet as any;
+      const product = item.products_pet as unknown;
       
       if (!product) {
         errors.push(`Produto ${item.product_id} não encontrado`);
@@ -186,7 +186,7 @@ export class CartService {
     const cartItems = await this.getCartItems(userId);
     
     for (const item of cartItems) {
-      const product = item.products_pet as any;
+      const product = item.products_pet as unknown;
       
       if (!product || !product.is_active || product.stock < item.quantity) {
         await this.removeFromCart(item.id);

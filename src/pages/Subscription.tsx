@@ -236,7 +236,7 @@ const Subscription: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold mb-2">
-                  Assinatura Ativa: {(currentSubscription as any).subscription_plans_pet?.name || 'Plano Ativo'}
+                  Assinatura Ativa: {(currentSubscription as UserSubscription & { subscription_plans_pet?: { name: string } }).subscription_plans_pet?.name || 'Plano Ativo'}
                 </h3>
                 <p className="text-primary-light">
                   Próxima cobrança: {currentSubscription.next_billing_date 

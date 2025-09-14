@@ -14,7 +14,6 @@ vi.mock('../../lib/supabase', () => ({
 
 describe('PetsService', () => {
   const mockSupabase = vi.mocked(supabase)
-  const mockFrom = vi.fn()
   const mockSelect = vi.fn()
   const mockEq = vi.fn()
   const mockInsert = vi.fn()
@@ -22,7 +21,6 @@ describe('PetsService', () => {
   const mockDelete = vi.fn()
   const mockSingle = vi.fn()
   const mockOrder = vi.fn()
-  const mockGetUser = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -31,12 +29,12 @@ describe('PetsService', () => {
       insert: mockInsert,
       update: mockUpdate,
       delete: mockDelete
-    } as any)
+    } as unknown)
     
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: { id: 'user1' } },
       error: null
-    } as any)
+    } as unknown)
     
     // Setup default chain for select operations
     const selectChain = {

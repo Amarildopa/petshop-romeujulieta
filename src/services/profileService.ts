@@ -54,7 +54,7 @@ export const profileService = {
   },
 
   // Create basic profile from user data
-  createBasicProfile(user: any): Profile {
+  createBasicProfile(user: unknown): Profile {
     return {
       id: user.id,
       created_at: new Date().toISOString(),

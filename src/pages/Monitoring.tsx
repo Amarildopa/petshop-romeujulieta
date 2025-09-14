@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
-  Activity, 
   AlertTriangle, 
   BarChart3, 
-  Clock, 
-  Database, 
   Eye, 
   RefreshCw,
   TrendingUp,
-  Users,
   Zap
 } from 'lucide-react'
 import { metrics } from '../lib/metrics'
@@ -33,7 +29,7 @@ interface MonitoringStats {
 
 const Monitoring: React.FC = () => {
   const [stats, setStats] = useState<MonitoringStats | null>(null)
-  const [logs, setLogs] = useState<any[]>([])
+  const [logs, setLogs] = useState<unknown[]>([])
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [selectedTimeRange, setSelectedTimeRange] = useState<'1h' | '24h' | '7d'>('1h')
 
@@ -61,14 +57,7 @@ const Monitoring: React.FC = () => {
     return new Date(timestamp).toLocaleString('pt-BR')
   }
 
-  const getTimeRangeLabel = (range: string) => {
-    switch (range) {
-      case '1h': return 'Última hora'
-      case '24h': return 'Últimas 24h'
-      case '7d': return 'Últimos 7 dias'
-      default: return 'Última hora'
-    }
-  }
+
 
   const getErrorTypeColor = (type: string) => {
     switch (type) {

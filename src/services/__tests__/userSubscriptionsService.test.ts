@@ -26,43 +26,12 @@ vi.mock('../../lib/supabase', () => {
 })
 
 // Interfaces para tipagem dos mocks
-interface MockQueryBuilder {
-  select: ReturnType<typeof vi.fn>
-  insert: ReturnType<typeof vi.fn>
-  update: ReturnType<typeof vi.fn>
-  delete: ReturnType<typeof vi.fn>
-  eq: ReturnType<typeof vi.fn>
-  in: ReturnType<typeof vi.fn>
-  order: ReturnType<typeof vi.fn>
-  single: ReturnType<typeof vi.fn>
-  then: ReturnType<typeof vi.fn>
-}
 
 interface MockSupabaseClient {
   from: ReturnType<typeof vi.fn>
 }
 
 const mockSupabase = supabase as MockSupabaseClient
-const mockQueryBuilder = mockSupabase.from() as MockQueryBuilder
-
-const createMockQueryBuilder = () => {
-  const builder = {
-    select: vi.fn(),
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    eq: vi.fn(),
-    lte: vi.fn().mockReturnThis(),
-    order: vi.fn().mockReturnThis(),
-    single: vi.fn()
-  }
-  
-  // Configurar select para retornar o builder mesmo com parâmetros
-  builder.select.mockImplementation(() => builder)
-  builder.eq.mockImplementation(() => Promise.resolve({ count: 0, error: null }))
-  
-  return builder
-}
 
 describe('UserSubscriptionsService', () => {
   beforeEach(() => {

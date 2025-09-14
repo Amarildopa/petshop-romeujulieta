@@ -416,7 +416,7 @@ export interface Database {
           message: string
           is_read: boolean
           read_at: string | null
-          data: any | null
+          data: unknown | null
           expires_at: string | null
         }
         Insert: {
@@ -429,7 +429,7 @@ export interface Database {
           message: string
           is_read?: boolean
           read_at?: string | null
-          data?: any | null
+          data?: unknown | null
           expires_at?: string | null
         }
         Update: {
@@ -442,7 +442,7 @@ export interface Database {
           message?: string
           is_read?: boolean
           read_at?: string | null
-          data?: any | null
+          data?: unknown | null
           expires_at?: string | null
         }
       }
@@ -533,8 +533,8 @@ export interface Database {
           final_amount: number
           payment_method: string | null
           payment_status: string
-          shipping_address: any
-          billing_address: any | null
+          shipping_address: Record<string, unknown>
+          billing_address: Record<string, unknown> | null
           notes: string | null
           tracking_code: string | null
           estimated_delivery: string | null
@@ -553,8 +553,8 @@ export interface Database {
           final_amount: number
           payment_method?: string | null
           payment_status?: string
-          shipping_address: any
-          billing_address?: any | null
+          shipping_address: Record<string, unknown>
+          billing_address?: Record<string, unknown> | null
           notes?: string | null
           tracking_code?: string | null
           estimated_delivery?: string | null
@@ -573,8 +573,8 @@ export interface Database {
           final_amount?: number
           payment_method?: string | null
           payment_status?: string
-          shipping_address?: any
-          billing_address?: any | null
+          shipping_address?: Record<string, unknown>
+          billing_address?: Record<string, unknown> | null
           notes?: string | null
           tracking_code?: string | null
           estimated_delivery?: string | null
@@ -842,7 +842,7 @@ export interface Database {
           description: string | null
           price: number
           billing_cycle: string
-          features: any
+          features: Record<string, unknown>
           max_pets: number
           max_appointments: number
           max_products_discount: number
@@ -861,7 +861,7 @@ export interface Database {
           description?: string | null
           price: number
           billing_cycle: string
-          features: any
+          features: Record<string, unknown>
           max_pets?: number
           max_appointments?: number
           max_products_discount?: number
@@ -880,7 +880,7 @@ export interface Database {
           description?: string | null
           price?: number
           billing_cycle?: string
-          features?: any
+          features?: Record<string, unknown>
           max_pets?: number
           max_appointments?: number
           max_products_discount?: number
@@ -970,7 +970,7 @@ export interface Database {
           failure_reason: string | null
           refund_amount: number
           refund_date: string | null
-          metadata: any | null
+          metadata: Record<string, unknown> | null
         }
         Insert: {
           id?: string
@@ -990,7 +990,7 @@ export interface Database {
           failure_reason?: string | null
           refund_amount?: number
           refund_date?: string | null
-          metadata?: any | null
+          metadata?: Record<string, unknown> | null
         }
         Update: {
           id?: string
@@ -1010,7 +1010,7 @@ export interface Database {
           failure_reason?: string | null
           refund_amount?: number
           refund_date?: string | null
-          metadata?: any | null
+          metadata?: Record<string, unknown> | null
         }
       }
       saved_payment_methods_pet: {
@@ -1028,7 +1028,7 @@ export interface Database {
           expiry_year: number | null
           is_default: boolean
           is_active: boolean
-          metadata: any | null
+          metadata: Record<string, unknown> | null
         }
         Insert: {
           id?: string
@@ -1044,7 +1044,7 @@ export interface Database {
           expiry_year?: number | null
           is_default?: boolean
           is_active?: boolean
-          metadata?: any | null
+          metadata?: Record<string, unknown> | null
         }
         Update: {
           id?: string
@@ -1060,7 +1060,7 @@ export interface Database {
           expiry_year?: number | null
           is_default?: boolean
           is_active?: boolean
-          metadata?: any | null
+          metadata?: Record<string, unknown> | null
         }
       }
       cashback_transactions_pet: {
@@ -1186,7 +1186,7 @@ export interface Database {
           is_edited: boolean
           edited_at: string | null
           reply_to_id: string | null
-          metadata: any | null
+          metadata: Record<string, unknown> | null
         }
         Insert: {
           id?: string
@@ -1204,7 +1204,7 @@ export interface Database {
           is_edited?: boolean
           edited_at?: string | null
           reply_to_id?: string | null
-          metadata?: any | null
+          metadata?: Record<string, unknown> | null
         }
         Update: {
           id?: string
@@ -1222,7 +1222,7 @@ export interface Database {
           is_edited?: boolean
           edited_at?: string | null
           reply_to_id?: string | null
-          metadata?: any | null
+          metadata?: Record<string, unknown> | null
         }
       }
       // =============================================
@@ -1233,7 +1233,7 @@ export interface Database {
           id: string
           user_id: string
           role: string
-          permissions: any
+          permissions: Record<string, unknown>
           is_active: boolean
           created_at: string
           updated_at: string
@@ -1242,7 +1242,7 @@ export interface Database {
           id?: string
           user_id: string
           role?: string
-          permissions?: any
+          permissions?: Record<string, unknown>
           is_active?: boolean
           created_at?: string
           updated_at?: string
@@ -1251,7 +1251,7 @@ export interface Database {
           id?: string
           user_id?: string
           role?: string
-          permissions?: any
+          permissions?: Record<string, unknown>
           is_active?: boolean
           created_at?: string
           updated_at?: string
@@ -1264,7 +1264,7 @@ export interface Database {
           action: string
           resource_type: string
           resource_id: string | null
-          details: any
+          details: Record<string, unknown>
           ip_address: string | null
           user_agent: string | null
           created_at: string
@@ -1275,7 +1275,7 @@ export interface Database {
           action: string
           resource_type: string
           resource_id?: string | null
-          details?: any
+          details?: Record<string, unknown>
           ip_address?: string | null
           user_agent?: string | null
           created_at?: string
@@ -1286,7 +1286,7 @@ export interface Database {
           action?: string
           resource_type?: string
           resource_id?: string | null
-          details?: any
+          details?: Record<string, unknown>
           ip_address?: string | null
           user_agent?: string | null
           created_at?: string
@@ -1296,7 +1296,7 @@ export interface Database {
         Row: {
           id: string
           key: string
-          value: any
+          value: unknown
           description: string | null
           category: string
           is_public: boolean
@@ -1306,7 +1306,7 @@ export interface Database {
         Insert: {
           id?: string
           key: string
-          value: any
+          value: unknown
           description?: string | null
           category?: string
           is_public?: boolean
@@ -1316,7 +1316,7 @@ export interface Database {
         Update: {
           id?: string
           key?: string
-          value?: any
+          value?: unknown
           description?: string | null
           category?: string
           is_public?: boolean
@@ -1329,8 +1329,8 @@ export interface Database {
           id: string
           name: string
           type: string
-          parameters: any
-          data: any
+          parameters: Record<string, unknown>
+          data: unknown
           generated_by: string | null
           generated_at: string
           expires_at: string | null
@@ -1339,8 +1339,8 @@ export interface Database {
           id?: string
           name: string
           type: string
-          parameters?: any
-          data?: any
+          parameters?: Record<string, unknown>
+          data?: unknown
           generated_by?: string | null
           generated_at?: string
           expires_at?: string | null
@@ -1349,8 +1349,8 @@ export interface Database {
           id?: string
           name?: string
           type?: string
-          parameters?: any
-          data?: any
+          parameters?: Record<string, unknown>
+          data?: unknown
           generated_by?: string | null
           generated_at?: string
           expires_at?: string | null
@@ -1366,7 +1366,7 @@ export interface Database {
           is_read: boolean
           admin_id: string
           action_url: string | null
-          metadata: any
+          metadata: Record<string, unknown>
           created_at: string
           read_at: string | null
         }
@@ -1379,7 +1379,7 @@ export interface Database {
           is_read?: boolean
           admin_id: string
           action_url?: string | null
-          metadata?: any
+          metadata?: Record<string, unknown>
           created_at?: string
           read_at?: string | null
         }
@@ -1392,7 +1392,7 @@ export interface Database {
           is_read?: boolean
           admin_id?: string
           action_url?: string | null
-          metadata?: any
+          metadata?: Record<string, unknown>
           created_at?: string
           read_at?: string | null
         }
@@ -1448,7 +1448,7 @@ export interface Database {
           sender_id: string
           sender_type: string
           message: string
-          attachments: any
+          attachments: unknown[]
           is_internal: boolean
           created_at: string
         }
@@ -1458,7 +1458,7 @@ export interface Database {
           sender_id: string
           sender_type: string
           message: string
-          attachments?: any
+          attachments?: unknown[]
           is_internal?: boolean
           created_at?: string
         }
@@ -1468,7 +1468,7 @@ export interface Database {
           sender_id?: string
           sender_type?: string
           message?: string
-          attachments?: any
+          attachments?: unknown[]
           is_internal?: boolean
           created_at?: string
         }

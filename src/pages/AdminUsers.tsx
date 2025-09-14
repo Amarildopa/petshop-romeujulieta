@@ -7,11 +7,6 @@ import {
   Plus, 
   Edit, 
   Trash2, 
-  Shield, 
-  Mail, 
-  Phone, 
-  Calendar,
-  MoreVertical,
   Eye,
   UserCheck,
   UserX

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Phone, Mail, Chrome, Apple, CheckCircle, Dog, Plus, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, Chrome, Apple, Dog, Plus, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { APP_CONFIG } from '../constants/app';
 import { DISCOUNT_CONFIG } from '../config/discounts';
@@ -21,7 +21,7 @@ const Register: React.FC = () => {
   const { signUp, user } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [step, setStep] = useState(1);
-  const [registrationMethod, setRegistrationMethod] = useState<'email' | 'phone'>('email');
+
   const [pets, setPets] = useState<Pet[]>([]);
   const [showPetForm, setShowPetForm] = useState(true);
   const [currentPet, setCurrentPet] = useState<Pet>({ name: '', species: '', breed: '' });
@@ -249,12 +249,7 @@ const Register: React.FC = () => {
     setPets(pets.filter((_, i) => i !== index));
   };
 
-  const benefits = [
-    'Agendamento online 24/7',
-    'Acompanhamento em tempo real',
-    'Relatórios detalhados',
-    'Suporte especializado'
-  ];
+
 
   return (
     <div className="min-h-screen bg-surface flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Camera, Upload, CheckCircle, XCircle, Loader, Info } from 'lucide-react'
 import { profileService } from '../services/profileService'
 import { supabase } from '../lib/supabase'
@@ -27,7 +27,7 @@ const PhotoTest: React.FC = () => {
 
   const testBucketAccess = async (bucketName: string): Promise<boolean> => {
     try {
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from(bucketName)
         .list('', { limit: 1 })
       
@@ -37,7 +37,7 @@ const PhotoTest: React.FC = () => {
     }
   }
 
-  const checkSupabaseStatus = async () => {
+  const checkSupabaseStatus = useCallback(async () => {
     addLog('🔍 Verificando status do Supabase...')
     
     try {
@@ -92,20 +92,22 @@ const PhotoTest: React.FC = () => {
           } else {
             addLog(`✅ Permissões OK - ${files?.length || 0} arquivos encontrados`)
           }
-        } catch (permError: any) {
-          addLog(`⚠️ Erro de permissão: ${permError.message}`)
+        } catch (permError: unknown) {
+          const errorMessage = permError instanceof Error ? permError.message : 'Erro desconhecido'
+          addLog(`⚠️ Erro de permissão: ${errorMessage}`)
         }
       }
       
-    } catch (error: any) {
-      addLog(`💥 Erro crítico: ${error.message}`)
-      setSupabaseStatus({ connected: false, buckets: [], error: error.message })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
+      addLog(`💥 Erro crítico: ${errorMessage}`)
+      setSupabaseStatus({ connected: false, buckets: [], error: errorMessage })
     }
-  }
+  }, [])
 
   useEffect(() => {
     checkSupabaseStatus()
-  }, [])
+  }, [checkSupabaseStatus])
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -196,13 +198,14 @@ const PhotoTest: React.FC = () => {
         addLog('✨ Arquivo salvo no bucket "avatars_novo" com sucesso')
       }
       
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido'
       setUploadResult({
         success: false,
-        error: error.message
+        error: errorMessage
       })
       
-      addLog(`❌ Erro no upload: ${error.message}`)
+      addLog(`❌ Erro no upload: ${errorMessage}`)
       addLog(`📋 Stack trace: ${error.stack || 'Não disponível'}`)
     } finally {
       setUploading(false)

@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Chrome, Apple, PawPrint } from 'lucide-react';
+import { Eye, EyeOff, Chrome, Apple, PawPrint } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [loginMethod, setLoginMethod] = useState<'email'>('email');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formKey, setFormKey] = useState(Date.now());
   const navigate = useNavigate();
-  const location = useLocation();
   const { signIn } = useAuth();
 
   // Carregar email salvo e limpar campos quando o componente monta

@@ -8,8 +8,8 @@ const TestSupabase = () => {
     const testConnection = async () => {
       try {
         // Testar variáveis de ambiente
-        const url = (import.meta as any).env.VITE_SUPABASE_URL;
-        const key = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
+        const url = (import.meta as { env: Record<string, string> }).env.VITE_SUPABASE_URL;
+        const key = (import.meta as { env: Record<string, string> }).env.VITE_SUPABASE_ANON_KEY;
         
         if (!url || !key) {
           setTestResult('❌ VARIÁVEIS NÃO ENCONTRADAS!');
@@ -21,7 +21,7 @@ const TestSupabase = () => {
         const { supabase } = await import('../lib/supabase');
         
         // Testar autenticação
-        const { data: { session }, error: authError } = await supabase.auth.getSession();
+        const { error: authError } = await supabase.auth.getSession();
         
         // Testar uma query simples
         const { error: queryError } = await supabase
@@ -71,9 +71,9 @@ const TestSupabase = () => {
           <div className="bg-blue-50 p-4 rounded-lg">
             <h3 className="font-semibold text-blue-800 mb-2">Informações de Debug:</h3>
             <div className="text-sm text-blue-700 space-y-1">
-              <p>URL: {(import.meta as any).env.VITE_SUPABASE_URL || 'Não definida'}</p>
-              <p>Key: {(import.meta as any).env.VITE_SUPABASE_ANON_KEY ? 'Definida' : 'Não definida'}</p>
-              <p>Ambiente: {(import.meta as any).env.MODE}</p>
+              <p>URL: {(import.meta as { env: Record<string, string> }).env.VITE_SUPABASE_URL || 'Não definida'}</p>
+              <p>Key: {(import.meta as { env: Record<string, string> }).env.VITE_SUPABASE_ANON_KEY ? 'Definida' : 'Não definida'}</p>
+              <p>Ambiente: {(import.meta as { env: Record<string, string> }).env.MODE}</p>
             </div>
           </div>
         </div>

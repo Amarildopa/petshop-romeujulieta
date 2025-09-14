@@ -17,6 +17,15 @@ interface LoggerConfig {
   maxLocalStorageLogs: number
 }
 
+// Interface para entradas de log
+interface LogEntry {
+  timestamp: string
+  level: string
+  message: string
+  data?: unknown
+  source?: string
+}
+
 const defaultConfig: LoggerConfig = {
   level: import.meta.env.MODE === 'development' ? LogLevel.DEBUG : LogLevel.INFO,
   enableConsole: true,
@@ -27,13 +36,7 @@ const defaultConfig: LoggerConfig = {
 
 class Logger {
   private config: LoggerConfig
-  private logs: Array<{
-    timestamp: string
-    level: string
-    message: string
-    data?: unknown
-    source?: string
-  }> = []
+  private logs: Array<LogEntry> = []
 
   constructor(config: Partial<LoggerConfig> = {}) {
     this.config = { ...defaultConfig, ...config }
@@ -50,7 +53,7 @@ class Logger {
     return `${timestamp} ${level} ${sourceStr} ${message}`
   }
 
-  private saveToLocalStorage(log: any) {
+  private saveToLocalStorage(log: LogEntry) {
     if (!this.config.enableLocalStorage) return
 
     this.logs.push(log)
@@ -133,7 +136,7 @@ class Logger {
     this.saveToLocalStorage(logEntry)
   }
 
-  debug(message: string, data?: any, source?: string) {
+  debug(message: string, data?: unknown, source?: string) {
     this.log(LogLevel.DEBUG, 'DEBUG', message, data, source)
   }
 
@@ -225,7 +228,7 @@ class Logger {
   }
 
   // Métodos para gerenciar logs
-  getLogs(level?: LogLevel): Array<any> {
+  getLogs(level?: LogLevel): Array<LogEntry> {
     if (level !== undefined) {
       return this.logs.filter(log => {
         const logLevel = LogLevel[log.level as keyof typeof LogLevel]
@@ -262,10 +265,10 @@ export const logger = new Logger()
 // Hook para usar o logger em componentes React
 export const useLogger = (source?: string) => {
   return {
-    debug: (message: string, data?: any) => logger.debug(message, data, source),
-    info: (message: string, data?: any) => logger.info(message, data, source),
-    warn: (message: string, data?: any) => logger.warn(message, data, source),
-    error: (message: string, error?: Error, data?: any) => logger.error(message, error, data, source)
+    debug: (message: string, data?: unknown) => logger.debug(message, data, source),
+    info: (message: string, data?: unknown) => logger.info(message, data, source),
+    warn: (message: string, data?: unknown) => logger.warn(message, data, source),
+    error: (message: string, error?: Error, data?: unknown) => logger.error(message, error, data, source)
   }
 }
 

@@ -5,7 +5,6 @@ import {
   User, 
   Mail, 
   Phone, 
-  MapPin, 
   Bell, 
   Shield, 
   CreditCard,
@@ -13,7 +12,6 @@ import {
   EyeOff,
   Edit,
   Save,
-  X,
   Loader2,
   Heart,
   Plus,
@@ -220,11 +218,12 @@ const Profile: React.FC = () => {
         setProfile(updatedProfile);
         await profileService.updateProfile(updatedProfile);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Erro ao fazer upload da foto:', err);
       
       // Mensagens de erro mais específicas
-      if (err.message?.includes('User not authenticated')) {
+      const errorMessage = err instanceof Error ? err.message : ''
+      if (errorMessage.includes('User not authenticated')) {
         setError('Você precisa estar logado para fazer upload da foto.');
       } else {
         // Para qualquer outro erro, a foto ainda será salva localmente

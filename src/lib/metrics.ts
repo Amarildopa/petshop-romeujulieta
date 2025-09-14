@@ -4,7 +4,7 @@ interface MetricData {
   value: number
   timestamp: number
   tags?: Record<string, string>
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 interface PerformanceMetric extends MetricData {
@@ -64,7 +64,7 @@ class MetricsCollector {
   }
 
   // Métricas de Performance
-  recordPerformance(operation: string, duration: number, tags?: Record<string, string>, metadata?: Record<string, any>) {
+  recordPerformance(operation: string, duration: number, tags?: Record<string, string>, metadata?: Record<string, unknown>) {
     const metric: PerformanceMetric = {
       type: 'performance',
       name: `performance.${operation}`,
@@ -79,7 +79,7 @@ class MetricsCollector {
   }
 
   // Métricas de Negócio
-  recordBusinessEvent(event: string, value: number = 1, userId?: string, tags?: Record<string, string>, metadata?: Record<string, any>) {
+  recordBusinessEvent(event: string, value: number = 1, userId?: string, tags?: Record<string, string>, metadata?: Record<string, unknown>) {
     const metric: BusinessMetric = {
       type: 'business',
       name: `business.${event}`,
@@ -94,7 +94,7 @@ class MetricsCollector {
   }
 
   // Métricas de Erro
-  recordError(errorType: string, errorMessage: string, value: number = 1, stack?: string, tags?: Record<string, string>, metadata?: Record<string, any>) {
+  recordError(errorType: string, errorMessage: string, value: number = 1, stack?: string, tags?: Record<string, string>, metadata?: Record<string, unknown>) {
     const metric: ErrorMetric = {
       type: 'error',
       name: `error.${errorType}`,
@@ -173,7 +173,7 @@ class MetricsCollector {
     operation: string,
     fn: () => Promise<T>,
     tags?: Record<string, string>,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<T> => {
     const startTime = performance.now()
     try {
@@ -192,7 +192,7 @@ class MetricsCollector {
     operation: string,
     fn: () => T,
     tags?: Record<string, string>,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): T => {
     const startTime = performance.now()
     try {
