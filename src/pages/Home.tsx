@@ -56,7 +56,7 @@ const Home: React.FC = () => {
             className="text-center md:text-left"
           >
             <h1 className="text-4xl md:text-6xl font-bold text-text-color-dark font-serif">
-              Com muito Carinho e Confiança para o seu Pet
+              Carinho e Confiança para o seu Pet
             </h1>
             <p className="mt-6 text-lg text-text-color max-w-xl mx-auto md:mx-0">
               No {APP_CONFIG.name}, oferecemos uma experiência premium com serviços de alta qualidade, acompanhamento em tempo real e um ambiente pensado para o bem-estar do seu melhor amigo.

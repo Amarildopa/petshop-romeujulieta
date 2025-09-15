@@ -151,7 +151,7 @@ describe('Home Page - Análise de Dados Mockados', () => {
       console.log(JSON.stringify(relatorioFinal, null, 2));
       
       // Verificar estrutura básica
-      expect(screen.getByText('Com muito Carinho e Confiança para o seu Pet')).toBeInTheDocument();
+      expect(screen.getByText('Carinho e Confiança para o seu Pet')).toBeInTheDocument();
       expect(screen.getByText('O que nossos clientes dizem')).toBeInTheDocument();
       
       // ✅ CONCLUSÃO: Apenas os depoimentos estão mockados
