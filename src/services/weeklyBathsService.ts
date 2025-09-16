@@ -107,7 +107,7 @@ export const weeklyBathsService = {
 
   // Update a weekly bath entry
   async updateWeeklyBath(id: string, updates: WeeklyBathUpdate): Promise<WeeklyBath> {
-    const updateData: any = {
+    const updateData: Partial<WeeklyBath> = {
       ...updates,
       updated_at: new Date().toISOString()
     };

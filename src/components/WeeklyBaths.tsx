@@ -196,7 +196,7 @@ const WeeklyBaths: React.FC = () => {
   const handleRetry = useCallback(() => {
     setImageLoadErrors(new Set());
     loadWeeklyBaths(true);
-  }, []);
+  }, [loadWeeklyBaths]);
 
   const getVisibleBaths = () => {
     if (weeklyBaths.length === 0) return [];

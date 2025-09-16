@@ -251,11 +251,9 @@ export class StorageService {
       format?: 'webp' | 'jpeg' | 'png';
     } = {}
   ): string {
-    const { width, height, quality = 80, format = 'webp' } = options;
-    
     // Se o Supabase suportar transformações de imagem, use aqui
     // Por enquanto, retorna a URL original
-    let optimizedUrl = originalUrl;
+    const optimizedUrl = originalUrl;
     
     // Exemplo de como seria com transformações (se disponível):
     // const params = new URLSearchParams();

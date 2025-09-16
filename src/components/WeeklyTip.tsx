@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Lightbulb, ArrowRight, Loader2, LogIn, UserPlus } from 'lucide-react';
+import { Lightbulb, Loader2, LogIn, UserPlus } from 'lucide-react';
 import { helpService } from '../services/helpService';
 import { useAuth } from '../contexts/AuthContext';
 import type { HelpArticle } from '../services/helpService';

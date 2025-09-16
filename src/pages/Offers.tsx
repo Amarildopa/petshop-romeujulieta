@@ -6,10 +6,8 @@ import {
   Percent, 
   Gift, 
   Star, 
-  Filter,
   Search,
   Clock,
-  Tag,
   ArrowRight
 } from 'lucide-react';
 

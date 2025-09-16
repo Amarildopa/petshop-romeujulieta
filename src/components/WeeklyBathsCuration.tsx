@@ -80,7 +80,7 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
     if (!editingBath) return;
     
     try {
-      const { id, created_at, ...updateData } = editingBath;
+      const { id, ...updateData } = editingBath;
       await weeklyBathsService.updateWeeklyBath(id, updateData);
       setBaths(prev => prev.map(bath => 
         bath.id === id ? editingBath : bath

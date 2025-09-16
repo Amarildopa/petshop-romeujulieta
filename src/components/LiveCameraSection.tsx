@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Camera, Eye, Heart, Shield, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const LiveCameraSection: React.FC = () => {
   const { user } = useAuth();
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleCameraAccess = () => {
     if (user) {
-      setIsModalOpen(true);
+      window.location.href = '/dashboard';
     } else {
       window.location.href = '/login';
     }
