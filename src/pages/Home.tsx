@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { APP_CONFIG } from '../constants/app';
 import Testimonials from '../components/Testimonials';
+import WeeklyBaths from '../components/WeeklyBaths';
+import WeeklyTip from '../components/WeeklyTip';
+import SpecialOffers from '../components/SpecialOffers';
+import VIPPackages from '../components/VIPPackages';
+import LiveCameraSection from '../components/LiveCameraSection';
 import { IMAGE_CONFIG } from '../config/images';
 import { 
   ArrowRight,
@@ -64,13 +69,14 @@ const Home: React.FC = () => {
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link
                 to="/booking"
-                className="inline-block bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-shadow shadow-lg hover:shadow-xl"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 Agendar Serviço
+                <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/services"
-                className="inline-block bg-surface text-primary border border-primary px-8 py-3 rounded-lg font-semibold hover:bg-primary/10 transition-colors"
+                className="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary px-8 py-4 rounded-xl font-semibold hover:bg-primary/5 transition-all duration-300"
               >
                 Nossos Serviços
               </Link>
@@ -89,6 +95,36 @@ const Home: React.FC = () => {
               className="rounded-3xl shadow-2xl w-full h-auto object-cover"
             />
           </motion.div>
+        </div>
+      </section>
+
+      {/* Live Camera Section */}
+      <LiveCameraSection />
+
+      {/* Weekly Baths Section */}
+      <WeeklyBaths />
+
+      {/* Weekly Content Section - Tip and Offers */}
+      <section className="py-16 bg-surface-dark">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* Weekly Tip */}
+            <div>
+              <WeeklyTip />
+            </div>
+            
+            {/* Special Offers */}
+            <div>
+              <SpecialOffers />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* VIP Packages Section */}
+      <section className="py-16 bg-surface">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <VIPPackages />
         </div>
       </section>
 
@@ -179,9 +215,10 @@ const Home: React.FC = () => {
           <div className="mt-8">
             <Link
               to="/register"
-              className="inline-flex items-center bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary-dark transition-shadow shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
-              Crie sua Conta Agora <ArrowRight className="ml-2 h-5 w-5" />
+              Crie sua Conta Agora
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>

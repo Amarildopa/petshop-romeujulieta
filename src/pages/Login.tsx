@@ -11,6 +11,7 @@ const Login: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formKey, setFormKey] = useState(Date.now());
   const navigate = useNavigate();
   const { signIn } = useAuth();
 
@@ -32,6 +33,7 @@ const Login: React.FC = () => {
     setPassword('');
     setError(null);
     setLoading(false);
+    setFormKey(Date.now());
     
     // Configurar atributos anti-autofill
     if (typeof window !== 'undefined') {

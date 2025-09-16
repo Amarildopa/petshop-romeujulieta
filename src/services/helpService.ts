@@ -180,6 +180,26 @@ export class HelpService {
     return data || [];
   }
 
+  async getRandomTip(): Promise<HelpArticle | null> {
+    // Primeiro, busca todos os artigos publicados (sem relacionamento com profiles)
+    const { data: articles, error: fetchError } = await supabase
+      .from('help_articles_pet')
+      .select('*')
+      .eq('is_published', true);
+
+    if (fetchError) {
+      throw new Error(`Erro ao buscar artigos: ${fetchError.message}`);
+    }
+
+    if (!articles || articles.length === 0) {
+      return null;
+    }
+
+    // Seleciona um artigo aleatório
+    const randomIndex = Math.floor(Math.random() * articles.length);
+    return articles[randomIndex];
+  }
+
   async getHelpArticleBySlug(slug: string): Promise<HelpArticle | null> {
     const { data, error } = await supabase
       .from('help_articles_pet')

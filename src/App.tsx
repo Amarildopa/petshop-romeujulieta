@@ -13,6 +13,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Booking = lazy(() => import('./pages/Booking'));
 const Services = lazy(() => import('./pages/Services'));
 const Store = lazy(() => import('./pages/Store'));
+const Offers = lazy(() => import('./pages/Offers'));
 const Profile = lazy(() => import('./pages/Profile'));
 const PetProfile = lazy(() => import('./pages/PetProfile'));
 const Subscription = lazy(() => import('./pages/Subscription'));
@@ -43,6 +44,7 @@ function App() {
               <Route path="/check-in/:appointmentId" element={<CheckIn />} />
               <Route path="/services" element={<Services />} />
               <Route path="/store" element={<Store />} />
+              <Route path="/offers" element={<Offers />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/pet-profile" element={<PetProfile />} />
               <Route path="/subscription" element={<Subscription />} />
