@@ -261,3 +261,4 @@ const LiveFeedModal: React.FC<LiveFeedModalProps> = ({ isOpen, onClose, petName 
 };
 
 export default LiveFeedModal;
+export { LiveFeedModal };
