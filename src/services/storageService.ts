@@ -244,7 +244,8 @@ export class StorageService {
    */
   getOptimizedUrl(
     originalUrl: string,
-    options: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _options: {
       width?: number;
       height?: number;
       quality?: number;
