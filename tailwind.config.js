@@ -7,27 +7,27 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          light: '#F9D4C4',
-          DEFAULT: '#F4A27E',
-          dark: '#E67C53',
+          light: '#FDE2F3',
+          DEFAULT: '#F8BBD9',
+          dark: '#F472B6',
         },
         secondary: {
-          light: '#D4E9E2',
-          DEFAULT: '#A8D8C7',
-          dark: '#7EC1AC',
+          light: '#DBEAFE',
+          DEFAULT: '#BFDBFE',
+          dark: '#93C5FD',
         },
         accent: {
-          light: '#EADBC8',
-          DEFAULT: '#D1BFA8',
-          dark: '#B8A388',
+          light: '#FFFBEB',
+          DEFAULT: '#FEF3C7',
+          dark: '#FCD34D',
         },
         surface: {
-          DEFAULT: '#FDFBF8',
-          dark: '#F5EFE6',
+          DEFAULT: '#FEF7FF',
+          dark: '#FCE7F3',
         },
         'text-color': {
-          DEFAULT: '#6B7280', // Lighter gray (gray-500)
-          dark: '#374151',    // Lighter dark gray (gray-700)
+          DEFAULT: '#64748B',
+          dark: '#334155',
         },
         status: {
           success: '#10B981',

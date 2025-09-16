@@ -231,7 +231,7 @@ const Subscription: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gradient-to-r from-primary to-primary-dark rounded-2xl p-6 mb-8 text-white"
+            className="bg-primary rounded-2xl p-6 mb-8 text-white"
           >
             <div className="flex items-center justify-between">
               <div>

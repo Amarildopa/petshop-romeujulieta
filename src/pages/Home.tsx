@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { APP_CONFIG } from '../constants/app';
 import Testimonials from '../components/Testimonials';
 import WeeklyBaths from '../components/WeeklyBaths';
+import WeeklyPoll from '../components/WeeklyPoll';
 import WeeklyTip from '../components/WeeklyTip';
 import SpecialOffers from '../components/SpecialOffers';
 import VIPPackages from '../components/VIPPackages';
@@ -69,14 +70,14 @@ const Home: React.FC = () => {
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link
                 to="/booking"
-                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 Agendar Serviço
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 to="/services"
-                className="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary px-8 py-4 rounded-xl font-semibold hover:bg-primary/5 transition-all duration-300"
+                className="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary-dark px-8 py-4 rounded-xl font-semibold hover:bg-primary/5 transition-all duration-300"
               >
                 Nossos Serviços
               </Link>
@@ -103,6 +104,9 @@ const Home: React.FC = () => {
 
       {/* Weekly Baths Section */}
       <WeeklyBaths />
+
+      {/* Weekly Poll Section */}
+      <WeeklyPoll />
 
       {/* Weekly Content Section - Tip and Offers */}
       <section className="py-16 bg-surface-dark">
@@ -215,7 +219,7 @@ const Home: React.FC = () => {
           <div className="mt-8">
             <Link
               to="/register"
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
+              className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               Crie sua Conta Agora
               <ArrowRight className="w-4 h-4" />

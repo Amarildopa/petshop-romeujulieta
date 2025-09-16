@@ -110,7 +110,7 @@ const LiveFeedModal: React.FC<LiveFeedModalProps> = ({ isOpen, onClose, petName 
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary to-secondary text-white p-4 flex items-center justify-between">
+          <div className="bg-primary text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Camera className="w-6 h-6" />
               <div>
@@ -211,7 +211,7 @@ const LiveFeedModal: React.FC<LiveFeedModalProps> = ({ isOpen, onClose, petName 
 
               {/* Video Feed */}
               <div className="flex-1 bg-black relative">
-                <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
+                <div className="w-full h-full bg-gray-800 flex items-center justify-center relative">
                   <div className="text-center text-white space-y-4">
                     <Camera className="w-16 h-16 mx-auto opacity-50" />
                     <div>

@@ -27,6 +27,7 @@ const AdminLayout = lazy(() => import('./components/AdminLayout'));
 const TestSupabase = lazy(() => import('./pages/TestSupabase'));
 const TestSimple = lazy(() => import('./pages/TestSimple'));
 const PhotoTest = lazy(() => import('./pages/PhotoTest'));
+const ThemeCustomizer = lazy(() => import('./pages/ThemeCustomizer'));
 
 function App() {
   return (
@@ -53,6 +54,10 @@ function App() {
             <Route path="/test-supabase" element={<TestSupabase />} />
             <Route path="/test-simple" element={<TestSimple />} />
             <Route path="/photo-test" element={<PhotoTest />} />
+            <Route
+              path="/theme-customizer"
+              element={<ThemeCustomizer />}
+            />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="users" element={

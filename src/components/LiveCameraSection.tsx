@@ -15,7 +15,7 @@ const LiveCameraSection: React.FC = () => {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-surface to-surface-dark relative overflow-hidden">
+    <section className="py-20 bg-surface relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-text-color-dark font-serif mb-6">
@@ -32,7 +32,7 @@ const LiveCameraSection: React.FC = () => {
             {/* Features Grid */}
             <div className="grid md:grid-cols-3 gap-8 mb-12">
               <div className="space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto">
+                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto">
                   <Camera className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-text-color-dark">
@@ -44,7 +44,7 @@ const LiveCameraSection: React.FC = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-secondary to-accent rounded-full flex items-center justify-center mx-auto">
+                <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto">
                   <Shield className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-text-color-dark">
@@ -56,7 +56,7 @@ const LiveCameraSection: React.FC = () => {
               </div>
 
               <div className="space-y-4">
-                <div className="w-16 h-16 bg-gradient-to-r from-accent to-primary rounded-full flex items-center justify-center mx-auto">
+                <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto">
                   <Heart className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-text-color-dark">
@@ -72,7 +72,7 @@ const LiveCameraSection: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button
                 onClick={handleCameraAccess}
-                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 <Eye className="w-5 h-5" />
                 {user ? 'Acessar Dashboard' : 'Fazer Login'}
@@ -82,7 +82,7 @@ const LiveCameraSection: React.FC = () => {
               {!user && (
                 <Link
                   to="/register"
-                  className="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary px-8 py-4 rounded-xl font-semibold hover:bg-primary/5 transition-all duration-300"
+                  className="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary-dark px-8 py-4 rounded-xl font-semibold hover:bg-primary/5 transition-all duration-300"
                 >
                   Criar Conta Grátis
                 </Link>

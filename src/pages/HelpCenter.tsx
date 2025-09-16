@@ -412,7 +412,7 @@ const HelpCenter: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="bg-gradient-to-r from-primary to-primary-dark rounded-2xl p-8 text-white text-center"
+          className="bg-primary rounded-2xl p-8 text-white text-center"
         >
           <h2 className="text-2xl font-bold mb-4">
             Não encontrou o que procurava?

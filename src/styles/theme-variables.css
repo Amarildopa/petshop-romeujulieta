@@ -1,0 +1,207 @@
+/* Variáveis CSS para personalização de tema - Rosa Delicado */
+:root {
+  /* Cores Primárias - Rosa Delicado */
+  --color-primary: #F8BBD9;
+  --color-primary-light: #FDE2F3;
+  --color-primary-dark: #F472B6;
+  
+  /* Cores Secundárias - Azul Suave */
+  --color-secondary: #BFDBFE;
+  --color-secondary-light: #DBEAFE;
+  --color-secondary-dark: #93C5FD;
+  
+  /* Cores de Destaque - Amarelo Suave */
+  --color-accent: #FEF3C7;
+  --color-accent-light: #FFFBEB;
+  --color-accent-dark: #FCD34D;
+  
+  /* Cores de Superfície - Rosa Muito Claro */
+  --color-surface: #FEF7FF;
+  --color-surface-dark: #FCE7F3;
+  
+  /* Cores de Texto - Cinza Suave */
+  --color-text: #64748B;
+  --color-text-dark: #334155;
+}
+
+/* Classes utilitárias para usar as variáveis */
+.bg-custom-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-custom-primary-light {
+  background-color: var(--color-primary-light);
+}
+
+.bg-custom-primary-dark {
+  background-color: var(--color-primary-dark);
+}
+
+.bg-custom-secondary {
+  background-color: var(--color-secondary);
+}
+
+.bg-custom-secondary-light {
+  background-color: var(--color-secondary-light);
+}
+
+.bg-custom-secondary-dark {
+  background-color: var(--color-secondary-dark);
+}
+
+.bg-custom-accent {
+  background-color: var(--color-accent);
+}
+
+.bg-custom-accent-light {
+  background-color: var(--color-accent-light);
+}
+
+.bg-custom-accent-dark {
+  background-color: var(--color-accent-dark);
+}
+
+.bg-custom-surface {
+  background-color: var(--color-surface);
+}
+
+.bg-custom-surface-dark {
+  background-color: var(--color-surface-dark);
+}
+
+.text-custom-primary {
+  color: var(--color-primary);
+}
+
+.text-custom-primary-light {
+  color: var(--color-primary-light);
+}
+
+.text-custom-primary-dark {
+  color: var(--color-primary-dark);
+}
+
+.text-custom-secondary {
+  color: var(--color-secondary);
+}
+
+.text-custom-secondary-light {
+  color: var(--color-secondary-light);
+}
+
+.text-custom-secondary-dark {
+  color: var(--color-secondary-dark);
+}
+
+.text-custom-accent {
+  color: var(--color-accent);
+}
+
+.text-custom-accent-light {
+  color: var(--color-accent-light);
+}
+
+.text-custom-accent-dark {
+  color: var(--color-accent-dark);
+}
+
+.text-custom {
+  color: var(--color-text);
+}
+
+.text-custom-dark {
+  color: var(--color-text-dark);
+}
+
+.border-custom-primary {
+  border-color: var(--color-primary);
+}
+
+.border-custom-secondary {
+  border-color: var(--color-secondary);
+}
+
+.border-custom-accent {
+  border-color: var(--color-accent);
+}
+
+/* Hover states */
+.hover\:bg-custom-primary:hover {
+  background-color: var(--color-primary);
+}
+
+.hover\:bg-custom-primary-light:hover {
+  background-color: var(--color-primary-light);
+}
+
+.hover\:bg-custom-primary-dark:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.hover\:text-custom-primary:hover {
+  color: var(--color-primary);
+}
+
+.hover\:border-custom-primary:hover {
+  border-color: var(--color-primary);
+}
+
+/* Focus states */
+.focus\:ring-custom-primary:focus {
+  --tw-ring-color: var(--color-primary);
+}
+
+.focus\:border-custom-primary:focus {
+  border-color: var(--color-primary);
+}
+
+/* Cores sólidas personalizadas */
+.bg-custom-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-custom-secondary {
+  background-color: var(--color-secondary);
+}
+
+.bg-custom-accent {
+  background-color: var(--color-accent);
+}
+
+/* Sombras personalizadas */
+.shadow-custom-primary {
+  box-shadow: 0 4px 14px 0 rgba(139, 92, 246, 0.25);
+}
+
+.shadow-custom-secondary {
+  box-shadow: 0 4px 14px 0 rgba(6, 182, 212, 0.25);
+}
+
+.shadow-custom-accent {
+  box-shadow: 0 4px 14px 0 rgba(245, 158, 11, 0.25);
+}
+
+/* Estados de opacidade */
+.bg-custom-primary-10 {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+.bg-custom-primary-20 {
+  background-color: rgba(139, 92, 246, 0.2);
+}
+
+.bg-custom-secondary-10 {
+  background-color: rgba(6, 182, 212, 0.1);
+}
+
+.bg-custom-secondary-20 {
+  background-color: rgba(6, 182, 212, 0.2);
+}
+
+.bg-custom-accent-10 {
+  background-color: rgba(245, 158, 11, 0.1);
+}
+
+.bg-custom-accent-20 {
+  background-color: rgba(245, 158, 11, 0.2);
+}

@@ -125,7 +125,7 @@ const Offers: React.FC = () => {
   return (
     <div className="min-h-screen bg-surface text-text-color">
       {/* Header */}
-      <section className="bg-gradient-to-r from-primary to-secondary py-16">
+      <section className="bg-primary py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -204,7 +204,7 @@ const Offers: React.FC = () => {
                 className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer"
               >
                 <div className="relative">
-                  <div className="h-56 bg-gradient-to-br from-primary-light to-secondary-light flex items-center justify-center">
+                  <div className="h-56 bg-primary-light flex items-center justify-center">
                     <div className="text-center">
                       <Gift className="h-16 w-16 text-primary-dark mx-auto mb-3" />
                       <span className="text-sm text-primary-dark font-medium">{offer.brand}</span>

@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Variáveis CSS para personalização de tema - Rosa Delicado */
+:root {
+  /* Cores Primárias - Rosa Delicado */
+  --color-primary: #F8BBD9;
+  --color-primary-light: #FDE2F3;
+  --color-primary-dark: #F472B6;
+  
+  /* Cores Secundárias - Azul Suave */
+  --color-secondary: #BFDBFE;
+  --color-secondary-light: #DBEAFE;
+  --color-secondary-dark: #93C5FD;
+  
+  /* Cores de Destaque - Amarelo Suave */
+  --color-accent: #FEF3C7;
+  --color-accent-light: #FFFBEB;
+  --color-accent-dark: #FCD34D;
+  
+  /* Cores de Superfície - Rosa Muito Claro */
+  --color-surface: #FEF7FF;
+  --color-surface-dark: #FCE7F3;
+  
+  /* Cores de Texto - Cinza Suave */
+  --color-text: #64748B;
+  --color-text-dark: #334155;
+}

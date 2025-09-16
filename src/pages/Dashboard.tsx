@@ -268,7 +268,7 @@ const Dashboard: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-gradient-to-br from-accent to-accent-light rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-accent/20 p-6 h-full flex flex-col"
+                className="bg-accent rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-accent/20 p-6 h-full flex flex-col"
               >
                 <div className="flex-grow">
                   <div className="flex items-center justify-between mb-4">
@@ -502,7 +502,7 @@ const Dashboard: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-gradient-to-br from-primary to-primary-dark rounded-xl p-6 text-white"
+              className="bg-primary rounded-xl p-6 text-white"
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold">Plano Premium</h3>

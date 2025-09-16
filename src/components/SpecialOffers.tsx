@@ -70,7 +70,7 @@ const SpecialOffers: React.FC = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
             viewport={{ once: true }}
-            className="bg-gradient-to-r from-primary-light to-secondary-light rounded-xl p-4 hover:shadow-lg transition-shadow cursor-pointer group"
+            className="bg-primary-light rounded-xl p-4 hover:shadow-lg transition-shadow cursor-pointer group"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
@@ -95,7 +95,7 @@ const SpecialOffers: React.FC = () => {
                 <div className="bg-primary text-white px-3 py-1 rounded-full text-xs font-bold mb-2">
                   {offer.discount}
                 </div>
-                <button className="inline-flex items-center justify-center gap-1 border-2 border-primary text-primary px-3 py-1 rounded-lg text-xs font-semibold hover:bg-primary/5 transition-all duration-300">
+                <button className="inline-flex items-center justify-center gap-1 border-2 border-primary text-primary-dark px-3 py-1 rounded-lg text-xs font-semibold hover:bg-primary/5 transition-all duration-300">
                   <ShoppingBag className="h-3 w-3" />
                   Comprar
                 </button>
@@ -108,7 +108,7 @@ const SpecialOffers: React.FC = () => {
       <div className="text-center">
         <Link
           to="/offers"
-          className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all duration-300 transform hover:scale-105 shadow-lg w-full"
+          className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg w-full"
         >
           Ver Todas as Ofertas
           <ShoppingBag className="w-4 h-4" />

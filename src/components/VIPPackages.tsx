@@ -95,14 +95,14 @@ const VIPPackages: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6"
+      className="bg-surface rounded-2xl p-6"
     >
       <div className="text-center mb-8">
         <motion.div
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-full text-sm font-semibold mb-4"
+          className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-full text-sm font-semibold mb-4"
         >
           <Crown className="w-4 h-4" />
           Cliente VIP
@@ -130,7 +130,7 @@ const VIPPackages: React.FC = () => {
           >
             {pkg.popular && (
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                <span className="bg-gradient-to-r from-primary to-secondary text-white px-3 py-1 rounded-full text-xs font-semibold">
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold">
                   Mais Popular
                 </span>
               </div>
@@ -138,9 +138,9 @@ const VIPPackages: React.FC = () => {
             
             <div className="text-center mb-4">
               <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-2 ${
-                pkg.id === 'vip' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' :
-                pkg.id === 'premium' ? 'bg-gradient-to-r from-primary to-secondary text-white' :
-                'bg-gradient-to-r from-secondary to-accent text-white'
+                pkg.id === 'vip' ? 'bg-accent text-white' :
+                pkg.id === 'premium' ? 'bg-primary text-white' :
+                'bg-secondary text-white'
               }`}>
                 {pkg.icon}
               </div>
@@ -213,14 +213,14 @@ const VIPPackages: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             to="/register"
-            className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-semibold hover:from-primary-dark hover:to-secondary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
+            className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             Cadastre-se Grátis
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             to="/login"
-            className="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary px-8 py-4 rounded-xl font-semibold hover:bg-primary/5 transition-all duration-300"
+            className="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary-dark px-8 py-4 rounded-xl font-semibold hover:bg-primary/5 transition-all duration-300"
           >
             Já sou cliente
           </Link>

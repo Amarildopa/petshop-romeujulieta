@@ -260,7 +260,7 @@ const Register: React.FC = () => {
       >
         {/* Mobile Special Offer */}
         <div className="lg:hidden mb-6">
-          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl shadow-lg p-6 border border-primary/20">
+          <div className="bg-primary/10 rounded-xl shadow-lg p-6 border border-primary/20">
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-primary rounded-full mb-3">
                 <span className="text-xl font-bold text-white">🎉</span>
@@ -324,7 +324,7 @@ const Register: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Special Offer Section */}
             <div className="hidden lg:block">
-              <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl shadow-xl p-8 border border-primary/20">
+              <div className="bg-primary/10 rounded-2xl shadow-xl p-8 border border-primary/20">
                 <div className="text-center mb-6">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
                     <span className="text-2xl font-bold text-white">🎉</span>
@@ -388,7 +388,7 @@ const Register: React.FC = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg p-4 border border-primary/30"
+                    className="bg-primary/20 rounded-lg p-4 border border-primary/30"
                   >
                     <div className="text-center">
                       <p className="text-sm text-text-color-dark font-medium">
