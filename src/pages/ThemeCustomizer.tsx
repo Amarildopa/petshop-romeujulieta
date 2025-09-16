@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import {
-  Palette,
-  Save,
   RotateCcw,
   Eye,
   Settings,
@@ -15,12 +12,6 @@ import {
   ShoppingBag,
   Calendar,
   User,
-  Bell,
-  Search,
-  Filter,
-  Plus,
-  Edit,
-  Trash2,
   AlertTriangle,
   Info,
   CheckCircle
