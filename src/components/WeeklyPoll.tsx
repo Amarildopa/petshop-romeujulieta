@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import {
   Heart,
   Trophy,
@@ -8,8 +8,6 @@ import {
   Star,
   Crown,
   Award,
-  ChevronLeft,
-  ChevronRight,
   Vote,
   CheckCircle
 } from 'lucide-react';
@@ -39,11 +37,9 @@ const WeeklyPoll: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState<string | null>(null);
   const [userVotes, setUserVotes] = useState<Set<string>>(new Set());
-  const [showWinner, setShowWinner] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Mock data para demonstração
-  const mockCurrentPets: PollPet[] = [
+  // Mock data para demonstração - usando useMemo para evitar recriação
+  const mockCurrentPets = useMemo<PollPet[]>(() => [
     {
       id: '1',
       pet_name: 'Luna',
@@ -76,9 +72,9 @@ const WeeklyPoll: React.FC = () => {
       votes: 29,
       bath_date: '2024-01-18'
     }
-  ];
+  ], []);
 
-  const mockLastWinner: WeeklyWinner = {
+  const mockLastWinner = useMemo<WeeklyWinner>(() => ({
     id: 'winner-1',
     pet_name: 'Mel',
     image_url: '/images/pets/mel.jpg',
@@ -86,7 +82,7 @@ const WeeklyPoll: React.FC = () => {
     total_votes: 87,
     week_start: '2024-01-08',
     week_end: '2024-01-14'
-  };
+  }), []);
 
   const loadPollData = useCallback(async () => {
     setLoading(true);
@@ -101,7 +97,7 @@ const WeeklyPoll: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [mockCurrentPets, mockLastWinner]);
 
   useEffect(() => {
     loadPollData();
@@ -131,14 +127,7 @@ const WeeklyPoll: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const [year, month, day] = dateString.split('-').map(Number);
-    const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit'
-    });
-  };
+
 
   const getWeekRange = () => {
     const now = new Date();
