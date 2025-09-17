@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Crown, Star, Sparkles, Check, X, ArrowRight } from 'lucide-react';
+import { Crown, Star, Sparkles, Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface Package {
