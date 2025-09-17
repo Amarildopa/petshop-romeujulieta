@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter } from 'lucide-react';
 
 const Footer: React.FC = () => {
@@ -101,12 +102,15 @@ const Footer: React.FC = () => {
               © 2024 Romeu e Julieta Pet&Spa. Todos os direitos reservados.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="/termos" className="text-gray-400 hover:text-primary text-sm transition-colors duration-300">
+              <Link to="/services" className="text-gray-400 hover:text-primary text-sm transition-colors duration-300">
+                Serviços
+              </Link>
+              <Link to="/termos" className="text-gray-400 hover:text-primary text-sm transition-colors duration-300">
                 Termos de Uso
-              </a>
-              <a href="/privacidade" className="text-gray-400 hover:text-primary text-sm transition-colors duration-300">
+              </Link>
+              <Link to="/privacidade" className="text-gray-400 hover:text-primary text-sm transition-colors duration-300">
                 Política de Privacidade
-              </a>
+              </Link>
             </div>
           </div>
         </div>
