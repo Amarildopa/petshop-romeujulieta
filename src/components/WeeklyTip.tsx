@@ -57,9 +57,9 @@ const WeeklyTip: React.FC = () => {
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
-      className="bg-white rounded-2xl shadow-xl p-8 md:p-12 h-full"
+      className="bg-white rounded-2xl shadow-xl p-8 h-full"
     >
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-light rounded-full mb-4">
               <Lightbulb className="h-8 w-8 text-primary-dark" />
             </div>
@@ -75,7 +75,7 @@ const WeeklyTip: React.FC = () => {
             <h3 className="text-xl font-semibold text-text-color-dark mb-4">
               {tip.title}
             </h3>
-            <p className="text-text-color text-lg leading-relaxed mb-8">
+            <p className="text-text-color text-lg leading-relaxed mb-6">
               {truncateContent(tip.content)}
             </p>
             
@@ -86,6 +86,12 @@ const WeeklyTip: React.FC = () => {
                 </span>
               </div>
             )}
+
+            <div className="space-y-4 mb-6">
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               {/* Botão para cadastro - sempre visível para não cadastrados */}

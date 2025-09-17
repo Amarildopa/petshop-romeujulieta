@@ -50,7 +50,7 @@ const Home: React.FC = () => {
     <div className="bg-surface text-text-color">
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-secondary-light opacity-50"></div>
+        <div className="absolute inset-0 bg-accent-light opacity-50"></div>
         <div className="absolute top-0 left-0 w-1/3 h-1/3 bg-primary-light/50 rounded-full filter blur-3xl"></div>
         <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-accent-light/50 rounded-full filter blur-3xl"></div>
         
@@ -109,7 +109,7 @@ const Home: React.FC = () => {
       <WeeklyPoll />
 
       {/* Weekly Content Section - Tip and Offers */}
-      <section className="py-16 bg-surface-dark">
+      <section className="py-16 bg-accent-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Weekly Tip */}
@@ -126,14 +126,14 @@ const Home: React.FC = () => {
       </section>
 
       {/* VIP Packages Section */}
-      <section className="py-16 bg-surface">
+      <section className="py-16 bg-accent-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <VIPPackages />
         </div>
       </section>
 
       {/* Services Section */}
-      <section className="py-20 bg-surface-dark">
+      <section className="py-20 bg-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-text-color-dark font-serif">Nossos Serviços</h2>
@@ -149,7 +149,7 @@ const Home: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-surface p-8 rounded-2xl shadow-lg text-center hover:-translate-y-2 transition-transform"
+                className="bg-white p-8 rounded-2xl shadow-lg text-center hover:-translate-y-2 transition-transform"
               >
                 <div className="inline-block bg-secondary-light p-4 rounded-full mb-4">
                   <service.icon className="h-8 w-8 text-secondary-dark" />
@@ -163,7 +163,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20">
+      <section className="py-20 bg-accent-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}

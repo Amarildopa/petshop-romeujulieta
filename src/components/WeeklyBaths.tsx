@@ -221,7 +221,7 @@ const WeeklyBaths: React.FC = () => {
 
   if (loading) {
     return (
-      <section className="py-16 bg-primary-light/20">
+      <section className="py-16 bg-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-bold text-text-color-dark font-serif">
@@ -257,7 +257,7 @@ const WeeklyBaths: React.FC = () => {
 
   if (weeklyBaths.length === 0) {
     return (
-      <section className="py-16 bg-primary-light/20">
+      <section className="py-16 bg-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-text-color-dark font-serif">
@@ -275,7 +275,7 @@ const WeeklyBaths: React.FC = () => {
   const visibleBaths = getVisibleBaths();
 
   return (
-    <section className="py-16 bg-primary-light/20">
+    <section className="py-16 bg-green-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <motion.div
