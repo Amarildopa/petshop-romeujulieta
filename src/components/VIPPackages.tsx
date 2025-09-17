@@ -107,7 +107,7 @@ const VIPPackages: React.FC = () => {
           <Crown className="w-4 h-4" />
           Cliente VIP
         </motion.div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+        <h2 className="text-4xl font-bold text-gray-800 mb-2 font-serif">
           Assine seu Pacote de Banhos
         </h2>
         <p className="text-gray-600 text-sm">

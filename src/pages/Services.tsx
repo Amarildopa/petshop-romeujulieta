@@ -117,7 +117,7 @@ const Services: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-text-color-dark">
+          <h1 className="text-4xl md:text-5xl font-bold text-text-color-dark font-serif">
             Serviços Premium para seu Pet
           </h1>
           <p className="text-xl text-text-color max-w-3xl mx-auto mt-4">
@@ -134,7 +134,7 @@ const Services: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-text-color-dark mb-4">
+            <h2 className="text-3xl font-bold text-text-color-dark mb-4 font-serif">
               Nossos Serviços Principais
             </h2>
             <p className="text-text-color text-lg max-w-2xl mx-auto">
@@ -223,7 +223,7 @@ const Services: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-text-color-dark mb-4">
+            <h2 className="text-3xl font-bold text-text-color-dark mb-4 font-serif">
               Por que escolher nossos serviços?
             </h2>
             <p className="text-text-color text-lg">
@@ -264,7 +264,7 @@ const Services: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-text-color-dark mb-4">
+            <h2 className="text-3xl font-bold text-text-color-dark mb-4 font-serif">
               Serviços Adicionais
             </h2>
             <p className="text-text-color text-lg">

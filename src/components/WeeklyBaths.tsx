@@ -224,7 +224,7 @@ const WeeklyBaths: React.FC = () => {
       <section className="py-16 bg-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-text-color-dark font-serif">
+            <h2 className="text-4xl font-bold text-text-color-dark font-serif">
               Quem passou por aqui na última semana?
             </h2>
             <p className="mt-4 text-lg text-text-color">
@@ -260,7 +260,7 @@ const WeeklyBaths: React.FC = () => {
       <section className="py-16 bg-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-text-color-dark font-serif">
+            <h2 className="text-4xl font-bold text-text-color-dark font-serif">
               Quem passou por aqui na última semana?
             </h2>
             <p className="mt-4 text-lg text-text-color">
@@ -284,7 +284,7 @@ const WeeklyBaths: React.FC = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-text-color-dark font-serif">
+            <h2 className="text-4xl font-bold text-text-color-dark font-serif">
               Quem passou por aqui na última semana?
             </h2>
             <p className="mt-4 text-lg text-text-color">
