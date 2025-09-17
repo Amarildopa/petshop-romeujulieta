@@ -174,32 +174,7 @@ const VIPPackages: React.FC = () => {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl p-4 mb-6">
-        <h3 className="font-semibold text-gray-800 mb-3 text-center">Assinatura vs Pagamento Avulso</h3>
-        <div className="grid grid-cols-3 gap-2 text-xs">
-          <div className="font-semibold text-gray-600">Benefício</div>
-          <div className="font-semibold text-gray-600 text-center">Avulso</div>
-          <div className="font-semibold text-primary text-center">Assinatura</div>
-          
-          <div className="col-span-3 border-t my-2"></div>
-          
-          <div className="text-gray-700">Descontos em produtos</div>
-          <div className="text-center"><X className="w-4 h-4 text-red-500 mx-auto" /></div>
-          <div className="text-center"><Check className="w-4 h-4 text-green-500 mx-auto" /></div>
-          
-          <div className="text-gray-700">Agendamento prioritário</div>
-          <div className="text-center"><X className="w-4 h-4 text-red-500 mx-auto" /></div>
-          <div className="text-center"><Check className="w-4 h-4 text-green-500 mx-auto" /></div>
-          
-          <div className="text-gray-700">Serviços extras inclusos</div>
-          <div className="text-center"><X className="w-4 h-4 text-red-500 mx-auto" /></div>
-          <div className="text-center"><Check className="w-4 h-4 text-green-500 mx-auto" /></div>
-          
-          <div className="text-gray-700">Flexibilidade total</div>
-          <div className="text-center"><Check className="w-4 h-4 text-green-500 mx-auto" /></div>
-          <div className="text-center"><Check className="w-4 h-4 text-green-500 mx-auto" /></div>
-        </div>
-      </div>
+
 
       <motion.div
         initial={{ opacity: 0 }}
