@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Chrome, Apple, PawPrint } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,7 +13,12 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [formKey, setFormKey] = useState(Date.now());
   const navigate = useNavigate();
+  const location = useLocation();
   const { signIn } = useAuth();
+
+  // Obter parâmetro de redirecionamento da URL
+  const searchParams = new URLSearchParams(location.search);
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
 
   // Carregar email salvo e limpar campos quando o componente monta
   useEffect(() => {
@@ -112,7 +117,7 @@ const Login: React.FC = () => {
           localStorage.removeItem('rememberMe');
         }
         
-        navigate('/dashboard');
+        navigate(redirectTo);
       }
     } catch {
       setError('Ocorreu um erro inesperado. Tente novamente.');

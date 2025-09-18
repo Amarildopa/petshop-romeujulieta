@@ -33,7 +33,8 @@ const Booking: React.FC = () => {
   // Check authentication and redirect if needed
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/login');
+      // Redirecionar para login com parâmetro de redirecionamento
+      navigate('/login?redirect=/booking');
     }
   }, [user, authLoading, navigate]);
 
