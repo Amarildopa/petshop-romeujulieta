@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Chrome, Apple, Dog, Plus, Trash2 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { APP_CONFIG } from '../constants/app';
 import { DISCOUNT_CONFIG } from '../config/discounts';
 import { profileService } from '../services/profileService';

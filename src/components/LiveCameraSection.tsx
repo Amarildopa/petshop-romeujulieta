@@ -1,7 +1,7 @@
 import React from 'react';
 import { Camera, Eye, Heart, Shield, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
 const LiveCameraSection: React.FC = () => {
   const { user } = useAuth();

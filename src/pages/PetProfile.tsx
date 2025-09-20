@@ -13,7 +13,7 @@ import {
   Star,
   Activity
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { petsService, type Pet } from '../services/petsService';
 import { getImageUrl } from '../config/images';
 

@@ -10,7 +10,7 @@ import {
   CreditCard,
   TrendingUp
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { subscriptionPlansService, type SubscriptionPlan } from '../services/subscriptionPlansService';
 import { userSubscriptionsService, type UserSubscription } from '../services/userSubscriptionsService';
 

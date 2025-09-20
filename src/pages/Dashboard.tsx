@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { LiveFeedModal } from '../components/LiveFeedModal';
 import { ServiceProgressBar } from '../components/ServiceProgressBar';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { petsService, type Pet } from '../services/petsService';
 import { appointmentsService, type Appointment } from '../services/appointmentsService';

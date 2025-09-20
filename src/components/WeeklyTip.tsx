@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Lightbulb, Loader2, LogIn, UserPlus } from 'lucide-react';
 import { helpService } from '../services/helpService';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import type { HelpArticle } from '../services/helpService';
 
 const WeeklyTip: React.FC = () => {

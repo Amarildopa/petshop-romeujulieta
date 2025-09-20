@@ -18,7 +18,7 @@ import {
   Trash2,
   Camera
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { profileService } from '../services/profileService';
 import { cepService } from '../services/cepService';
 import { getImageUrl } from '../config/images';

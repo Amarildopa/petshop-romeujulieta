@@ -13,7 +13,7 @@ import {
   Package,
   ShoppingBag
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { productsService, type Product } from '../services/productsService';
 import { cartService } from '../services/cartService';
 import { getImageUrl } from '../config/images';

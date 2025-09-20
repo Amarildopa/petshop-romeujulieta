@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import AdminSidebar from './AdminSidebar'
 import AdminRouteGuard from './AdminRouteGuard'
 import { Bell, User, LogOut, Menu } from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../hooks/useAuth'
 import { useAdminAuth } from '../hooks/useAdminAuth'
 
 const AdminLayout: React.FC = () => {

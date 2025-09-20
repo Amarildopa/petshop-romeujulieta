@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Clock, Heart, ChevronRight, Check, Plus, User, Calendar } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+import { Clock, Heart, ChevronRight, Check, Plus, User } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import { servicesService, type Service } from '../services/servicesService';
 import { petsService, type Pet } from '../services/petsService';
 import { careExtrasService, type CareExtra } from '../services/careExtrasService';
