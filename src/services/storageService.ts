@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
  */
 export class StorageService {
   private static instance: StorageService;
-  private readonly bucketName = 'pet-images';
+  private readonly bucketName = 'avatars'; // Temporariamente usando 'avatars' até criar 'pet-images'
   private readonly maxFileSize = 5 * 1024 * 1024; // 5MB
   private readonly allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
@@ -121,17 +121,27 @@ export class StorageService {
     } = {}
   ): Promise<{ url: string; path: string }> {
     const {
-      folder = 'weekly-baths',
+      folder = 'pets', // Mudando de 'weekly-baths' para 'pets' para fotos de pets
       resize = true,
       maxWidth = 800,
       maxHeight = 600,
       quality = 0.8,
-      prefix = 'weekly-bath'
+      prefix = 'pet'
     } = options;
+
+    console.log('🔍 StorageService.uploadImage iniciado:', {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      bucketName: this.bucketName,
+      folder,
+      prefix
+    });
 
     // Valida o arquivo
     const validation = this.validateFile(file);
     if (!validation.isValid) {
+      console.error('❌ Validação falhou:', validation.error);
       throw new Error(validation.error);
     }
 
@@ -140,14 +150,20 @@ export class StorageService {
 
       // Redimensiona se solicitado
       if (resize) {
+        console.log('🖼️ Redimensionando imagem...');
         fileToUpload = await this.resizeImage(file, maxWidth, maxHeight, quality);
+        console.log('✅ Imagem redimensionada');
       }
 
       // Gera nome único
       const fileName = this.generateFileName(file.name, prefix);
       const filePath = `${folder}/${fileName}`;
+      
+      console.log('📁 Caminho do arquivo:', filePath);
+      console.log('🪣 Bucket:', this.bucketName);
 
       // Faz upload
+      console.log('⬆️ Iniciando upload...');
       const { error: uploadError } = await supabase.storage
         .from(this.bucketName)
         .upload(filePath, fileToUpload, {
@@ -156,13 +172,19 @@ export class StorageService {
         });
 
       if (uploadError) {
+        console.error('❌ Erro no upload:', uploadError);
         throw new Error(`Erro no upload: ${uploadError.message}`);
       }
 
+      console.log('✅ Upload concluído com sucesso');
+
       // Obtém URL pública
+      console.log('🔗 Obtendo URL pública...');
       const { data: { publicUrl } } = supabase.storage
         .from(this.bucketName)
         .getPublicUrl(filePath);
+
+      console.log('✅ URL pública obtida:', publicUrl);
 
       return {
         url: publicUrl,
@@ -170,7 +192,7 @@ export class StorageService {
       };
 
     } catch (error) {
-      console.error('Erro no upload:', error);
+      console.error('💥 Erro no upload:', error);
       throw error;
     }
   }

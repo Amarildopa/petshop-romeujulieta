@@ -16,6 +16,7 @@ const Store = lazy(() => import('./pages/Store'));
 const Offers = lazy(() => import('./pages/Offers'));
 const Profile = lazy(() => import('./pages/Profile'));
 const PetProfile = lazy(() => import('./pages/PetProfile'));
+const AddPet = lazy(() => import('./pages/AddPet'));
 const Subscription = lazy(() => import('./pages/Subscription'));
 const GrowthJourney = lazy(() => import('./pages/GrowthJourney'));
 const CheckIn = lazy(() => import('./pages/CheckIn'));
@@ -28,6 +29,8 @@ const TestSupabase = lazy(() => import('./pages/TestSupabase'));
 const TestSimple = lazy(() => import('./pages/TestSimple'));
 const PhotoTest = lazy(() => import('./pages/PhotoTest'));
 const ThemeCustomizer = lazy(() => import('./pages/ThemeCustomizer'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const PaymentConfirmation = lazy(() => import('./pages/PaymentConfirmation'));
 
 function App() {
   return (
@@ -48,7 +51,10 @@ function App() {
               <Route path="/offers" element={<Offers />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/pet-profile" element={<PetProfile />} />
+              <Route path="/add-pet" element={<AddPet />} />
               <Route path="/subscription" element={<Subscription />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
             <Route path="/journey/:petId" element={<GrowthJourney />} />
             <Route path="/monitoring" element={<Monitoring />} />
             <Route path="/test-supabase" element={<TestSupabase />} />

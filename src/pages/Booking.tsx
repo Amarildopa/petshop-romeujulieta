@@ -9,6 +9,25 @@ import { careExtrasService, type CareExtra } from '../services/careExtrasService
 import { availableSlotsService, type AvailableSlot } from '../services/availableSlotsService';
 import { appointmentsService } from '../services/appointmentsService';
 import { getImageUrl } from '../config/images';
+import { BreedSelector } from '../components/BreedSelector';
+import { Breed } from '../services/breedsService';
+import PhotoUpload from '../components/PhotoUpload';
+
+// Função para calcular idade baseada na data de nascimento
+const calculateAge = (birthDate: string): string => {
+  if (!birthDate) return '';
+  
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  
+  return age > 0 ? `${age} anos` : 'Menos de 1 ano';
+};
 
 const Booking: React.FC = () => {
   const [selectedService, setSelectedService] = useState('');
@@ -37,6 +56,7 @@ const Booking: React.FC = () => {
     name: '',
     species: 'Cachorro',
     breed: '',
+    breed_id: null as string | null,
     birth_date: '',
     gender: 'Macho',
     weight: '',
@@ -208,6 +228,7 @@ const Booking: React.FC = () => {
         name: '',
         species: 'Cachorro',
         breed: '',
+        breed_id: null as string | null,
         birth_date: '',
         gender: 'Macho',
         weight: '',
@@ -463,13 +484,18 @@ const Booking: React.FC = () => {
                       <label className="block text-sm font-medium text-text-color-dark mb-2">
                         Raça
                       </label>
-                      <input
-                        type="text"
-                        value={petFormData.breed}
-                        onChange={(e) => setPetFormData(prev => ({ ...prev, breed: e.target.value }))}
-                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        placeholder="Ex: Golden Retriever, SRD..."
-                        maxLength={100}
+                      <BreedSelector
+                        value={petFormData.breed_id}
+                        onChange={(breedId, breed) => {
+                          setPetFormData(prev => ({
+                            ...prev,
+                            breed_id: breedId,
+                            breed: breed?.name || ''
+                          }));
+                        }}
+                        species={petFormData.species === 'Cachorro' ? 'dog' : petFormData.species === 'Gato' ? 'cat' : undefined}
+                        placeholder="Digite para buscar uma raça..."
+                        className="w-full"
                       />
                     </div>
                     
@@ -480,7 +506,11 @@ const Booking: React.FC = () => {
                       <input
                         type="date"
                         value={petFormData.birth_date}
-                        onChange={(e) => setPetFormData(prev => ({ ...prev, birth_date: e.target.value }))}
+                        onChange={(e) => setPetFormData(prev => ({ 
+                          ...prev, 
+                          birth_date: e.target.value,
+                          age: calculateAge(e.target.value)
+                        }))}
                         className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
@@ -559,14 +589,14 @@ const Booking: React.FC = () => {
                     
                     <div>
                       <label className="block text-sm font-medium text-text-color-dark mb-2">
-                        Idade (texto)
+                        Idade (calculada automaticamente)
                       </label>
                       <input
                         type="text"
                         value={petFormData.age}
-                        onChange={(e) => setPetFormData(prev => ({ ...prev, age: e.target.value }))}
-                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        placeholder="Ex: 2 anos, 6 meses..."
+                        readOnly
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                        placeholder="Selecione a data de nascimento para calcular a idade"
                       />
                     </div>
                     
@@ -585,15 +615,23 @@ const Booking: React.FC = () => {
                     
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-text-color-dark mb-2">
-                        URL da foto
+                        Foto do pet
                       </label>
-                      <input
-                        type="url"
-                        value={petFormData.avatar_url}
-                        onChange={(e) => setPetFormData(prev => ({ ...prev, avatar_url: e.target.value }))}
-                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        placeholder="https://exemplo.com/foto-do-pet.jpg"
+                      <PhotoUpload
+                        onUploadComplete={(imageUrl) => {
+                          setPetFormData(prev => ({ ...prev, avatar_url: imageUrl }));
+                        }}
+                        onUploadError={(error) => {
+                          console.error('Erro no upload da foto:', error);
+                        }}
+                        maxSizeMB={5}
+                        className="w-full"
                       />
+                      {petFormData.avatar_url && (
+                        <p className="text-sm text-green-600 mt-2">
+                          ✓ Foto carregada com sucesso
+                        </p>
+                      )}
                     </div>
                     
                     <div>

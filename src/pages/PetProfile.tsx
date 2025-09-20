@@ -105,12 +105,8 @@ const PetProfile: React.FC = () => {
   };
 
   const getAverageRating = () => {
-    if (!currentPet || !currentPet.services || currentPet.services.length === 0) {
-      return '0.0';
-    }
-    
-    const total = currentPet.services.reduce((sum, service) => sum + service.rating, 0);
-    return (total / currentPet.services.length).toFixed(1);
+    // Funcionalidade em desenvolvimento
+    return '0.0';
   };
 
   const nextVaccination = getNextVaccination();
@@ -178,7 +174,10 @@ const PetProfile: React.FC = () => {
           <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-text-color-dark mb-2">Nenhum pet cadastrado</h2>
           <p className="text-text-color mb-6">Comece adicionando seu primeiro pet!</p>
-          <button className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition-colors">
+          <button 
+            onClick={() => navigate('/add-pet')}
+            className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition-colors"
+          >
             Adicionar Pet
           </button>
         </div>
@@ -198,7 +197,10 @@ const PetProfile: React.FC = () => {
             <h1 className="text-2xl font-bold text-text-color-dark">
               Perfil dos Pets
             </h1>
-            <button className="flex items-center space-x-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+            <button 
+              onClick={() => navigate('/add-pet')}
+              className="flex items-center space-x-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors"
+            >
               <Plus className="h-4 w-4" />
               <span>Adicionar Pet</span>
             </button>
@@ -329,7 +331,7 @@ const PetProfile: React.FC = () => {
                     <AlertCircle className="h-5 w-5 text-status-danger mr-2" />
                     Alergias
                   </h3>
-                  {currentPet.allergies.length > 0 ? (
+                  {currentPet.allergies && currentPet.allergies.length > 0 ? (
                     <div className="space-y-2">
                       {currentPet.allergies.map((allergy, index) => (
                         <div
@@ -349,7 +351,7 @@ const PetProfile: React.FC = () => {
                   <h3 className="font-semibold text-text-color-dark mb-3">
                     Medicamentos
                   </h3>
-                  {currentPet.medications.length > 0 ? (
+                  {currentPet.medications && currentPet.medications.length > 0 ? (
                     <div className="space-y-2">
                       {currentPet.medications.map((medication, index) => (
                         <div
@@ -400,7 +402,7 @@ const PetProfile: React.FC = () => {
                       <span className="text-sm text-text-color">Total de Serviços</span>
                     </div>
                     <span className="font-semibold text-text-color-dark">
-                      {currentPet.services.length}
+                      0
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -426,37 +428,12 @@ const PetProfile: React.FC = () => {
 
               <div className="bg-white rounded-2xl shadow-sm border border-accent/20 p-6">
                 <h3 className="font-semibold text-text-color-dark mb-4">
-                  Último Serviço
+                  Informações Adicionais
                 </h3>
                 <div className="space-y-3">
-                  <div>
-                    <p className="font-medium text-text-color-dark">
-                      {currentPet.lastService.type}
-                    </p>
-                    <p className="text-sm text-text-color">
-                      {new Date(currentPet.lastService.date).toLocaleDateString('pt-BR')}
-                    </p>
+                  <div className="text-center text-text-color">
+                    <p>Histórico de serviços em desenvolvimento</p>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${
-                            i < currentPet.lastService.rating
-                              ? 'text-yellow-400 fill-current'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-text-color">
-                      {currentPet.lastService.photos} fotos
-                    </span>
-                  </div>
-                  <button className="w-full bg-primary-light/50 text-primary-dark py-2 rounded-lg hover:bg-primary-light/80 transition-colors text-sm font-medium">
-                    Ver Fotos e Detalhes
-                  </button>
                 </div>
               </div>
             </motion.div>
@@ -477,38 +454,10 @@ const PetProfile: React.FC = () => {
               </div>
 
               <div className="space-y-4">
-                {currentPet.services.slice(0, 4).map((service, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-4 bg-surface-dark rounded-lg"
-                  >
-                    <div>
-                      <h3 className="font-medium text-text-color-dark">
-                        {service.type}
-                      </h3>
-                      <p className="text-sm text-text-color">
-                        {new Date(service.date).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < service.rating
-                                ? 'text-yellow-400 fill-current'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <button className="text-primary hover:text-primary-dark text-sm font-medium">
-                        Detalhes
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                <div className="text-center text-text-color py-8">
+                  <p>Histórico de serviços em desenvolvimento</p>
+                  <p className="text-sm mt-2">Esta funcionalidade será implementada em breve</p>
+                </div>
               </div>
             </motion.div>
           </div>

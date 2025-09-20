@@ -7,11 +7,14 @@ import { APP_CONFIG } from '../constants/app';
 import { DISCOUNT_CONFIG } from '../config/discounts';
 import { profileService } from '../services/profileService';
 import { petsService } from '../services/petsService';
+import { BreedSelector } from '../components/BreedSelector';
+import { Breed } from '../services/breedsService';
 
 interface Pet {
   name: string;
   species: string;
   breed: string;
+  breed_id?: string | null;
   birthDate?: string;
   weight?: string;
   notes?: string;
@@ -24,7 +27,7 @@ const Register: React.FC = () => {
 
   const [pets, setPets] = useState<Pet[]>([]);
   const [showPetForm, setShowPetForm] = useState(true);
-  const [currentPet, setCurrentPet] = useState<Pet>({ name: '', species: '', breed: '' });
+  const [currentPet, setCurrentPet] = useState<Pet>({ name: '', species: '', breed: '', breed_id: null });
 
   // Função para calcular idade baseada na data de nascimento
   const calculateAge = (birthDate: string): string => {
@@ -241,7 +244,7 @@ const Register: React.FC = () => {
   const handleAddPet = () => {
     if (currentPet.name && currentPet.species) {
       setPets([...pets, { ...currentPet }]);
-      setCurrentPet({ name: '', species: '', breed: '' });
+      setCurrentPet({ name: '', species: '', breed: '', breed_id: null });
     }
   };
 
@@ -666,16 +669,18 @@ const Register: React.FC = () => {
                     <label className="block text-sm font-medium text-text-color mb-2">
                       Raça
                     </label>
-                    <input
-                      type="text"
-                      value={currentPet.breed}
-                      onChange={(e) => setCurrentPet({ ...currentPet, breed: e.target.value })}
-                      className="w-full px-3 py-2 border border-accent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="Ex: Golden Retriever"
-                      autoComplete="off"
-                      data-form-type="other"
-                      data-lpignore="true"
-                      name={`petBreed-${formKey}`}
+                    <BreedSelector
+                      value={currentPet.breed_id}
+                      onChange={(breedId, breed) => {
+                        setCurrentPet({
+                          ...currentPet,
+                          breed_id: breedId,
+                          breed: breed?.name || ''
+                        });
+                      }}
+                      species={currentPet.species === 'Cachorro' ? 'dog' : currentPet.species === 'Gato' ? 'cat' : undefined}
+                      placeholder="Digite para buscar uma raça..."
+                      className="w-full"
                     />
                   </div>
 

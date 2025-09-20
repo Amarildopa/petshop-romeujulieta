@@ -22,6 +22,23 @@ import { useAuth } from '../hooks/useAuth';
 import { profileService } from '../services/profileService';
 import { cepService } from '../services/cepService';
 import { getImageUrl } from '../config/images';
+import PhotoUpload from '../components/PhotoUpload';
+
+// Função para calcular idade baseada na data de nascimento
+const calculateAge = (birthDate: string): string => {
+  if (!birthDate) return '';
+  
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  
+  return age > 0 ? `${age} anos` : 'Menos de 1 ano';
+};
 
 type Profile = {
   id: string;
@@ -752,12 +769,22 @@ const Profile: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-text-color-dark mb-2">
-                        Idade
+                        Data de nascimento
+                      </label>
+                      <input
+                        type="date"
+                        className="w-full px-4 py-3 border border-accent/30 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Idade (calculada automaticamente)
                       </label>
                       <input
                         type="text"
-                        className="w-full px-4 py-3 border border-accent/30 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        placeholder="Ex: 2 anos"
+                        readOnly
+                        className="w-full px-4 py-3 border border-accent/30 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                        placeholder="Selecione a data de nascimento para calcular a idade"
                       />
                     </div>
                     <div>
@@ -768,6 +795,22 @@ const Profile: React.FC = () => {
                         type="text"
                         className="w-full px-4 py-3 border border-accent/30 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                         placeholder="Ex: 5kg"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Foto do pet
+                      </label>
+                      <PhotoUpload
+                        onUploadComplete={(imageUrl) => {
+                          console.log('Foto do pet carregada:', imageUrl);
+                          // Aqui você pode salvar a URL da foto no estado do formulário
+                        }}
+                        onUploadError={(error) => {
+                          console.error('Erro no upload da foto do pet:', error);
+                        }}
+                        maxSizeMB={5}
+                        className="w-full"
                       />
                     </div>
                     <div>

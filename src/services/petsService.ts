@@ -1,6 +1,22 @@
 import { supabase } from '../lib/supabase'
 import { profileService } from './profileService'
 
+// Função para calcular idade baseada na data de nascimento
+const calculateAge = (birthDate: string): string => {
+  if (!birthDate) return '';
+  
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  
+  return age > 0 ? `${age} anos` : 'Menos de 1 ano';
+};
+
 export interface Pet {
   id: string
   created_at: string
@@ -101,12 +117,14 @@ export const petsService = {
     await profileService.ensureProfileExists();
 
     // Processar weight e height para converter strings com unidades para números
+    // Calcular idade automaticamente se birth_date estiver presente
     const processedData = {
       ...petData,
       weight: typeof petData.weight === 'string' 
         ? parseFloat(petData.weight.replace(/[^\d.,]/g, '').replace(',', '.')) || null
         : petData.weight,
       height: petData.height, // height permanece como string no banco
+      age: petData.birth_date ? calculateAge(petData.birth_date) : petData.age,
       owner_id: session.user.id
     }
 
@@ -142,10 +160,16 @@ export const petsService = {
     }
 
     // Converter weight para número se for string com unidades, height permanece como string
+    // Calcular idade automaticamente se birth_date estiver sendo atualizada
     const processedUpdates = { ...updates }
     
     if (processedUpdates.weight && typeof processedUpdates.weight === 'string') {
       processedUpdates.weight = parseFloat(processedUpdates.weight.replace(/[^\d.,]/g, '').replace(',', '.')) || null
+    }
+    
+    // Calcular idade automaticamente se birth_date estiver sendo atualizada
+    if (processedUpdates.birth_date) {
+      processedUpdates.age = calculateAge(processedUpdates.birth_date)
     }
     
     // height não precisa ser convertido pois é TEXT no banco

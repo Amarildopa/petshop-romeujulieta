@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { 
   Award, 
   Check, 
@@ -15,6 +16,7 @@ import { subscriptionPlansService, type SubscriptionPlan } from '../services/sub
 import { userSubscriptionsService, type UserSubscription } from '../services/userSubscriptionsService';
 
 const Subscription: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState('');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [loading, setLoading] = useState(true);
@@ -104,26 +106,10 @@ const Subscription: React.FC = () => {
       return;
     }
 
-    try {
-      await userSubscriptionsService.createSubscription({
-        user_id: user.id,
-        plan_id: planId,
-        billing_cycle: billingCycle,
-        price: plans.find(p => p.id === planId)?.price || 0,
-        status: 'active',
-        auto_renew: true
-      });
-
-      // Reload data
-      const [currentSub, stats] = await Promise.all([
-        userSubscriptionsService.getActiveSubscription(user.id),
-        userSubscriptionsService.getSubscriptionStats(user.id)
-      ]);
-
-      setCurrentSubscription(currentSub);
-      setSubscriptionStats(stats);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao assinar plano');
+    // Redirecionar para a página de checkout com os dados do plano via query parameters
+    const selectedPlan = plans.find(p => p.id === planId);
+    if (selectedPlan) {
+      navigate(`/checkout?planId=${planId}&cycle=${billingCycle}`);
     }
   };
 

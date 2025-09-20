@@ -31,40 +31,53 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
   };
 
   const uploadFile = async (file: File): Promise<string> => {
+    console.log('📸 PhotoUpload.uploadFile iniciado:', {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type
+    });
+
     const result = await storageService.uploadImage(file, {
-      folder: 'weekly-baths',
+      folder: 'pets', // Mudando para 'pets' para fotos de pets
       resize: true,
       maxWidth: 800,
       maxHeight: 600,
       quality: 0.85,
-      prefix: 'weekly-bath'
+      prefix: 'pet'
     });
     
+    console.log('✅ PhotoUpload.uploadFile concluído:', result.url);
     return result.url;
   };
 
   const handleFileSelect = async (file: File) => {
+    console.log('🎯 PhotoUpload.handleFileSelect iniciado:', file.name);
+    
     const validationError = validateFile(file);
     if (validationError) {
+      console.error('❌ Validação falhou:', validationError);
       onUploadError(validationError);
       return;
     }
 
     try {
       setUploading(true);
+      console.log('⏳ Iniciando upload...');
       
       // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
         setPreview(e.target?.result as string);
+        console.log('🖼️ Preview criado');
       };
       reader.readAsDataURL(file);
 
       // Upload file
       const imageUrl = await uploadFile(file);
+      console.log('🎉 Upload concluído com sucesso:', imageUrl);
       onUploadComplete(imageUrl);
     } catch (error) {
-      console.error('Erro no upload:', error);
+      console.error('💥 Erro no upload:', error);
       onUploadError(error instanceof Error ? error.message : 'Erro desconhecido no upload');
       setPreview(null);
     } finally {
