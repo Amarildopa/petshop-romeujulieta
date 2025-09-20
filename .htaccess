@@ -1,0 +1,91 @@
+# ========================================
+# PÁGINA "EM BREVE" - PETSHOP ROMEO & JULIETA
+# ========================================
+# 
+# Este arquivo redireciona TODOS os visitantes para a página "Em Breve"
+# EXCETO rotas administrativas e arquivos essenciais
+#
+# INSTRUÇÕES DE USO:
+# 1. Renomeie este arquivo para ".htaccess" (sem extensão)
+# 2. Faça upload para a pasta raiz do seu domínio na Hostinger
+# 3. Certifique-se que o arquivo "coming-soon.html" está na pasta "public/"
+#
+# PARA DESATIVAR:
+# - Renomeie o arquivo para ".htaccess-backup" ou delete
+#
+# ========================================
+
+RewriteEngine On
+
+# Permitir acesso a arquivos essenciais
+RewriteCond %{REQUEST_URI} !^/coming-soon\.html$ [NC]
+RewriteCond %{REQUEST_URI} !^/public/coming-soon\.html$ [NC]
+RewriteCond %{REQUEST_URI} !^/favicon\.ico$ [NC]
+RewriteCond %{REQUEST_URI} !^/robots\.txt$ [NC]
+
+# Permitir acesso a rotas administrativas (opcional)
+RewriteCond %{REQUEST_URI} !^/admin [NC]
+RewriteCond %{REQUEST_URI} !^/api [NC]
+
+# Permitir acesso a assets essenciais
+RewriteCond %{REQUEST_URI} !^/assets [NC]
+RewriteCond %{REQUEST_URI} !^/images [NC]
+RewriteCond %{REQUEST_URI} !^/css [NC]
+RewriteCond %{REQUEST_URI} !^/js [NC]
+
+# Não redirecionar se já estiver na página coming-soon
+RewriteCond %{REQUEST_URI} !^/coming-soon\.html$ [NC]
+RewriteCond %{REQUEST_URI} !^/public/coming-soon\.html$ [NC]
+
+# Redirecionar tudo para coming-soon.html
+RewriteRule ^(.*)$ /public/coming-soon.html [L]
+
+# ========================================
+# CONFIGURAÇÕES ADICIONAIS DE SEGURANÇA
+# ========================================
+
+# Prevenir acesso direto a arquivos sensíveis
+<Files ".env*">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.log">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Compressão para melhor performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# Cache para assets estáticos
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/ico "access plus 1 month"
+    ExpiresByType image/icon "access plus 1 month"
+    ExpiresByType text/html "access plus 1 hour"
+</IfModule>

@@ -216,7 +216,7 @@ const PetProfile: React.FC = () => {
                 }`}
               >
                 <img
-                  src={getImageUrl.petImage(pet.image_url, 'small')}
+                  src={getImageUrl.petImage(pet.avatar_url, 'small')}
                   alt={pet.name}
                   className="w-12 h-12 rounded-full object-cover"
                 />
@@ -252,7 +252,7 @@ const PetProfile: React.FC = () => {
             <div className="text-center mb-6">
               <div className="relative inline-block">
                 <img
-                  src={getImageUrl.petImage(currentPet.image_url, 'medium')}
+                  src={getImageUrl.petImage(currentPet.avatar_url, 'medium')}
                   alt={currentPet.name}
                   className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-primary-light"
                 />

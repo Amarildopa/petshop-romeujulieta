@@ -3,6 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Chrome, Apple, PawPrint } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { userSubscriptionsService } from '../services/userSubscriptionsService';
+import { supabase } from '../lib/supabase';
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -117,7 +119,23 @@ const Login: React.FC = () => {
           localStorage.removeItem('rememberMe');
         }
         
-        navigate(redirectTo);
+        // Verificar se o usuário tem assinatura ativa
+        try {
+          const activeSubscription = await userSubscriptionsService.getActiveSubscription(
+            (await supabase.auth.getUser()).data.user?.id || ''
+          );
+          
+          // Se não tem assinatura ativa e não está indo para a página de planos, redirecionar para planos
+          if (!activeSubscription && redirectTo !== '/subscription') {
+            navigate('/subscription');
+          } else {
+            navigate(redirectTo);
+          }
+        } catch (subscriptionError) {
+          // Em caso de erro ao verificar assinatura, redirecionar para o destino padrão
+          console.warn('Erro ao verificar assinatura:', subscriptionError);
+          navigate(redirectTo);
+        }
       }
     } catch {
       setError('Ocorreu um erro inesperado. Tente novamente.');

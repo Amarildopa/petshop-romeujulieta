@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Clock, Heart, ChevronRight, Check } from 'lucide-react';
+import { Clock, Heart, ChevronRight, Check, Plus, User, Calendar } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { servicesService, type Service } from '../services/servicesService';
 import { petsService, type Pet } from '../services/petsService';
@@ -29,6 +29,27 @@ const Booking: React.FC = () => {
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+
+  // Estados para cadastro de pet inline
+  const [showPetForm, setShowPetForm] = useState(false);
+  const [petFormLoading, setPetFormLoading] = useState(false);
+  const [petFormData, setPetFormData] = useState({
+    name: '',
+    species: 'Cachorro',
+    breed: '',
+    birth_date: '',
+    gender: 'Macho',
+    weight: '',
+    color: '',
+    microchip_id: '',
+    notes: '',
+    avatar_url: '',
+    age: '',
+    height: '',
+    personality: [] as string[],
+    allergies: [] as string[],
+    medications: [] as string[]
+  });
 
   // Check authentication and redirect if needed
   useEffect(() => {
@@ -152,6 +173,61 @@ const Booking: React.FC = () => {
     setSelectedExtras(prev => 
       prev.includes(extraId) ? prev.filter(id => id !== extraId) : [...prev, extraId]
     );
+  };
+
+  const handleCreatePet = async () => {
+    if (!petFormData.name || !petFormData.species) {
+      setError('Por favor, preencha os campos obrigatórios do pet (nome e espécie)');
+      return;
+    }
+
+    try {
+      setPetFormLoading(true);
+      
+      // Debug: Log dos dados que serão enviados
+      console.log('🐕 Dados do pet a serem enviados:', petFormData);
+      
+      const newPet = await petsService.createPet({
+        ...petFormData,
+        avatar_url: petFormData.avatar_url || null // Usar o valor do formulário ou null
+      });
+      
+      console.log('✅ Pet criado com sucesso:', newPet);
+      
+      // Adicionar o novo pet à lista
+      setPets(prev => [newPet, ...prev]);
+      
+      // Selecionar automaticamente o pet recém-criado
+      setSelectedPet(newPet.id);
+      
+      // Fechar o formulário
+      setShowPetForm(false);
+      
+      // Limpar o formulário
+      setPetFormData({
+        name: '',
+        species: 'Cachorro',
+        breed: '',
+        birth_date: '',
+        gender: 'Macho',
+        weight: '',
+        color: '',
+        microchip_id: '',
+        notes: '',
+        avatar_url: '',
+        age: '',
+        height: '',
+        personality: [] as string[],
+        allergies: [] as string[],
+        medications: [] as string[]
+      });
+      
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao cadastrar pet');
+    } finally {
+      setPetFormLoading(false);
+    }
   };
 
   const handleConfirmBooking = async () => {
@@ -320,70 +396,364 @@ const Booking: React.FC = () => {
               <h2 className="text-2xl font-semibold text-text-color-dark mb-6">
                 Escolha o pet
               </h2>
-              <div className="space-y-4">
-                {pets.map((pet) => (
-                  <div
-                    key={pet.id}
-                    onClick={() => setSelectedPet(pet.id)}
-                    className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 ${
-                      selectedPet === pet.id
-                        ? 'border-primary bg-primary-light/30'
-                        : 'border-accent/20 hover:border-primary/50'
-                    }`}
+              
+              {pets.length === 0 && !showPetForm ? (
+                <div className="text-center py-12">
+                  <div className="w-24 h-24 bg-primary-light/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <User className="h-12 w-12 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-text-color-dark mb-2">
+                    Você não possui nenhum pet cadastrado
+                  </h3>
+                  <p className="text-text-color mb-6">
+                    Para continuar com o agendamento, você precisa cadastrar seu pet primeiro.
+                  </p>
+                  <button
+                    onClick={() => setShowPetForm(true)}
+                    className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center space-x-2 mx-auto"
                   >
-                    <div className="flex items-center space-x-4">
-                      <img
-                        src={getImageUrl.petImage(pet.image_url, 'small')}
-                        alt={pet.name}
-                        className="w-16 h-16 rounded-full object-cover"
+                    <Plus className="h-5 w-5" />
+                    <span>Cadastrar meu pet</span>
+                  </button>
+                </div>
+              ) : showPetForm ? (
+                <div className="bg-surface-dark rounded-xl p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-semibold text-text-color-dark">
+                      Cadastrar novo pet
+                    </h3>
+                    <button
+                      onClick={() => setShowPetForm(false)}
+                      className="text-text-color hover:text-text-color-dark"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Nome do pet *
+                      </label>
+                      <input
+                        type="text"
+                        value={petFormData.name}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, name: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: Rex, Luna, Mimi..."
+                        maxLength={100}
                       />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-text-color-dark">
-                          {pet.name}
-                        </h3>
-                        <p className="text-text-color">
-                          {pet.breed} • {pet.age}
-                        </p>
-                      </div>
-                      <Heart className={`h-6 w-6 ${
-                        selectedPet === pet.id ? 'text-status-danger fill-current' : 'text-gray-400'
-                      }`} />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Espécie *
+                      </label>
+                      <select
+                        value={petFormData.species}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, species: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="Cachorro">Cachorro</option>
+                        <option value="Gato">Gato</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Raça
+                      </label>
+                      <input
+                        type="text"
+                        value={petFormData.breed}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, breed: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: Golden Retriever, SRD..."
+                        maxLength={100}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Data de nascimento
+                      </label>
+                      <input
+                        type="date"
+                        value={petFormData.birth_date}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, birth_date: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Gênero
+                      </label>
+                      <select
+                        value={petFormData.gender}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, gender: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Macho">Macho</option>
+                        <option value="Fêmea">Fêmea</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Peso (kg)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        max="999.99"
+                        value={petFormData.weight}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, weight: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: 15.5"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Altura
+                      </label>
+                      <input
+                        type="text"
+                        value={petFormData.height}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, height: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: 60cm, Grande, Médio..."
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Cor
+                      </label>
+                      <input
+                        type="text"
+                        value={petFormData.color}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, color: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: Dourado, Preto e branco..."
+                        maxLength={50}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Microchip ID
+                      </label>
+                      <input
+                        type="text"
+                        value={petFormData.microchip_id}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, microchip_id: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: 123456789012345"
+                        maxLength={50}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Idade (texto)
+                      </label>
+                      <input
+                        type="text"
+                        value={petFormData.age}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, age: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: 2 anos, 6 meses..."
+                      />
+                    </div>
+                    
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Observações
+                      </label>
+                      <textarea
+                        value={petFormData.notes}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, notes: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Informações adicionais sobre o pet..."
+                        rows={3}
+                      />
+                    </div>
+                    
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        URL da foto
+                      </label>
+                      <input
+                        type="url"
+                        value={petFormData.avatar_url}
+                        onChange={(e) => setPetFormData(prev => ({ ...prev, avatar_url: e.target.value }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="https://exemplo.com/foto-do-pet.jpg"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Personalidade
+                      </label>
+                      <input
+                        type="text"
+                        value={petFormData.personality.join(', ')}
+                        onChange={(e) => setPetFormData(prev => ({ 
+                          ...prev, 
+                          personality: e.target.value.split(',').map(item => item.trim()).filter(item => item) 
+                        }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: Brincalhão, Calmo, Sociável (separar por vírgula)"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Alergias
+                      </label>
+                      <input
+                        type="text"
+                        value={petFormData.allergies.join(', ')}
+                        onChange={(e) => setPetFormData(prev => ({ 
+                          ...prev, 
+                          allergies: e.target.value.split(',').map(item => item.trim()).filter(item => item) 
+                        }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: Frango, Pólen, Ácaros (separar por vírgula)"
+                      />
+                    </div>
+                    
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-text-color-dark mb-2">
+                        Medicamentos
+                      </label>
+                      <input
+                        type="text"
+                        value={petFormData.medications.join(', ')}
+                        onChange={(e) => setPetFormData(prev => ({ 
+                          ...prev, 
+                          medications: e.target.value.split(',').map(item => item.trim()).filter(item => item) 
+                        }))}
+                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Ex: Antibiótico, Vermífugo (separar por vírgula)"
+                      />
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="mt-8">
-                <h3 className="text-xl font-semibold text-text-color-dark mb-4">
-                  Que tal adicionar um cuidado extra?
-                </h3>
-                <div className="space-y-3">
-                  {careExtras.map((extra) => (
-                    <div
-                      key={extra.id}
-                      onClick={() => handleToggleExtra(extra.id)}
-                      className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-between ${
-                        selectedExtras.includes(extra.id)
-                          ? 'border-primary bg-primary-light/30'
-                          : 'border-accent/20 hover:border-primary/50'
-                      }`}
+                  
+                  <div className="flex justify-end space-x-3 mt-6">
+                    <button
+                      onClick={() => setShowPetForm(false)}
+                      className="px-4 py-2 text-text-color hover:text-text-color-dark transition-colors"
+                      disabled={petFormLoading}
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-primary-light rounded-full flex items-center justify-center">
-                          <Heart className="h-4 w-4 text-primary" />
-                        </div>
-                        <div>
-                          <span className="font-medium text-text-color-dark">{extra.name}</span>
-                          <p className="text-sm text-text-color">{extra.description}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-semibold text-primary-dark">+ R$ {extra.price.toFixed(2)}</span>
-                        <p className="text-xs text-text-color">{extra.duration_minutes} min</p>
-                      </div>
-                    </div>
-                  ))}
+                      Cancelar
+                    </button>
+                    <button
+                      onClick={handleCreatePet}
+                      disabled={petFormLoading || !petFormData.name || !petFormData.species}
+                      className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                    >
+                      {petFormLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>Cadastrando...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Check className="h-4 w-4" />
+                          <span>Cadastrar pet</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <>
+                  <div className="space-y-4">
+                    {pets.map((pet) => (
+                      <div
+                        key={pet.id}
+                        onClick={() => setSelectedPet(pet.id)}
+                        className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 ${
+                          selectedPet === pet.id
+                            ? 'border-primary bg-primary-light/30'
+                            : 'border-accent/20 hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <img
+                            src={getImageUrl.petImage(pet.avatar_url, 'small')}
+                            alt={pet.name}
+                            className="w-16 h-16 rounded-full object-cover"
+                          />
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-text-color-dark">
+                              {pet.name}
+                            </h3>
+                            <p className="text-text-color">
+                              {pet.breed} • {pet.age}
+                            </p>
+                          </div>
+                          <Heart className={`h-6 w-6 ${
+                            selectedPet === pet.id ? 'text-status-danger fill-current' : 'text-gray-400'
+                          }`} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Botão para adicionar outro pet */}
+                  <div className="mt-4">
+                    <button
+                      onClick={() => setShowPetForm(true)}
+                      className="w-full p-4 border-2 border-dashed border-accent/40 rounded-xl hover:border-primary/50 transition-colors flex items-center justify-center space-x-2 text-text-color hover:text-primary"
+                    >
+                      <Plus className="h-5 w-5" />
+                      <span>Cadastrar outro pet</span>
+                    </button>
+                  </div>
+                </>
+              )}
+              
+              {pets.length > 0 && !showPetForm && (
+                <div className="mt-8">
+                  <h3 className="text-xl font-semibold text-text-color-dark mb-4">
+                    Que tal adicionar um cuidado extra?
+                  </h3>
+                  <div className="space-y-3">
+                    {careExtras.map((extra) => (
+                      <div
+                        key={extra.id}
+                        onClick={() => handleToggleExtra(extra.id)}
+                        className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 flex items-center justify-between ${
+                          selectedExtras.includes(extra.id)
+                            ? 'border-primary bg-primary-light/30'
+                            : 'border-accent/20 hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="w-6 h-6 bg-primary-light rounded-full flex items-center justify-center">
+                            <Heart className="h-4 w-4 text-primary" />
+                          </div>
+                          <div>
+                            <span className="font-medium text-text-color-dark">{extra.name}</span>
+                            <p className="text-sm text-text-color">{extra.description}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-semibold text-primary-dark">+ R$ {extra.price.toFixed(2)}</span>
+                          <p className="text-xs text-text-color">{extra.duration_minutes} min</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -470,7 +840,7 @@ const Booking: React.FC = () => {
               <div className="bg-surface-dark rounded-xl p-6 space-y-4">
                 <div className="flex items-center space-x-4">
                   <img
-                    src={getImageUrl.petImage(selectedPetData?.image_url, 'small')}
+                    src={getImageUrl.petImage(selectedPetData?.avatar_url, 'small')}
                     alt={selectedPetData?.name}
                     className="w-12 h-12 rounded-full object-cover"
                   />

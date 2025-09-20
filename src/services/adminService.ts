@@ -580,7 +580,7 @@ export const adminService = {
       .lte('created_at', end)
 
     const { data: subscriptions } = await supabase
-      .from('user_subscriptions_pet')
+      .from('subscriptions_pet')
       .select('monthly_price, created_at, status')
       .gte('created_at', start)
       .lte('created_at', end)

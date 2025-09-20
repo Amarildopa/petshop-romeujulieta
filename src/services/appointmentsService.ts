@@ -13,11 +13,12 @@ export interface Appointment {
   notes: string | null
   total_price: number
   extras: string[]
-  // Joined data
+  
+  // Related data
   pet?: {
     name: string
     breed: string
-    image_url: string | null
+    avatar_url: string | null
   }
   service?: {
     name: string
@@ -34,7 +35,7 @@ export const appointmentsService = {
         .from('appointments_pet')
         .select(`
           *,
-          pet:pets_pet(name, breed, image_url),
+          pet:pets_pet(name, breed, avatar_url),
           service:services_pet(name, description, duration)
         `)
         .order('appointment_date', { ascending: true })
@@ -60,7 +61,7 @@ export const appointmentsService = {
         .from('appointments_pet')
         .select(`
           *,
-          pet:pets_pet(name, breed, image_url),
+          pet:pets_pet(name, breed, avatar_url),
           service:services_pet(name, description, duration)
         `)
         .gte('appointment_date', today)
@@ -88,7 +89,7 @@ export const appointmentsService = {
         .from('appointments_pet')
         .select(`
           *,
-          pet:pets_pet(name, breed, image_url),
+          pet:pets_pet(name, breed, avatar_url),
           service:services_pet(name, description, duration)
         `)
         .eq('appointment_date', today)
@@ -130,7 +131,7 @@ export const appointmentsService = {
       })
       .select(`
         *,
-        pet:pets_pet(name, breed, image_url),
+        pet:pets_pet(name, breed, avatar_url),
         service:services_pet(name, description, duration)
       `)
       .single()
@@ -153,7 +154,7 @@ export const appointmentsService = {
       .eq('id', id)
       .select(`
         *,
-        pet:pets_pet(name, breed, image_url),
+        pet:pets_pet(name, breed, avatar_url),
         service:services_pet(name, description, duration)
       `)
       .single()

@@ -1,0 +1,23 @@
+Categoria,Rota,Componente,Descrição,Proteção,Parâmetros
+Públicas,/,Home,Página inicial do sistema,Nenhuma,
+Públicas,/login,Login,Autenticação de usuários,Nenhuma,
+Públicas,/register,Register,Cadastro de novos usuários,Nenhuma,
+Autenticadas,/dashboard,Dashboard,Painel principal do usuário,Login obrigatório,
+Autenticadas,/profile,Profile,Perfil do usuário,Login obrigatório,
+Autenticadas,/pet-profile,PetProfile,Perfil do pet,Login obrigatório,
+Serviços,/services,Services,Catálogo de serviços,Login obrigatório,
+Serviços,/booking,Booking,Agendamento de serviços,Login obrigatório,
+Serviços,/store,Store,Loja de produtos,Login obrigatório,
+Serviços,/offers,Offers,Ofertas especiais,Login obrigatório,
+Serviços,/subscription,Subscription,Planos de assinatura,Login obrigatório,
+Monitoramento,/check-in/:appointmentId,CheckIn,Check-in de agendamento,Login obrigatório,appointmentId
+Monitoramento,/journey/:petId,GrowthJourney,Jornada de crescimento do pet,Login obrigatório,petId
+Monitoramento,/monitoring,Monitoring,Monitoramento em tempo real,Login obrigatório,
+Admin,/admin,AdminLayout,Layout base da área administrativa,Permissões admin,
+Admin,/admin/,AdminDashboard,Dashboard administrativo,Permissões admin,
+Admin,/admin/users,AdminUsers,Gerenciamento de usuários,Permissão 'users',
+Admin,/admin/reports,AdminReports,Relatórios administrativos,Permissão 'reports',
+Desenvolvimento,/test-supabase,TestSupabase,Teste de conexão com Supabase,Apenas dev,
+Desenvolvimento,/test-simple,TestSimple,Testes simples do sistema,Apenas dev,
+Desenvolvimento,/photo-test,PhotoTest,Teste de upload de fotos,Apenas dev,
+Desenvolvimento,/theme-customizer,ThemeCustomizer,Customizador de temas,Apenas dev,

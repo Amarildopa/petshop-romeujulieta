@@ -15,7 +15,7 @@ import {
 interface PollPet {
   id: string;
   pet_name: string;
-  image_url: string;
+  avatar_url: string;
   owner_name: string;
   votes: number;
   bath_date: string;
@@ -24,7 +24,7 @@ interface PollPet {
 interface WeeklyWinner {
   id: string;
   pet_name: string;
-  image_url: string;
+  avatar_url: string;
   owner_name: string;
   total_votes: number;
   week_start: string;
@@ -43,7 +43,7 @@ const WeeklyPoll: React.FC = () => {
     {
       id: '1',
       pet_name: 'Luna',
-      image_url: '/images/pets/luna.jpg',
+      avatar_url: '/images/pets/luna.jpg',
       owner_name: 'Maria Silva',
       votes: 45,
       bath_date: '2024-01-15'
@@ -51,7 +51,7 @@ const WeeklyPoll: React.FC = () => {
     {
       id: '2',
       pet_name: 'Thor',
-      image_url: '/images/pets/thor.jpg',
+      avatar_url: '/images/pets/thor.jpg',
       owner_name: 'João Santos',
       votes: 38,
       bath_date: '2024-01-16'
@@ -59,7 +59,7 @@ const WeeklyPoll: React.FC = () => {
     {
       id: '3',
       pet_name: 'Bella',
-      image_url: '/images/pets/bella.jpg',
+      avatar_url: '/images/pets/bella.jpg',
       owner_name: 'Ana Costa',
       votes: 52,
       bath_date: '2024-01-17'
@@ -67,7 +67,7 @@ const WeeklyPoll: React.FC = () => {
     {
       id: '4',
       pet_name: 'Max',
-      image_url: '/images/pets/max.jpg',
+      avatar_url: '/images/pets/max.jpg',
       owner_name: 'Carlos Lima',
       votes: 29,
       bath_date: '2024-01-18'
@@ -77,7 +77,7 @@ const WeeklyPoll: React.FC = () => {
   const mockLastWinner = useMemo<WeeklyWinner>(() => ({
     id: 'winner-1',
     pet_name: 'Mel',
-    image_url: '/images/pets/mel.jpg',
+    avatar_url: '/images/pets/mel.jpg',
     owner_name: 'Fernanda Oliveira',
     total_votes: 87,
     week_start: '2024-01-08',
@@ -214,7 +214,7 @@ const WeeklyPoll: React.FC = () => {
             <div className="flex items-center justify-center space-x-6">
               <div className="relative">
                 <img
-                  src={lastWinner.image_url}
+                  src={lastWinner.avatar_url}
                   alt={`${lastWinner.pet_name} - Vencedor`}
                   className="w-20 h-20 rounded-full object-cover border-4 border-yellow-300 shadow-lg"
                   onError={(e) => {
@@ -295,7 +295,7 @@ const WeeklyPoll: React.FC = () => {
                   
                   <div className="relative mb-3">
                     <img
-                      src={pet.image_url}
+                      src={pet.avatar_url}
                       alt={pet.pet_name}
                       className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 mx-auto"
                       onError={(e) => {

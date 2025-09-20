@@ -478,7 +478,7 @@ const Dashboard: React.FC = () => {
                     >
                       <div className="flex items-center space-x-3">
                         <img
-                          src={getImageUrl.petImage(pet.image_url, 'small')}
+                          src={getImageUrl.petImage(pet.avatar_url, 'small')}
                           alt={pet.name}
                           className="w-12 h-12 rounded-full object-cover"
                         />

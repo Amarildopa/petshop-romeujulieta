@@ -190,7 +190,7 @@ const Register: React.FC = () => {
               height: '',
               color: '',
               gender: '',
-              image_url: null,
+              avatar_url: null,
               personality: [],
               allergies: [],
               medications: []

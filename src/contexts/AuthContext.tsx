@@ -105,6 +105,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem('rememberedEmail')
       localStorage.removeItem('rememberMe')
       
+      // Redirecionar para a landing page usando window.location
+      window.location.href = '/'
+      
       return { error }
     } catch (error) {
       return { error: error as AuthError }

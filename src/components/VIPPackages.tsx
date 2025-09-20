@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Star, Sparkles, Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 interface Package {
   id: string;
@@ -90,6 +91,8 @@ const packages: Package[] = [
 ];
 
 const VIPPackages: React.FC = () => {
+  const { user } = useAuth();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -186,19 +189,33 @@ const VIPPackages: React.FC = () => {
           Quer conhecer os valores e condições especiais?
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            to="/register"
-            className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
-          >
-            Cadastre-se Grátis
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            to="/login"
-            className="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary-dark px-8 py-4 rounded-xl font-semibold hover:bg-primary/5 transition-all duration-300"
-          >
-            Já sou cliente
-          </Link>
+          {user ? (
+            // Usuário logado - mostrar botão "Seus Planos"
+            <Link
+              to="/subscription"
+              className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              Seus Planos
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          ) : (
+            // Usuário não logado - mostrar botões "Cadastre-se" e "Já sou cliente"
+            <>
+              <Link
+                to="/register"
+                className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                Cadastre-se
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to="/login"
+                className="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary-dark px-8 py-4 rounded-xl font-semibold hover:bg-primary/5 transition-all duration-300"
+              >
+                Já sou cliente
+              </Link>
+            </>
+          )}
         </div>
         <p className="text-xs text-gray-500 mt-3">
           Cadastre-se para ver preços exclusivos e condições especiais

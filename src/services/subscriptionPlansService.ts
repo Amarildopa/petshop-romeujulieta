@@ -166,7 +166,7 @@ export class SubscriptionPlansService {
     averageSubscriptionDuration: number;
   }> {
     const { data: subscriptions, error } = await supabase
-      .from('user_subscriptions_pet')
+      .from('subscriptions_pet')
       .select('price, start_date, status')
       .eq('plan_id', planId);
 

@@ -75,8 +75,8 @@ export const getImageUrl = {
   /**
    * Retorna URL da imagem do pet ou fallback
    */
-  petImage: (url?: string | null, size: 'small' | 'medium' | 'large' = 'medium') => {
-    return url || IMAGE_CONFIG.pets[size];
+  petImage: (avatar_url?: string | null, size: 'small' | 'medium' | 'large' = 'medium') => {
+    return avatar_url || IMAGE_CONFIG.pets[size];
   },
 
   /**

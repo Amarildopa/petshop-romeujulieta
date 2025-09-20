@@ -9,12 +9,6 @@ export interface Profile {
   phone: string
   address: string
   cep: string
-  cpf: string
-  street: string
-  neighborhood: string
-  city: string
-  state: string
-  complement: string
   avatar_url: string | null
 }
 
@@ -53,6 +47,46 @@ export const profileService = {
     }
   },
 
+  // Ensure profile exists in database
+  async ensureProfileExists(): Promise<Profile> {
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    // Verificar se o perfil já existe
+    const { data: existingProfile, error: fetchError } = await supabase
+      .from('profiles_pet')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    if (fetchError) {
+      throw new Error(`Erro ao verificar perfil: ${fetchError.message}`)
+    }
+
+    // Se o perfil já existe, retorná-lo
+    if (existingProfile) {
+      return existingProfile
+    }
+
+    // Se não existe, criar um perfil básico
+    const basicProfile = this.createBasicProfile(user)
+    
+    const { data: newProfile, error: insertError } = await supabase
+      .from('profiles_pet')
+      .insert(basicProfile)
+      .select()
+      .single()
+
+    if (insertError) {
+      throw new Error(`Erro ao criar perfil: ${insertError.message}`)
+    }
+
+    return newProfile
+  },
+
   // Create basic profile from user data
   createBasicProfile(user: unknown): Profile {
     return {
@@ -64,12 +98,6 @@ export const profileService = {
       phone: user.user_metadata?.phone || '',
       address: '',
       cep: '',
-      cpf: '',
-      street: '',
-      neighborhood: '',
-      city: '',
-      state: '',
-      complement: '',
       avatar_url: user.user_metadata?.avatar_url || null
     }
   },
