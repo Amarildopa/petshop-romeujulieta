@@ -1,0 +1,200 @@
+name: 🚧 Toggle Coming Soon Page
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Ação a executar'
+        required: true
+        default: 'enable'
+        type: choice
+        options:
+        - enable
+        - disable
+      message:
+        description: 'Mensagem personalizada (opcional)'
+        required: false
+        default: 'Estamos chegando em breve! 🐾'
+
+jobs:
+  toggle-coming-soon:
+    name: 🔄 ${{ github.event.inputs.action == 'enable' && 'Ativar' || 'Desativar' }} Página "Em Breve"
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install Dependencies
+      run: npm ci
+      
+    - name: 🎨 Customize Coming Soon Message
+      if: github.event.inputs.action == 'enable' && github.event.inputs.message != ''
+      run: |
+        # Personalizar mensagem na página coming-soon.html
+        sed -i 's/Estamos chegando em breve! 🐾/${{ github.event.inputs.message }}/g' public/coming-soon.html
+        echo "✅ Mensagem personalizada aplicada: ${{ github.event.inputs.message }}"
+      
+    - name: 🚧 Enable Coming Soon Mode
+      if: github.event.inputs.action == 'enable'
+      run: |
+        echo "🚀 Ativando modo 'Em Breve'..."
+        
+        # Fazer backup do .htaccess atual se existir
+        if [ -f "dist/.htaccess" ]; then
+          cp dist/.htaccess .htaccess-backup
+          echo "💾 Backup do .htaccess criado"
+        fi
+        
+        # Criar diretório dist se não existir
+        mkdir -p dist
+        
+        # Copiar .htaccess do coming-soon
+        cp .htaccess-coming-soon dist/.htaccess
+        echo "✅ .htaccess do modo 'Em Breve' ativado"
+        
+        # Copiar página coming-soon para dist
+        mkdir -p dist/public
+        cp public/coming-soon.html dist/public/
+        echo "✅ Página 'Em Breve' copiada"
+        
+        # Criar arquivo de status
+        echo "COMING_SOON_ACTIVE=true" > dist/.coming-soon-status
+        echo "ACTIVATED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> dist/.coming-soon-status
+        echo "ACTIVATED_BY=${{ github.actor }}" >> dist/.coming-soon-status
+        echo "COMMIT_SHA=${{ github.sha }}" >> dist/.coming-soon-status
+        
+        echo "🎯 Modo 'Em Breve' ativado com sucesso!"
+        
+    - name: 🔓 Disable Coming Soon Mode
+      if: github.event.inputs.action == 'disable'
+      run: |
+        echo "🔓 Desativando modo 'Em Breve'..."
+        
+        # Build da aplicação normal
+        npm run build
+        
+        # Restaurar .htaccess original se existir backup
+        if [ -f ".htaccess-backup" ]; then
+          cp .htaccess-backup dist/.htaccess
+          echo "✅ .htaccess original restaurado"
+        else
+          # Gerar .htaccess padrão da aplicação
+          cat > dist/.htaccess << 'EOF'
+        # PetShop Romeo & Julieta - Hostinger Configuration
+        
+        # Enable HTTPS redirect
+        RewriteEngine On
+        RewriteCond %{HTTPS} off
+        RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+        
+        # Handle React Router (SPA)
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule . /index.html [L]
+        
+        # Security Headers
+        <IfModule mod_headers.c>
+            Header always set X-Content-Type-Options nosniff
+            Header always set X-Frame-Options DENY
+            Header always set X-XSS-Protection "1; mode=block"
+            Header always set Referrer-Policy "strict-origin-when-cross-origin"
+        </IfModule>
+        
+        # Compression
+        <IfModule mod_deflate.c>
+            AddOutputFilterByType DEFLATE text/plain
+            AddOutputFilterByType DEFLATE text/html
+            AddOutputFilterByType DEFLATE text/css
+            AddOutputFilterByType DEFLATE application/javascript
+        </IfModule>
+        
+        # Cache Control
+        <IfModule mod_expires.c>
+            ExpiresActive On
+            ExpiresByType text/css "access plus 1 year"
+            ExpiresByType application/javascript "access plus 1 year"
+            ExpiresByType image/png "access plus 1 year"
+            ExpiresByType image/jpg "access plus 1 year"
+            ExpiresByType image/jpeg "access plus 1 year"
+            ExpiresByType image/gif "access plus 1 year"
+            ExpiresByType image/svg+xml "access plus 1 year"
+        </IfModule>
+        EOF
+          echo "✅ .htaccess padrão gerado"
+        fi
+        
+        # Remover arquivos do modo coming-soon
+        rm -f dist/public/coming-soon.html
+        rm -f dist/.coming-soon-status
+        
+        echo "🎯 Modo 'Em Breve' desativado com sucesso!"
+        
+    - name: 🏗️ Build Application (for disable mode)
+      if: github.event.inputs.action == 'disable'
+      env:
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+      run: |
+        echo "🏗️ Fazendo build da aplicação completa..."
+        npm run build
+        
+    - name: 📊 Deploy Status Check
+      run: |
+        echo "📋 Status do Deploy:"
+        echo "   - Ação: ${{ github.event.inputs.action }}"
+        echo "   - Usuário: ${{ github.actor }}"
+        echo "   - Commit: ${{ github.sha }}"
+        echo "   - Branch: ${{ github.ref_name }}"
+        echo "   - Data: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        
+        if [ "${{ github.event.inputs.action }}" = "enable" ]; then
+          echo "   - Página 'Em Breve': ✅ ATIVA"
+          echo "   - Mensagem: ${{ github.event.inputs.message || 'Estamos chegando em breve! 🐾' }}"
+        else
+          echo "   - Página 'Em Breve': ❌ INATIVA"
+          echo "   - Aplicação: ✅ NORMAL"
+        fi
+        
+        echo ""
+        echo "📁 Arquivos no dist/:"
+        ls -la dist/ || echo "Diretório dist não encontrado"
+        
+    - name: 🚀 Deploy to Hostinger via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./dist/
+        server-dir: ${{ secrets.FTP_PATH }}/
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/.env*
+          **/.coming-soon-status
+          
+    - name: 🎉 Success Notification
+      run: |
+        if [ "${{ github.event.inputs.action }}" = "enable" ]; then
+          echo "🚧 ✅ Página 'Em Breve' ATIVADA com sucesso!"
+          echo "🌐 Seu site agora mostra: ${{ github.event.inputs.message || 'Estamos chegando em breve! 🐾' }}"
+          echo "🔧 Para desativar, execute este workflow novamente com action='disable'"
+        else
+          echo "🚀 ✅ Página 'Em Breve' DESATIVADA com sucesso!"
+          echo "🌐 Seu site está funcionando normalmente"
+          echo "🔧 Para ativar novamente, execute este workflow com action='enable'"
+        fi
+        
+        echo ""
+        echo "📅 Deploy realizado em: $(date)"
+        echo "👤 Por: ${{ github.actor }}"
+        echo "🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
