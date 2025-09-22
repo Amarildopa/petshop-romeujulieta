@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { APP_CONFIG } from '../constants/app';
 import { IMAGE_CONFIG } from '../config/images';
-import { Heart, Sparkles } from 'lucide-react';
+import React from 'react';
 
 const AboutSection: React.FC = () => {
   return (
@@ -21,30 +21,13 @@ const AboutSection: React.FC = () => {
           />
         </motion.div>
         <div>
-          <h2 className="text-4xl font-bold text-text-color-dark font-serif">Sobre Nós - A Experiência {APP_CONFIG.shortName}</h2>
+          <h2 className="text-4xl font-bold text-text-color-dark">A Experiência {APP_CONFIG.shortName}</h2>
           <p className="mt-4 text-lg text-text-color">
-            Nossa missão é criar um ambiente seguro, confortável e feliz para seu pet. Somos uma família dedicada ao bem-estar animal, oferecendo serviços de alta qualidade com muito amor e carinho.
+            Somos uma família apaixonada por animais, que acredita em cuidar com carinho, respeito e transparência. No Romeu & Julieta Pet&Spa, acolhemos cada tutor e seu bichinho como parte da nossa própria família, compartilhando experiências, novas descobertas e muita confiança.
           </p>
-          <div className="mt-8 space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="bg-primary-light p-3 rounded-full">
-                <Heart className="h-6 w-6 text-primary-dark" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">Profissionais Apaixonados</h3>
-                <p className="text-text-color">Nossa equipe é treinada e ama o que faz, garantindo um tratamento carinhoso e paciente para cada pet.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4">
-              <div className="bg-secondary-light p-3 rounded-full">
-                <Sparkles className="h-6 w-6 text-secondary-dark" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">Ambiente Impecável</h3>
-                <p className="text-text-color">Higiene e segurança são nossa prioridade. Nossas instalações são sempre limpas e desinfetadas para o conforto do seu pet.</p>
-              </div>
-            </div>
-          </div>
+          <p className="mt-4 text-lg text-text-color">
+            Nossa missão é criar um espaço seguro, aberto e acolhedor, onde você sempre sabe como seu pet está sendo tratado: com amor, atenção e qualidade – como se fosse nosso também.
+          </p>
         </div>
       </div>
     </section>

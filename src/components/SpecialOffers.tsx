@@ -54,7 +54,7 @@ const SpecialOffers: React.FC = () => {
         <div className="inline-block bg-accent-light p-3 rounded-full mb-4">
           <Percent className="h-6 w-6 text-accent-dark" />
         </div>
-        <h2 className="text-4xl font-bold text-text-color-dark font-serif mb-2">
+        <h2 className="text-4xl font-bold text-text-color-dark mb-2">
           Super Ofertas
         </h2>
         <p className="text-text-color">

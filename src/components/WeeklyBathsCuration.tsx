@@ -150,7 +150,7 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 font-serif">Curadoria de Banhos Semanais</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Curadoria de Banhos Semanais</h2>
           <p className="text-gray-600 mt-1">Gerencie as fotos que aparecerão na seção "Quem passou por aqui na última semana?"</p>
         </div>
         <button

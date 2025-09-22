@@ -63,9 +63,9 @@ const WeeklyTip: React.FC = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-light rounded-full mb-4">
               <Lightbulb className="h-8 w-8 text-primary-dark" />
             </div>
-            <h2 className="text-4xl font-bold text-text-color-dark font-serif">
-              Dica da Semana
-            </h2>
+            <h2 className="text-4xl font-bold text-text-color-dark">
+          Dica da Semana
+        </h2>
             <p className="mt-2 text-text-color">
               Aprenda algo novo para cuidar melhor do seu pet
             </p>

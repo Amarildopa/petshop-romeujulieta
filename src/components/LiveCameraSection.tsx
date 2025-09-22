@@ -18,9 +18,9 @@ const LiveCameraSection: React.FC = () => {
     <section className="py-16 bg-blue-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-text-color-dark font-serif mb-6">
-            Veja seu Pet no Banho
-          </h2>
+          <h2 className="text-4xl font-bold text-text-color-dark mb-6">
+          Acompanhe seu Pet em Tempo Real
+        </h2>
           <p className="text-xl text-text-color max-w-3xl mx-auto leading-relaxed">
             Acompanhe seu melhor amigo em tempo real através das nossas câmeras de segurança.
             Transparência total para sua tranquilidade.

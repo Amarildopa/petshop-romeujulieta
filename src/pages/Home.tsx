@@ -15,12 +15,12 @@ import Footer from '../components/Footer';
 import { IMAGE_CONFIG } from '../config/images';
 import { 
   ArrowRight,
-  Dog,
   Scissors,
   ShoppingBag,
-  Stethoscope,
   MessageCircle,
   Instagram,
+  Home as HomeIcon,
+  Car,
 } from 'lucide-react';
 
 const Home: React.FC = () => {
@@ -46,23 +46,23 @@ const Home: React.FC = () => {
   const services = [
     {
       icon: Scissors,
-      name: 'Banho & Tosa',
-      description: 'Estética e higiene com produtos premium.',
+      name: 'Banho, Tosa & Spa',
+      description: 'Nossa equipe é treinada para acolher, entender e respeitar a personalidade única do seu amigo – porque cada pet merece um cuidado só dele! Aromaterapia e Cromoterapia fazem parte de todos os serviços do Spa Romeu e Julieta. Seja bem vindo!',
     },
     {
-      icon: Stethoscope,
-      name: 'Consultas Vet',
-      description: 'Cuidado preventivo e especializado.',
-    },
-    {
-      icon: Dog,
-      name: 'Daycare',
-      description: 'Diversão e socialização com segurança.',
+      icon: HomeIcon,
+      name: 'Nossa Loja',
+      description: 'Somos apaixonados por detalhes! Aqui você encontra acessórios, caminhas, roupinhas, mimos lindos, petiscos naturais e brinquedos para todos os estilos de pet. Tudo escolhido com carinho para encantar, trazer conforto e valorizar cada momento ao lado do seu melhor amigo. Porque aqui, cada produto é tão especial quanto o seu pet! Venha nos visitar e traga seu Pet para conhecer nosso espaço e comer um biscoitinho.',
     },
     {
       icon: ShoppingBag,
-      name: 'Loja Premium',
-      description: 'Rações, petiscos e acessórios.',
+      name: 'E-commerce',
+      description: 'Mesmo à distância, você pode aproveitar tudo que preparamos para o seu pet: compre online, de onde estiver, com facilidade e tranquilidade. (acesso ao e-commerce)',
+    },
+    {
+      icon: Car,
+      name: 'Delivery',
+      description: 'Tudo o que você escolher chega rapidinho até você e seu pet – em até 5km. Clique no botão Whatsapp e agende seu serviço.',
     },
   ];
 
@@ -80,7 +80,7 @@ const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-4xl md:text-6xl font-bold text-text-color-dark mb-6 font-serif"
+                className="text-4xl md:text-6xl font-bold text-text-color-dark mb-6"
               >
                 Cuidado e Amor para seu <span className="text-primary">Pet</span>
               </motion.h1>
@@ -115,7 +115,7 @@ const Home: React.FC = () => {
                   <MessageCircle className="w-5 h-5" />
                 </a>
                 <a
-                  href="https://instagram.com/romeujulietapetspa"
+                  href="https://www.instagram.com/romeuejulieta_petspa/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
@@ -144,6 +144,9 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Location Section - Verde muito claro */}
+      <LocationSection />
+
       {/* About Section - Verde muito claro */}
       <AboutSection />
 
@@ -151,9 +154,9 @@ const Home: React.FC = () => {
       <section className="py-20 bg-yellow-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-text-color-dark font-serif">Nossos Serviços</h2>
+            <h2 className="text-4xl font-bold text-text-color-dark">Nossos Serviços</h2>
             <p className="mt-4 text-lg text-text-color max-w-2xl mx-auto">
-              Oferecemos uma gama completa de serviços para manter seu pet feliz e saudável
+              Aqui, seu pet encontra tudo para ser feliz e saudável
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -170,7 +173,16 @@ const Home: React.FC = () => {
                   <service.icon className="w-8 h-8 text-primary group-hover:text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-text-color-dark mb-2">{service.name}</h3>
-                <p className="text-text-color">{service.description}</p>
+                <p className="text-text-color mb-4">{service.description}</p>
+                {service.name === 'Banho, Tosa & Spa' && (
+                  <Link
+                    to="/banho-tosa-spa"
+                    className="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold transition-colors duration-200"
+                  >
+                    Saiba mais
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                )}
               </motion.div>
             ))}
           </div>
@@ -191,7 +203,7 @@ const Home: React.FC = () => {
       <section className="py-20 bg-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-text-color-dark font-serif">Dicas da Semana e Super Ofertas</h2>
+            <h2 className="text-4xl font-bold text-text-color-dark">Dicas da Semana e Super Ofertas</h2>
             <p className="mt-4 text-lg text-text-color max-w-2xl mx-auto">
               Fique por dentro das melhores dicas de cuidado pet e aproveite nossas ofertas especiais
             </p>
@@ -220,9 +232,6 @@ const Home: React.FC = () => {
         <WeeklyPoll />
       </section>
 
-      {/* Location Section - Verde muito claro */}
-      <LocationSection />
-
       {/* Testimonials Section - Azul muito claro */}
       <section className="bg-blue-50">
         <Testimonials />
@@ -237,7 +246,7 @@ const Home: React.FC = () => {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold text-text-color-dark mb-6 font-serif">
+            <h2 className="text-4xl font-bold text-text-color-dark mb-6">
               Pronto para Cuidar do seu Pet?
             </h2>
             <p className="text-xl text-text-color mb-8 max-w-2xl mx-auto">

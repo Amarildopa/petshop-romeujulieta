@@ -33,6 +33,7 @@ const ThemeCustomizer = lazy(() => import('./pages/ThemeCustomizer'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const PaymentConfirmation = lazy(() => import('./pages/PaymentConfirmation'));
 const WhatsAppTest = lazy(() => import('./pages/WhatsAppTest'));
+const BanhoTosaSpa = lazy(() => import('./pages/BanhoTosaSpa'));
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
               <Route path="/subscription" element={<Subscription />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+              <Route path="/banho-tosa-spa" element={<BanhoTosaSpa />} />
             <Route path="/journey/:petId" element={<GrowthJourney />} />
             <Route path="/monitoring" element={<Monitoring />} />
             <Route path="/test-supabase" element={<TestSupabase />} />

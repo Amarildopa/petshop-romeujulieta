@@ -139,7 +139,7 @@ const Offers: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl md:text-5xl font-bold text-white font-serif mb-4"
+            className="text-4xl md:text-5xl font-bold text-white mb-4"
           >
             Super Ofertas
           </motion.h1>
@@ -269,7 +269,7 @@ const Offers: React.FC = () => {
       {/* CTA Section */}
       <section className="py-16 bg-accent-light">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-text-color-dark font-serif mb-4">
+          <h2 className="text-3xl font-bold text-text-color-dark mb-4">
             Não encontrou o que procurava?
           </h2>
           <p className="text-lg text-text-color mb-8">

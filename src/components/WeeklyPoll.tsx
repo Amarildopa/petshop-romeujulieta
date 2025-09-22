@@ -151,7 +151,7 @@ const WeeklyPoll: React.FC = () => {
       <section className="py-16 bg-accent-light/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-text-color-dark font-serif">
+            <h2 className="text-4xl font-bold text-text-color-dark">
               Pet Mais Fofinho da Semana
             </h2>
             <p className="mt-4 text-lg text-text-color">
@@ -184,7 +184,7 @@ const WeeklyPoll: React.FC = () => {
           >
             <div className="flex items-center justify-center mb-4">
               <Trophy className="h-8 w-8 text-primary-dark mr-3" />
-              <h2 className="text-4xl font-bold text-text-color-dark font-serif">
+              <h2 className="text-4xl font-bold text-text-color-dark">
                 Pet Mais Fofinho da Semana
               </h2>
             </div>

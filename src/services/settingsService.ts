@@ -19,6 +19,21 @@ export interface ContactSettings {
   contact_cep: string
 }
 
+export interface BusinessHours {
+  monday: { open: string; close: string }
+  tuesday: { open: string; close: string }
+  wednesday: { open: string; close: string }
+  thursday: { open: string; close: string }
+  friday: { open: string; close: string }
+  saturday: { open: string; close: string }
+  sunday?: { open: string; close: string }
+}
+
+export interface LocationData {
+  contact: ContactSettings
+  businessHours: BusinessHours
+}
+
 class SettingsService {
   // Buscar todas as configurações públicas do sistema
   async getPublicSettings(): Promise<SystemSetting[]> {
@@ -64,6 +79,63 @@ class SettingsService {
   }
 
   // Buscar configurações de contato
+  // Buscar horários de funcionamento
+  async getBusinessHours(): Promise<BusinessHours> {
+    try {
+      const { data, error } = await supabase
+        .from('system_settings_pet')
+        .select('value')
+        .eq('key', 'business_hours')
+        .eq('is_public', true)
+        .single()
+
+      if (error) throw error
+
+      if (data?.value) {
+        return JSON.parse(data.value) as BusinessHours
+      }
+
+      // Valores padrão
+      return {
+        monday: { open: '08:00', close: '18:00' },
+        tuesday: { open: '08:00', close: '18:00' },
+        wednesday: { open: '08:00', close: '18:00' },
+        thursday: { open: '08:00', close: '18:00' },
+        friday: { open: '08:00', close: '18:00' },
+        saturday: { open: '08:00', close: '17:00' }
+      }
+    } catch (error) {
+      logger.error('Error fetching business hours', error as Error, {}, 'SETTINGS')
+      // Retornar valores padrão em caso de erro
+      return {
+        monday: { open: '08:00', close: '18:00' },
+        tuesday: { open: '08:00', close: '18:00' },
+        wednesday: { open: '08:00', close: '18:00' },
+        thursday: { open: '08:00', close: '18:00' },
+        friday: { open: '08:00', close: '18:00' },
+        saturday: { open: '08:00', close: '17:00' }
+      }
+    }
+  }
+
+  // Buscar todos os dados de localização (contato + horários)
+  async getLocationData(): Promise<LocationData> {
+    try {
+      const [contact, businessHours] = await Promise.all([
+        this.getContactSettings(),
+        this.getBusinessHours()
+      ])
+
+      return {
+        contact,
+        businessHours
+      }
+    } catch (error) {
+      logger.error('Error fetching location data', error as Error, {}, 'SETTINGS')
+      throw error
+    }
+  }
+
   async getContactSettings(): Promise<ContactSettings> {
     try {
       console.log('🔍 Buscando configurações de contato...')

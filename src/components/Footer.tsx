@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Informações da Empresa */}
           <div className="col-span-1 lg:col-span-2">
-            <h3 className="text-2xl font-bold font-serif text-primary mb-4">
+            <h3 className="text-2xl font-bold text-primary mb-4">
               Romeu e Julieta Pet&Spa
             </h3>
             <p className="text-gray-300 mb-6 leading-relaxed">
@@ -47,7 +47,7 @@ const Footer: React.FC = () => {
 
           {/* Contato */}
           <div>
-            <h4 className="text-lg font-semibold font-serif mb-4">Contato</h4>
+            <h4 className="text-lg font-semibold mb-4">Contato</h4>
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-primary flex-shrink-0" />
@@ -70,7 +70,7 @@ const Footer: React.FC = () => {
 
           {/* Horário de Funcionamento */}
           <div>
-            <h4 className="text-lg font-semibold font-serif mb-4">Funcionamento</h4>
+            <h4 className="text-lg font-semibold mb-4">Funcionamento</h4>
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-primary flex-shrink-0" />
