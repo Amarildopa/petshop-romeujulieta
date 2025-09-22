@@ -277,10 +277,6 @@ const Home: React.FC = () => {
             Falar no WhatsApp
           </span>
         </a>
-        {/* Debug: Mostrar número carregado */}
-        <div className="absolute -top-16 right-0 bg-black text-white text-xs p-2 rounded opacity-75">
-          📱 {whatsappNumber}
-        </div>
       </div>
 
       {/* Footer */}
