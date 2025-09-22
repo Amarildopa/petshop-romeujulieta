@@ -15,6 +15,7 @@ const Services = lazy(() => import('./pages/Services'));
 const Store = lazy(() => import('./pages/Store'));
 const Offers = lazy(() => import('./pages/Offers'));
 const Profile = lazy(() => import('./pages/Profile'));
+const ProfileNew = lazy(() => import('./pages/ProfileNew'));
 const PetProfile = lazy(() => import('./pages/PetProfile'));
 const AddPet = lazy(() => import('./pages/AddPet'));
 const Subscription = lazy(() => import('./pages/Subscription'));
@@ -31,6 +32,7 @@ const PhotoTest = lazy(() => import('./pages/PhotoTest'));
 const ThemeCustomizer = lazy(() => import('./pages/ThemeCustomizer'));
 const Checkout = lazy(() => import('./pages/Checkout'));
 const PaymentConfirmation = lazy(() => import('./pages/PaymentConfirmation'));
+const WhatsAppTest = lazy(() => import('./pages/WhatsAppTest'));
 
 function App() {
   return (
@@ -50,6 +52,7 @@ function App() {
               <Route path="/store" element={<Store />} />
               <Route path="/offers" element={<Offers />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/profile-new" element={<ProfileNew />} />
               <Route path="/pet-profile" element={<PetProfile />} />
               <Route path="/add-pet" element={<AddPet />} />
               <Route path="/subscription" element={<Subscription />} />
@@ -60,6 +63,7 @@ function App() {
             <Route path="/test-supabase" element={<TestSupabase />} />
             <Route path="/test-simple" element={<TestSimple />} />
             <Route path="/photo-test" element={<PhotoTest />} />
+            <Route path="/whatsapp-test" element={<WhatsAppTest />} />
             <Route
               path="/theme-customizer"
               element={<ThemeCustomizer />}

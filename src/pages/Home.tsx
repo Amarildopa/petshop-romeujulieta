@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { APP_CONFIG } from '../constants/app';
+import { settingsService } from '../services/settingsService';
 import Testimonials from '../components/Testimonials';
 import WeeklyBaths from '../components/WeeklyBaths';
 import WeeklyPoll from '../components/WeeklyPoll';
@@ -16,13 +16,33 @@ import { IMAGE_CONFIG } from '../config/images';
 import { 
   ArrowRight,
   Dog,
-  Heart,
   Scissors,
   ShoppingBag,
   Stethoscope,
+  MessageCircle,
+  Instagram,
 } from 'lucide-react';
 
 const Home: React.FC = () => {
+  const [whatsappNumber, setWhatsappNumber] = useState('5511999999999'); // Valor padrão
+
+  // Buscar número do WhatsApp do banco de dados
+  useEffect(() => {
+    const fetchWhatsAppNumber = async () => {
+      try {
+        console.log('🔍 Carregando número do WhatsApp...');
+        const number = await settingsService.getWhatsAppNumber();
+        console.log('📱 Número carregado:', number);
+        setWhatsappNumber(number);
+      } catch (error) {
+        console.error('❌ Erro ao carregar número do WhatsApp:', error);
+        // Mantém o valor padrão em caso de erro
+      }
+    };
+
+    fetchWhatsAppNumber();
+  }, []);
+
   const services = [
     {
       icon: Scissors,
@@ -70,7 +90,7 @@ const Home: React.FC = () => {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="text-xl md:text-2xl text-text-color mb-8 max-w-3xl"
               >
-                No {APP_CONFIG.name}, oferecemos serviços completos de cuidado pet com profissionais qualificados e muito amor.
+                No Romeu & Julieta Pet&Spa, temos atenção e amor de verdade, carinho em cada detalhe e total transparência em tudo o que fazemos. Seu pet seguro, você tranquilo e todo mundo feliz! Seja muito bem vindo. Traga seu pet para comer um biscotinho com a gente!
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -80,17 +100,29 @@ const Home: React.FC = () => {
               >
                 <Link
                   to="/booking"
-                  className="bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-2"
+                  className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                 >
-                  Agendar Serviço
+                  Agende seu Horário
                   <ArrowRight className="w-5 h-5" />
                 </Link>
-                <Link
-                  to="/services"
-                  className="bg-white text-primary border-2 border-primary px-8 py-4 rounded-full text-lg font-semibold hover:bg-primary hover:text-white transition-all duration-300"
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=Olá! Gostaria de saber mais sobre os serviços do Romeu & Julieta Pet&Spa`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
                 >
-                  Ver Serviços
-                </Link>
+                  WhatsApp
+                  <MessageCircle className="w-5 h-5" />
+                </a>
+                <a
+                  href="https://instagram.com/romeujulietapetspa"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                >
+                  Instagram
+                  <Instagram className="w-5 h-5" />
+                </a>
               </motion.div>
             </div>
             <motion.div
@@ -106,17 +138,6 @@ const Home: React.FC = () => {
                   className="w-full h-[500px] object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-              </div>
-              <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-lg">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                    <Heart className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-text-color-dark">+1000</p>
-                    <p className="text-sm text-text-color">Pets Felizes</p>
-                  </div>
-                </div>
               </div>
             </motion.div>
           </div>
@@ -241,6 +262,26 @@ const Home: React.FC = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* WhatsApp Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <a
+          href={`https://wa.me/${whatsappNumber}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+          aria-label="Falar no WhatsApp"
+        >
+          <MessageCircle size={24} />
+          <span className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+            Falar no WhatsApp
+          </span>
+        </a>
+        {/* Debug: Mostrar número carregado */}
+        <div className="absolute -top-16 right-0 bg-black text-white text-xs p-2 rounded opacity-75">
+          📱 {whatsappNumber}
+        </div>
+      </div>
 
       {/* Footer */}
       <Footer />

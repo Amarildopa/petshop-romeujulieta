@@ -2,15 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, User, Loader2 } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
 import { petsService } from '../services/petsService';
 import { BreedSelector } from '../components/BreedSelector';
-import { Breed } from '../services/breedsService';
 import PhotoUpload from '../components/PhotoUpload';
 
 const AddPet: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -340,7 +337,7 @@ const AddPet: React.FC = () => {
             {/* Personalidade */}
             <div>
               <label className="block text-sm font-medium text-text-color-dark mb-2">
-                Personalidade
+                Conta pra gente: como é o jeitinho do seu pet?
               </label>
               <input
                 type="text"
@@ -357,7 +354,7 @@ const AddPet: React.FC = () => {
             {/* Alergias */}
             <div>
               <label className="block text-sm font-medium text-text-color-dark mb-2">
-                Alergias
+                Alguma Alergia?
               </label>
               <input
                 type="text"
@@ -370,38 +367,6 @@ const AddPet: React.FC = () => {
                 placeholder="Ex: Frango, Pólen, Produtos químicos..."
               />
             </div>
-
-            {/* Medicamentos */}
-            <div>
-              <label className="block text-sm font-medium text-text-color-dark mb-2">
-                Medicamentos
-              </label>
-              <input
-                type="text"
-                value={petFormData.medications.join(', ')}
-                onChange={(e) => setPetFormData(prev => ({
-                  ...prev,
-                  medications: e.target.value.split(',').map(item => item.trim()).filter(Boolean)
-                }))}
-                className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Ex: Antibiótico, Vermífugo..."
-              />
-            </div>
-          </div>
-
-          {/* Observações */}
-          <div className="mt-6">
-            <label className="block text-sm font-medium text-text-color-dark mb-2">
-              Observações
-            </label>
-            <textarea
-              value={petFormData.notes}
-              onChange={(e) => setPetFormData(prev => ({ ...prev, notes: e.target.value }))}
-              className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-              rows={4}
-              placeholder="Informações adicionais sobre o pet..."
-              maxLength={500}
-            />
           </div>
 
           {/* Buttons */}

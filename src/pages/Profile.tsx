@@ -20,25 +20,10 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { profileService } from '../services/profileService';
+import { petsService } from '../services/petsService';
 import { cepService } from '../services/cepService';
 import { getImageUrl } from '../config/images';
 import PhotoUpload from '../components/PhotoUpload';
-
-// Função para calcular idade baseada na data de nascimento
-const calculateAge = (birthDate: string): string => {
-  if (!birthDate) return '';
-  
-  const today = new Date();
-  const birth = new Date(birthDate);
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-  
-  return age > 0 ? `${age} anos` : 'Menos de 1 ano';
-};
 
 type Profile = {
   id: string;
@@ -257,9 +242,108 @@ const Profile: React.FC = () => {
     console.log('Adicionar pet');
   };
 
+  // Estados para edição de pets
+  const [editingPet, setEditingPet] = useState<Pet | null>(null);
+  const [editPetData, setEditPetData] = useState({
+    name: '',
+    species: 'Cachorro',
+    breed: '',
+    birth_date: '',
+    gender: 'Macho',
+    weight: '',
+    height: '',
+    color: '',
+    microchip_id: '',
+    notes: '',
+    avatar_url: '',
+    is_active: true,
+    personality: [] as string[],
+    allergies: [] as string[],
+    medications: [] as string[]
+  });
+  const [editPetLoading, setEditPetLoading] = useState(false);
+  const [editPetError, setEditPetError] = useState<string | null>(null);
+
+  // Debug: Log do estado editingPet
+  console.log('🔄 Estado atual editingPet:', editingPet);
+
   const handleEditPet = (petId: string) => {
-    // Implementar lógica para editar pet
-    console.log('Editar pet:', petId);
+    console.log('🐕 Clicou para editar pet:', petId);
+    alert(`Clicou para editar pet: ${petId}`);
+    const pet = mockPets.find(p => p.id === petId);
+    console.log('🔍 Pet encontrado:', pet);
+    if (pet) {
+      setEditingPet(pet);
+      setEditPetData({
+        name: pet.name || '',
+        species: pet.species || 'Cachorro',
+        breed: pet.breed || '',
+        birth_date: pet.birth_date || '',
+        gender: pet.gender || 'Macho',
+        weight: pet.weight?.toString() || '',
+        height: pet.height || '',
+        color: pet.color || '',
+        microchip_id: pet.microchip_id || '',
+        notes: pet.notes || '',
+        avatar_url: pet.avatar_url || '',
+        is_active: pet.is_active !== false,
+        personality: pet.personality || [],
+        allergies: pet.allergies || [],
+        medications: pet.medications || []
+      });
+      console.log('✅ Estado do modal definido, editingPet:', pet);
+    } else {
+      console.log('❌ Pet não encontrado com ID:', petId);
+    }
+  };
+
+  const handleSaveEditPet = async () => {
+    if (!editingPet || !editPetData.name || !editPetData.species) {
+      setEditPetError('Por favor, preencha os campos obrigatórios (nome e espécie)');
+      return;
+    }
+
+    try {
+      setEditPetLoading(true);
+      setEditPetError(null);
+      
+      // Integrar com o petsService.updatePet
+      await petsService.updatePet(editingPet.id, {
+        name: editPetData.name,
+        species: editPetData.species,
+        breed: editPetData.breed || null,
+        birth_date: editPetData.birth_date || null,
+        gender: editPetData.gender || null,
+        weight: editPetData.weight ? parseFloat(editPetData.weight) : null,
+        height: editPetData.height || null,
+        color: editPetData.color || null,
+        microchip_id: editPetData.microchip_id || null,
+        notes: editPetData.notes || null,
+        avatar_url: editPetData.avatar_url || null,
+        is_active: editPetData.is_active,
+        personality: editPetData.personality,
+        allergies: editPetData.allergies,
+        medications: editPetData.medications
+      });
+      
+      console.log('✅ Pet atualizado com sucesso:', editingPet.id);
+      
+      // Fechar modal
+      setEditingPet(null);
+      
+      // Recarregar lista de pets (implementar quando integrar com backend real)
+      // await loadUserPets();
+      
+    } catch (err) {
+      setEditPetError(err instanceof Error ? err.message : 'Erro ao atualizar pet');
+    } finally {
+      setEditPetLoading(false);
+    }
+  };
+
+  const handleCancelEditPet = () => {
+    setEditingPet(null);
+    setEditPetError(null);
   };
 
   const handleDeletePet = (petId: string) => {
@@ -275,7 +359,17 @@ const Profile: React.FC = () => {
       breed: 'Golden Retriever',
       age: '3 anos',
       weight: '25kg',
-      avatar_url: null
+      avatar_url: null,
+      birth_date: '2021-01-15',
+      gender: 'Macho',
+      height: '60cm',
+      color: 'Dourado',
+      microchip_id: '123456789',
+      notes: 'Pet muito dócil e brincalhão',
+      is_active: true,
+      personality: ['Brincalhão', 'Dócil'],
+      allergies: [],
+      medications: []
     },
     {
       id: '2',
@@ -284,7 +378,17 @@ const Profile: React.FC = () => {
       breed: 'Persa',
       age: '2 anos',
       weight: '4kg',
-      avatar_url: null
+      avatar_url: null,
+      birth_date: '2022-03-10',
+      gender: 'Fêmea',
+      height: '25cm',
+      color: 'Branco',
+      microchip_id: '987654321',
+      notes: 'Gata independente, gosta de carinho',
+      is_active: true,
+      personality: ['Independente', 'Carinhosa'],
+      allergies: ['Frango'],
+      medications: []
     }
   ];
 
@@ -691,6 +795,10 @@ const Profile: React.FC = () => {
                 )}
 
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  <div className="bg-red-100 p-4 rounded">
+                    <p>Debug: mockPets.length = {mockPets.length}</p>
+                    <p>Debug: mockPets = {JSON.stringify(mockPets.slice(0, 1), null, 2)}</p>
+                  </div>
                   {mockPets.map((pet) => (
                     <div key={pet.id} className="bg-surface-dark rounded-lg p-6 border border-accent/20">
                       <div className="flex items-start space-x-4">
@@ -703,17 +811,34 @@ const Profile: React.FC = () => {
                           <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold text-text-color-dark">{pet.name}</h3>
                             <div className="flex items-center space-x-2">
+                              {/* Botão de teste simples */}
                               <button
-                                onClick={() => handleEditPet(pet.id)}
-                                className="text-primary hover:text-primary-dark transition-colors"
+                                onClick={() => alert(`Teste clique: ${pet.name}`)}
+                                className="bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                              >
+                                TESTE
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleEditPet(pet.id);
+                                }}
+                                className="text-primary hover:text-primary-dark transition-colors p-1 rounded hover:bg-primary/10"
                                 title="Editar pet"
+                                type="button"
                               >
                                 <Edit className="h-4 w-4" />
                               </button>
                               <button
-                                onClick={() => handleDeletePet(pet.id)}
-                                className="text-red-600 hover:text-red-700 transition-colors"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleDeletePet(pet.id);
+                                }}
+                                className="text-red-600 hover:text-red-700 transition-colors p-1 rounded hover:bg-red-100"
                                 title="Remover pet"
+                                type="button"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -1041,6 +1166,244 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Edição de Pet */}
+      {editingPet && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          >
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-text-color-dark">
+                Editar Pet: {editingPet.name}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Debug: editingPet = {editingPet ? 'true' : 'false'}
+              </p>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {editPetError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-red-600 text-sm">{editPetError}</p>
+                </div>
+              )}
+
+              {/* Foto do Pet */}
+              <div className="text-center">
+                <div className="relative inline-block">
+                  <img
+                    src={editPetData.avatar_url || getImageUrl.petImage(null, 'medium')}
+                    alt={editPetData.name}
+                    className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
+                  />
+                  <PhotoUpload
+                    onUploadComplete={(url) => setEditPetData(prev => ({ ...prev, avatar_url: url }))}
+                    folder="pets"
+                    className="absolute -bottom-2 -right-2 bg-primary text-white rounded-full p-2 hover:bg-primary-dark transition-colors"
+                  >
+                    <Camera className="h-4 w-4" />
+                  </PhotoUpload>
+                </div>
+                <p className="text-sm text-text-color mt-2">Clique no ícone da câmera para alterar a foto</p>
+              </div>
+
+              {/* Informações Básicas */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Nome do Pet *
+                  </label>
+                  <input
+                    type="text"
+                    value={editPetData.name}
+                    onChange={(e) => setEditPetData(prev => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Nome do seu pet"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Espécie *
+                  </label>
+                  <select
+                    value={editPetData.species}
+                    onChange={(e) => setEditPetData(prev => ({ ...prev, species: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  >
+                    <option value="Cachorro">Cachorro</option>
+                    <option value="Gato">Gato</option>
+                    <option value="Pássaro">Pássaro</option>
+                    <option value="Peixe">Peixe</option>
+                    <option value="Hamster">Hamster</option>
+                    <option value="Coelho">Coelho</option>
+                    <option value="Outro">Outro</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Raça
+                  </label>
+                  <input
+                    type="text"
+                    value={editPetData.breed}
+                    onChange={(e) => setEditPetData(prev => ({ ...prev, breed: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Raça do pet"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Gênero
+                  </label>
+                  <select
+                    value={editPetData.gender}
+                    onChange={(e) => setEditPetData(prev => ({ ...prev, gender: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  >
+                    <option value="Macho">Macho</option>
+                    <option value="Fêmea">Fêmea</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Data de Nascimento
+                  </label>
+                  <input
+                    type="date"
+                    value={editPetData.birth_date}
+                    onChange={(e) => setEditPetData(prev => ({ ...prev, birth_date: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Peso (kg)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={editPetData.weight}
+                    onChange={(e) => setEditPetData(prev => ({ ...prev, weight: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Peso em kg"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Altura
+                  </label>
+                  <input
+                    type="text"
+                    value={editPetData.height}
+                    onChange={(e) => setEditPetData(prev => ({ ...prev, height: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Ex: 50cm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Cor
+                  </label>
+                  <input
+                    type="text"
+                    value={editPetData.color}
+                    onChange={(e) => setEditPetData(prev => ({ ...prev, color: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Cor do pet"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Microchip ID
+                  </label>
+                  <input
+                    type="text"
+                    value={editPetData.microchip_id}
+                    onChange={(e) => setEditPetData(prev => ({ ...prev, microchip_id: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="ID do microchip"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-text-color-dark mb-2">
+                    Status do Pet
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="is_active"
+                        checked={editPetData.is_active}
+                        onChange={() => setEditPetData(prev => ({ ...prev, is_active: true }))}
+                        className="mr-2"
+                      />
+                      <span className="text-green-600 font-medium">Ativo</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="is_active"
+                        checked={!editPetData.is_active}
+                        onChange={() => setEditPetData(prev => ({ ...prev, is_active: false }))}
+                        className="mr-2"
+                      />
+                      <span className="text-red-600 font-medium">Inativo</span>
+                    </label>
+                  </div>
+                  <p className="text-sm text-text-color mt-1">
+                    Pets inativos não aparecerão nas opções de agendamento
+                  </p>
+                </div>
+              </div>
+
+              {/* Observações */}
+              <div>
+                <label className="block text-sm font-medium text-text-color-dark mb-2">
+                  Observações
+                </label>
+                <textarea
+                  value={editPetData.notes}
+                  onChange={(e) => setEditPetData(prev => ({ ...prev, notes: e.target.value }))}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="Informações adicionais sobre o pet..."
+                />
+              </div>
+            </div>
+
+            {/* Botões de Ação */}
+            <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+              <button
+                onClick={handleCancelEditPet}
+                disabled={editPetLoading}
+                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveEditPet}
+                disabled={editPetLoading}
+                className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 flex items-center"
+              >
+                {editPetLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Salvar Alterações
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

@@ -31,7 +31,7 @@ class PaymentService {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Gerar código PIX simulado
-      const pixCode = this.generatePixCode(paymentData.amount);
+      const pixCode = this.generatePixCode();
       const transactionId = `pix_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       // Salvar transação no banco
@@ -57,7 +57,7 @@ class PaymentService {
         success: true,
         transactionId,
         pixCode,
-        qrCode: `data:image/svg+xml;base64,${btoa(this.generateQRCodeSVG(pixCode))}`,
+        qrCode: `data:image/svg+xml;base64,${btoa(this.generateQRCodeSVG())}`,
         status: 'pending',
         message: 'PIX gerado com sucesso. Escaneie o QR Code ou copie o código para pagar.'
       };
@@ -190,29 +190,13 @@ class PaymentService {
   }
 
   // Gerar código PIX simulado
-  private generatePixCode(amount: number): string {
-    const payload = {
-      version: '01',
-      initMethod: '12',
-      merchantInfo: {
-        gui: 'BR.GOV.BCB.PIX',
-        key: '36c4b8c4-4c4c-4c4c-4c4c-4c4c4c4c4c4c'
-      },
-      merchantCategory: '0000',
-      currency: '986',
-      amount: amount.toFixed(2),
-      country: 'BR',
-      merchantName: 'PETSHOP ROMEO E JULIETA',
-      merchantCity: 'SAO PAULO',
-      additionalInfo: '***'
-    };
-
+  private generatePixCode(): string {
     // Simular geração de código PIX
     return `00020126580014BR.GOV.BCB.PIX013636c4b8c4-4c4c-4c4c-4c4c-4c4c4c4c4c4c5204000053039865802BR5925PETSHOP ROMEO E JULIETA6009SAO PAULO62070503***6304`;
   }
 
   // Gerar QR Code SVG simulado
-  private generateQRCodeSVG(pixCode: string): string {
+  private generateQRCodeSVG(): string {
     return `
       <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
         <rect width="200" height="200" fill="white"/>

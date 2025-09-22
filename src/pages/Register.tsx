@@ -8,7 +8,6 @@ import { DISCOUNT_CONFIG } from '../config/discounts';
 import { profileService } from '../services/profileService';
 import { petsService } from '../services/petsService';
 import { BreedSelector } from '../components/BreedSelector';
-import { Breed } from '../services/breedsService';
 
 interface Pet {
   name: string;

@@ -10,7 +10,6 @@ import { availableSlotsService, type AvailableSlot } from '../services/available
 import { appointmentsService } from '../services/appointmentsService';
 import { getImageUrl } from '../config/images';
 import { BreedSelector } from '../components/BreedSelector';
-import { Breed } from '../services/breedsService';
 import PhotoUpload from '../components/PhotoUpload';
 
 // Função para calcular idade baseada na data de nascimento
@@ -602,19 +601,6 @@ const Booking: React.FC = () => {
                     
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-text-color-dark mb-2">
-                        Observações
-                      </label>
-                      <textarea
-                        value={petFormData.notes}
-                        onChange={(e) => setPetFormData(prev => ({ ...prev, notes: e.target.value }))}
-                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        placeholder="Informações adicionais sobre o pet..."
-                        rows={3}
-                      />
-                    </div>
-                    
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-text-color-dark mb-2">
                         Foto do pet
                       </label>
                       <PhotoUpload
@@ -636,7 +622,7 @@ const Booking: React.FC = () => {
                     
                     <div>
                       <label className="block text-sm font-medium text-text-color-dark mb-2">
-                        Personalidade
+                        Conta pra gente: como é o jeitinho do seu pet?
                       </label>
                       <input
                         type="text"
@@ -652,7 +638,7 @@ const Booking: React.FC = () => {
                     
                     <div>
                       <label className="block text-sm font-medium text-text-color-dark mb-2">
-                        Alergias
+                        Alguma Alergia?
                       </label>
                       <input
                         type="text"
@@ -663,22 +649,6 @@ const Booking: React.FC = () => {
                         }))}
                         className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                         placeholder="Ex: Frango, Pólen, Ácaros (separar por vírgula)"
-                      />
-                    </div>
-                    
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-text-color-dark mb-2">
-                        Medicamentos
-                      </label>
-                      <input
-                        type="text"
-                        value={petFormData.medications.join(', ')}
-                        onChange={(e) => setPetFormData(prev => ({ 
-                          ...prev, 
-                          medications: e.target.value.split(',').map(item => item.trim()).filter(item => item) 
-                        }))}
-                        className="w-full px-3 py-2 border border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        placeholder="Ex: Antibiótico, Vermífugo (separar por vírgula)"
                       />
                     </div>
                   </div>

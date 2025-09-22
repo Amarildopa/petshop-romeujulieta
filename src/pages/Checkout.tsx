@@ -7,7 +7,6 @@ import {
   Shield, 
   ArrowLeft, 
   Check,
-  Clock,
   AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
@@ -58,7 +57,7 @@ const Checkout: React.FC = () => {
         
         setPlan(planData);
         setBillingCycle(cycle || 'monthly');
-      } catch (err) {
+      } catch {
         setError('Erro ao carregar dados do plano');
       } finally {
         setLoading(false);

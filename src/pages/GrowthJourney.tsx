@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { faker } from '@faker-js/faker';
 import { Camera, PawPrint, Star, ArrowLeft, Cake, Award } from 'lucide-react';
 import { IMAGE_CONFIG } from '../config/images';
+import { getPlaceholderImageByCategory } from '../utils/placeholderImages';
 
 // Mock data for pets, assuming we don't fetch it
 const pets = [
@@ -26,35 +26,35 @@ const generateJourneyEvents = () => {
             title: 'Primeiro dia em casa!',
             description: 'Luna chegou e encheu nossa casa de alegria. Pequenina e curiosa!',
             icon: PawPrint,
-            image: faker.image.urlLoremFlickr({ category: 'puppy', width: 400, height: 300 }),
+            image: getPlaceholderImageByCategory({ category: 'puppy', width: 400, height: 300 }),
         },
         {
             date: '2023-05-20',
             title: 'Primeira Visita ao Vet',
             description: 'Check-up completo e primeira vacina. Foi muito corajosa!',
             icon: Star,
-            image: faker.image.urlLoremFlickr({ category: 'veterinarian', width: 400, height: 300 }),
+            image: getPlaceholderImageByCategory({ category: 'veterinarian', width: 400, height: 300 }),
         },
         {
             date: '2024-01-15',
             title: 'Primeiro Aniversário',
             description: 'Festa com bolo especial para cachorros e muitos presentes.',
             icon: Cake,
-            image: faker.image.urlLoremFlickr({ category: 'dog birthday', width: 400, height: 300 }),
+            image: getPlaceholderImageByCategory({ category: 'dog birthday', width: 400, height: 300 }),
         },
         {
             date: '2024-07-22',
             title: 'Primeiro Banho & Tosa',
             description: 'Ficou ainda mais linda e cheirosa depois do dia no spa.',
             icon: Camera,
-            image: faker.image.urlLoremFlickr({ category: 'dog bath', width: 400, height: 300 }),
+            image: getPlaceholderImageByCategory({ category: 'dog bath', width: 400, height: 300 }),
         },
         {
             date: '2025-01-05',
             title: 'Campeã do Concurso de Agilidade',
             description: 'Mostrou todo o seu talento e ganhou o primeiro lugar!',
             icon: Award,
-            image: faker.image.urlLoremFlickr({ category: 'dog agility', width: 400, height: 300 }),
+            image: getPlaceholderImageByCategory({ category: 'dog agility', width: 400, height: 300 }),
         },
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };

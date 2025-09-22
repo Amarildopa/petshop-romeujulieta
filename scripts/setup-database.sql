@@ -12,7 +12,7 @@
 
 INSERT INTO system_settings_pet (key, value, description, category, is_public) VALUES
 -- Configurações gerais
-('app_name', 'PetShop Romeo & Julieta', 'Nome da aplicação', 'general', true),
+('app_name', 'Romeu e Julieta Pet&Spa', 'Nome da aplicação', 'general', true),
 ('app_version', '1.0.0', 'Versão da aplicação', 'general', true),
 ('app_description', 'Sistema completo de gestão para pet shops', 'Descrição da aplicação', 'general', true),
 ('app_logo', '/logo.png', 'URL do logo da aplicação', 'general', true),
@@ -20,7 +20,7 @@ INSERT INTO system_settings_pet (key, value, description, category, is_public) V
 
 -- Configurações de contato
 ('contact_email', 'contato@petshop.com', 'Email de contato', 'contact', true),
-('contact_phone', '(11) 99999-9999', 'Telefone de contato', 'contact', true),
+('contact_phone', '(11) 99380-5117', 'Telefone de contato', 'contact', true),
 ('contact_address', 'Rua das Flores, 123 - São Paulo/SP', 'Endereço da empresa', 'contact', true),
 ('contact_cep', '01234-567', 'CEP da empresa', 'contact', true),
 

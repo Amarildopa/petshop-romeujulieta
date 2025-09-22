@@ -24,6 +24,7 @@ const PetProfile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [editedPet, setEditedPet] = useState<Partial<Pet>>({});
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -63,21 +64,35 @@ const PetProfile: React.FC = () => {
     
     try {
       setSaving(true);
-      const petToUpdate = pets.find(pet => pet.id === selectedPet);
-      if (petToUpdate) {
+      const currentPet = pets.find(pet => pet.id === selectedPet);
+      if (currentPet) {
+        const updatedPetData = {
+          ...currentPet,
+          ...editedPet
+        };
+        
         await petsService.updatePet(selectedPet, {
-          name: petToUpdate.name,
-          breed: petToUpdate.breed,
-          age: petToUpdate.age,
-          weight: petToUpdate.weight,
-          height: petToUpdate.height,
-          color: petToUpdate.color,
-          gender: petToUpdate.gender,
-          personality: petToUpdate.personality,
-          allergies: petToUpdate.allergies,
-          medications: petToUpdate.medications
+          name: updatedPetData.name || currentPet.name,
+          breed: updatedPetData.breed || currentPet.breed,
+          age: updatedPetData.age || currentPet.age,
+          weight: updatedPetData.weight || currentPet.weight,
+          height: updatedPetData.height || currentPet.height,
+          color: updatedPetData.color || currentPet.color,
+          gender: updatedPetData.gender || currentPet.gender,
+          personality: updatedPetData.personality || currentPet.personality,
+          allergies: updatedPetData.allergies || currentPet.allergies,
+          medications: updatedPetData.medications || currentPet.medications
         });
+        
+        // Atualizar o estado local
+        setPets(prevPets => 
+          prevPets.map(pet => 
+            pet.id === selectedPet ? { ...pet, ...editedPet } : pet
+          )
+        );
+        
         setIsEditing(false);
+        setEditedPet({});
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao salvar pet');
@@ -242,74 +257,186 @@ const PetProfile: React.FC = () => {
                 Informações Básicas
               </h2>
               <button
-                onClick={isEditing ? handleSavePet : () => setIsEditing(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (isEditing) {
+                    console.log('🎯 Salvando pet:', selectedPet);
+                    handleSavePet();
+                  } else {
+                    console.log('🎯 Editando pet:', selectedPet);
+                    setIsEditing(true);
+                    // Inicializar editedPet com os dados atuais
+                    const currentPet = pets.find(pet => pet.id === selectedPet);
+                    if (currentPet) {
+                      setEditedPet({
+                        name: currentPet.name,
+                        breed: currentPet.breed,
+                        age: currentPet.age,
+                        weight: currentPet.weight,
+                        height: currentPet.height,
+                        color: currentPet.color,
+                        gender: currentPet.gender,
+                        personality: currentPet.personality,
+                        allergies: currentPet.allergies,
+                        medications: currentPet.medications
+                      });
+                    }
+                  }
+                }}
                 disabled={saving}
-                className="p-2 text-text-color hover:text-primary transition-colors disabled:opacity-50"
+                className="p-2 text-text-color hover:text-primary transition-colors disabled:opacity-50 hover:bg-gray-100 rounded-lg"
                 title={isEditing ? 'Salvar alterações' : 'Editar pet'}
+                type="button"
               >
                 {isEditing ? <Save className="h-5 w-5" /> : <Edit className="h-5 w-5" />}
               </button>
             </div>
 
             <div className="text-center mb-6">
-              <div className="relative inline-block">
-                <img
-                  src={getImageUrl.petImage(currentPet.avatar_url, 'medium')}
-                  alt={currentPet.name}
-                  className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-primary-light"
-                />
-                <button 
-                  className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary-dark transition-colors"
-                  title="Alterar foto do pet"
-                >
-                  <Camera className="h-4 w-4" />
-                </button>
+                <div className="relative inline-block">
+                  <img
+                    src={getImageUrl.petImage(currentPet.avatar_url, 'medium')}
+                    alt={currentPet.name}
+                    className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-primary-light"
+                  />
+                  <button 
+                    className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-lg hover:bg-primary-dark transition-colors"
+                    title="Alterar foto do pet"
+                  >
+                    <Camera className="h-4 w-4" />
+                  </button>
+                </div>
+                
+                {/* Nome editável */}
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedPet.name || currentPet.name}
+                    onChange={(e) => setEditedPet(prev => ({ ...prev, name: e.target.value }))}
+                    className="text-2xl font-bold text-text-color-dark mt-3 text-center bg-white border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                ) : (
+                  <h3 className="text-2xl font-bold text-text-color-dark mt-3">{currentPet.name}</h3>
+                )}
+                
+                {/* Raça editável */}
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedPet.breed || currentPet.breed}
+                    onChange={(e) => setEditedPet(prev => ({ ...prev, breed: e.target.value }))}
+                    className="text-text-color text-center bg-white border border-gray-300 rounded-lg px-3 py-1 mt-1 focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                ) : (
+                  <p className="text-text-color">{currentPet.breed}</p>
+                )}
               </div>
-              <h3 className="text-2xl font-bold text-text-color-dark mt-3">{currentPet.name}</h3>
-              <p className="text-text-color">{currentPet.breed}</p>
-            </div>
 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-3 bg-surface-dark rounded-lg">
                   <Calendar className="h-5 w-5 text-text-color mx-auto mb-1" />
                   <p className="text-sm text-text-color">Idade</p>
-                  <p className="font-semibold text-text-color-dark">{currentPet.age}</p>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedPet.age || currentPet.age}
+                      onChange={(e) => setEditedPet(prev => ({ ...prev, age: e.target.value }))}
+                      className="font-semibold text-text-color-dark bg-white border border-gray-300 rounded px-2 py-1 text-center text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  ) : (
+                    <p className="font-semibold text-text-color-dark">{currentPet.age}</p>
+                  )}
                 </div>
                 <div className="text-center p-3 bg-surface-dark rounded-lg">
                   <Weight className="h-5 w-5 text-text-color mx-auto mb-1" />
                   <p className="text-sm text-text-color">Peso</p>
-                  <p className="font-semibold text-text-color-dark">{currentPet.weight}</p>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedPet.weight || currentPet.weight}
+                      onChange={(e) => setEditedPet(prev => ({ ...prev, weight: e.target.value }))}
+                      className="font-semibold text-text-color-dark bg-white border border-gray-300 rounded px-2 py-1 text-center text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  ) : (
+                    <p className="font-semibold text-text-color-dark">{currentPet.weight}</p>
+                  )}
                 </div>
               </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-text-color">Sexo:</span>
-                  <span className="font-medium text-text-color-dark">{currentPet.gender}</span>
+                  {isEditing ? (
+                    <select
+                      value={editedPet.gender || currentPet.gender}
+                      onChange={(e) => setEditedPet(prev => ({ ...prev, gender: e.target.value }))}
+                      className="font-medium text-text-color-dark bg-white border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                      <option value="Macho">Macho</option>
+                      <option value="Fêmea">Fêmea</option>
+                    </select>
+                  ) : (
+                    <span className="font-medium text-text-color-dark">{currentPet.gender}</span>
+                  )}
                 </div>
                 <div className="flex justify-between">
                   <span className="text-text-color">Cor:</span>
-                  <span className="font-medium text-text-color-dark">{currentPet.color}</span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedPet.color || currentPet.color}
+                      onChange={(e) => setEditedPet(prev => ({ ...prev, color: e.target.value }))}
+                      className="font-medium text-text-color-dark bg-white border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  ) : (
+                    <span className="font-medium text-text-color-dark">{currentPet.color}</span>
+                  )}
                 </div>
                 <div className="flex justify-between">
                   <span className="text-text-color">Altura:</span>
-                  <span className="font-medium text-text-color-dark">{currentPet.height}</span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedPet.height || currentPet.height}
+                      onChange={(e) => setEditedPet(prev => ({ ...prev, height: e.target.value }))}
+                      className="font-medium text-text-color-dark bg-white border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                  ) : (
+                    <span className="font-medium text-text-color-dark">{currentPet.height}</span>
+                  )}
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold text-text-color-dark mb-2">Personalidade</h4>
-                <div className="flex flex-wrap gap-2">
-                  {currentPet.personality.map((trait, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-secondary-light text-secondary-dark rounded-full text-sm"
-                    >
-                      {trait}
-                    </span>
-                  ))}
-                </div>
+                <h4 className="font-semibold text-text-color-dark mb-2">Conta pra gente: como é o jeitinho do seu pet?</h4>
+                {isEditing ? (
+                  <div className="space-y-2">
+                    <textarea
+                      value={editedPet.personality ? editedPet.personality.join(', ') : currentPet.personality.join(', ')}
+                      onChange={(e) => setEditedPet(prev => ({ 
+                        ...prev, 
+                        personality: e.target.value.split(',').map(trait => trait.trim()).filter(trait => trait.length > 0)
+                      }))}
+                      placeholder="Digite as características separadas por vírgula"
+                      className="w-full p-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                      rows={3}
+                    />
+                    <p className="text-xs text-gray-500">Separe as características com vírgulas</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {currentPet.personality.map((trait, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-secondary-light text-secondary-dark rounded-full text-sm"
+                      >
+                        {trait}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -325,45 +452,43 @@ const PetProfile: React.FC = () => {
                 Saúde & Alertas
               </h2>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-1 gap-6">
                 <div>
                   <h3 className="font-semibold text-text-color-dark mb-3 flex items-center">
                     <AlertCircle className="h-5 w-5 text-status-danger mr-2" />
-                    Alergias
+                    Alguma Alergia?
                   </h3>
-                  {currentPet.allergies && currentPet.allergies.length > 0 ? (
+                  {isEditing ? (
                     <div className="space-y-2">
-                      {currentPet.allergies.map((allergy, index) => (
-                        <div
-                          key={index}
-                          className="p-3 bg-status-danger-light border border-red-200 rounded-lg"
-                        >
-                          <p className="text-status-danger font-medium">{allergy}</p>
-                        </div>
-                      ))}
+                      <textarea
+                        value={editedPet.allergies ? editedPet.allergies.join(', ') : (currentPet.allergies || []).join(', ')}
+                        onChange={(e) => setEditedPet(prev => ({ 
+                          ...prev, 
+                          allergies: e.target.value.split(',').map(allergy => allergy.trim()).filter(allergy => allergy.length > 0)
+                        }))}
+                        placeholder="Digite as alergias separadas por vírgula (deixe vazio se não houver)"
+                        className="w-full p-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                        rows={3}
+                      />
+                      <p className="text-xs text-gray-500">Separe as alergias com vírgulas ou deixe vazio se não houver</p>
                     </div>
                   ) : (
-                    <p className="text-text-color text-sm">Nenhuma alergia conhecida</p>
-                  )}
-                </div>
-
-                <div>
-                  <h3 className="font-semibold text-text-color-dark mb-3">
-                    Medicamentos
-                  </h3>
-                  {currentPet.medications && currentPet.medications.length > 0 ? (
-                    <div className="space-y-2">
-                      {currentPet.medications.map((medication, index) => (
-                        <div
-                          key={index}
-                          className="p-3 bg-status-info-light border border-blue-200 rounded-lg"
-                        >
-                          <p className="text-status-info font-medium">{medication}</p>
+                    <>
+                      {currentPet.allergies && currentPet.allergies.length > 0 ? (
+                        <div className="space-y-2">
+                          {currentPet.allergies.map((allergy, index) => (
+                            <div
+                              key={index}
+                              className="p-3 bg-status-danger-light border border-red-200 rounded-lg"
+                            >
+                              <p className="text-status-danger font-medium">{allergy}</p>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-text-color text-sm">Nenhum medicamento em uso</p>
+                      ) : (
+                        <p className="text-text-color text-sm">Nenhuma alergia conhecida</p>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

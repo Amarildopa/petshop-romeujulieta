@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { faker } from '@faker-js/faker';
 import { 
   Calendar,
   Camera,
@@ -27,6 +26,7 @@ import { petsService, type Pet } from '../services/petsService';
 import { appointmentsService, type Appointment } from '../services/appointmentsService';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../config/images';
+import { generatePlaceholderImages } from '../utils/placeholderImages';
 
 const Dashboard: React.FC = () => {
   const [isLiveFeedOpen, setIsLiveFeedOpen] = useState(false);
@@ -115,7 +115,7 @@ const Dashboard: React.FC = () => {
     }
   ];
 
-  const growthJourneyPhotos = Array.from({ length: 4 }, () => faker.image.urlLoremFlickr({ category: 'animals', width: 128, height: 128 }));
+  const growthJourneyPhotos = generatePlaceholderImages('animals', 4);
 
   // Show loading while checking authentication
   if (authLoading) {

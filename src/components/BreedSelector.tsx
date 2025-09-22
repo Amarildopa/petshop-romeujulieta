@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, ChevronDown, X } from 'lucide-react';
 import { breedsService, Breed } from '../services/breedsService';
 
@@ -34,6 +34,40 @@ export const BreedSelector: React.FC<BreedSelectorProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
 
+  const loadSelectedBreed = useCallback(async (breedId: string) => {
+    try {
+      const breed = await breedsService.getBreedById(breedId);
+      if (breed) {
+        setSelectedBreed(breed);
+        setSearchQuery(breed.name);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar raça selecionada:', error);
+    }
+  }, []);
+
+  const searchBreeds = useCallback(async (query: string) => {
+    try {
+      setLoading(true);
+      const results = await breedsService.searchBreedsByText(query, species, 20);
+      setBreeds(results);
+      setHighlightedIndex(-1);
+    } catch (error) {
+      console.error('Erro ao buscar raças:', error);
+      setBreeds([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [species]);
+
+  const selectBreed = useCallback((breed: Breed) => {
+    setSelectedBreed(breed);
+    setSearchQuery(breed.name);
+    setIsOpen(false);
+    setHighlightedIndex(-1);
+    onChange(breed.id, breed);
+  }, [onChange]);
+
   // Carregar raça selecionada quando value muda
   useEffect(() => {
     if (value && value !== selectedBreed?.id) {
@@ -42,26 +76,7 @@ export const BreedSelector: React.FC<BreedSelectorProps> = ({
       setSelectedBreed(null);
       setSearchQuery('');
     }
-  }, [value]);
-
-  // Buscar raças quando query muda
-  useEffect(() => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    searchTimeoutRef.current = setTimeout(() => {
-      if (isOpen) {
-        searchBreeds(searchQuery);
-      }
-    }, 300);
-
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, [searchQuery, species, isOpen]);
+  }, [value, selectedBreed, loadSelectedBreed]);
 
   // Fechar dropdown quando clicar fora
   useEffect(() => {
@@ -116,41 +131,26 @@ export const BreedSelector: React.FC<BreedSelectorProps> = ({
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
-  }, [isOpen, breeds, highlightedIndex]);
+  }, [isOpen, breeds, highlightedIndex, selectBreed]);
 
-  const loadSelectedBreed = async (breedId: string) => {
-    try {
-      const breed = await breedsService.getBreedById(breedId);
-      if (breed) {
-        setSelectedBreed(breed);
-        setSearchQuery(breed.name);
+  // Buscar raças quando query muda
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      if (isOpen) {
+        searchBreeds(searchQuery);
       }
-    } catch (error) {
-      console.error('Erro ao carregar raça selecionada:', error);
-    }
-  };
+    }, 300);
 
-  const searchBreeds = async (query: string) => {
-    try {
-      setLoading(true);
-      const results = await breedsService.searchBreedsByText(query, species, 20);
-      setBreeds(results);
-      setHighlightedIndex(-1);
-    } catch (error) {
-      console.error('Erro ao buscar raças:', error);
-      setBreeds([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const selectBreed = (breed: Breed) => {
-    setSelectedBreed(breed);
-    setSearchQuery(breed.name);
-    setIsOpen(false);
-    setHighlightedIndex(-1);
-    onChange(breed.id, breed);
-  };
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery, species, isOpen, searchBreeds]);
 
   const clearSelection = () => {
     setSelectedBreed(null);
