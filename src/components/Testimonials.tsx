@@ -132,7 +132,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({
   }
 
   return (
-    <section className={`py-16 bg-gray-50 ${className}`}>
+    <section className={`py-16 bg-yellow-50 ${className}`}>
       <div className="container mx-auto px-4">
         {/* Cabeçalho */}
         <div className="text-center mb-12">

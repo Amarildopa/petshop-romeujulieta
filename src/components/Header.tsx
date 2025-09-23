@@ -1,26 +1,90 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { PawPrint, Menu, X, User, Calendar, ShoppingBag, LogOut } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import AdminStatus from './AdminStatus';
 import { getAppName } from '../constants/app';
 import { getImageUrl } from '../config/images';
+import { 
+  PawPrint,
+  Menu, 
+  X, 
+  LogOut
+} from 'lucide-react';
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { profile } = useUserProfile();
 
   const navItems = [
-    { path: '/services', label: 'Serviços', icon: Calendar },
-    { path: '/store', label: 'Loja', icon: ShoppingBag },
-    { path: '/dashboard', label: 'Dashboard', icon: User },
+    { path: '/', label: 'Home' },
+    { path: '/#location', label: 'Onde Estamos' },
+    { path: '/#about', label: 'Sobre Nós' },
+    { path: '/#services', label: 'Nossos serviços' },
+    { path: '/#vip-packages', label: 'Clube' },
+    { path: '/store', label: 'E-commerce' }
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const handleNavClick = (path: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    if (path.startsWith('/#')) {
+      // Se for uma âncora, navegar para home e fazer scroll
+      const sectionId = path.substring(2); // Remove '/#'
+      
+      if (location.pathname !== '/') {
+        // Se não estiver na home, navegar primeiro
+        navigate('/');
+        setTimeout(() => {
+          scrollToSection(sectionId);
+        }, 100);
+      } else {
+        // Se já estiver na home, fazer scroll direto
+        scrollToSection(sectionId);
+      }
+    } else if (path === '/') {
+      // Para o item Home, navegar para home e fazer scroll para o topo
+      navigate('/');
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }, 100);
+    } else {
+      // Navegação normal para outras páginas
+      navigate(path);
+    }
+    
+    setIsMenuOpen(false);
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerHeight = 80; // Altura aproximada do header fixo
+      const elementPosition = element.offsetTop - headerHeight;
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    if (path.startsWith('/#')) {
+      return location.pathname === '/' && location.hash === path.substring(1);
+    }
+    return location.pathname === path;
+  };
 
   return (
     <header className="bg-surface/80 backdrop-blur-lg shadow-sm border-b border-accent/20 sticky top-0 z-50">
@@ -35,20 +99,20 @@ export const Header: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navItems.map(({ path, label, icon: Icon }) => (
-              <Link
-                key={path}
-                to={path}
-                className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                  isActive(path)
-                    ? 'text-primary-dark bg-primary/10'
-                    : 'text-text-color hover:text-primary-dark hover:bg-surface-dark'
+          <nav className="hidden md:flex items-center space-x-2">
+            {navItems.map((item) => (
+              <a
+                key={item.path}
+                href={item.path}
+                onClick={(e) => handleNavClick(item.path, e)}
+                className={`px-2.5 py-1.5 text-sm rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer ${
+                  isActive(item.path)
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
                 }`}
               >
-                <Icon className="h-4 w-4" />
-                <span className="font-medium">{label}</span>
-              </Link>
+                {item.label}
+              </a>
             ))}
           </nav>
 
@@ -116,20 +180,19 @@ export const Header: React.FC = () => {
             className="md:hidden bg-surface border-t border-accent/20"
           >
             <div className="px-4 py-2 space-y-1">
-              {navItems.map(({ path, label, icon: Icon }) => (
-                <Link
-                  key={path}
-                  to={path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center space-x-3 px-3 py-3 rounded-lg transition-colors duration-200 ${
-                    isActive(path)
-                      ? 'text-primary-dark bg-primary/10'
-                      : 'text-text-color hover:text-primary-dark hover:bg-surface-dark'
+              {navItems.map((item) => (
+                <a
+                  key={item.path}
+                  href={item.path}
+                  onClick={(e) => handleNavClick(item.path, e)}
+                  className={`block px-3 py-2 text-sm transition-colors duration-200 cursor-pointer ${
+                    isActive(item.path)
+                      ? 'text-blue-600 bg-blue-50 border-r-4 border-blue-600'
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span className="font-medium">{label}</span>
-                </Link>
+                  {item.label}
+                </a>
               ))}
               {user ? (
                 <div className="pt-2 space-y-2">

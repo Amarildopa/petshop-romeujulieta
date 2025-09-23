@@ -88,7 +88,7 @@ const LocationSection: React.FC = () => {
 
   if (loading) {
     return (
-      <section className="py-20 bg-pink-50">
+      <section className="py-20 bg-yellow-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
@@ -101,7 +101,7 @@ const LocationSection: React.FC = () => {
 
   if (error || !locationData) {
     return (
-      <section className="py-20 bg-pink-50">
+      <section className="py-20 bg-yellow-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-red-600">{error || 'Erro ao carregar informações'}</p>
@@ -111,7 +111,7 @@ const LocationSection: React.FC = () => {
     );
   }
   return (
-    <section className="py-20 bg-pink-50">
+    <section id="location" className="py-20 bg-yellow-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-text-color-dark">Onde Estamos</h2>

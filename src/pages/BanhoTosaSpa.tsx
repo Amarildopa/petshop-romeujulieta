@@ -238,6 +238,37 @@ export default function BanhoTosaSpa() {
            'Técnica suave e não invasiva',
            'Cuidado personalizado para cada pet'
          ]
+       },
+       {
+         id: 'day-spa-premium',
+         title: 'DAY PET&SPA MOMENTO PREMIUM',
+         icon: Sparkles,
+         color: 'from-rose-500 to-rose-700',
+         bgColor: 'from-rose-50 to-rose-100',
+         iconColor: 'text-rose-600',
+         description: 'Um verdadeiro ritual de bem-estar! O Day Spa oferece banho comum, banho de ozônio, hidratação, banho de ofurô e uma sessão de reiki, tudo em um único dia. Seu pet vivencia cuidado, relaxamento profundo e renovação física e energética, com todos os benefícios exclusivos do nosso Spa.',
+         features: [
+           {
+             icon: Heart,
+             title: 'Experiência Completa',
+             description: 'Ideal para proporcionar uma experiência única e transformadora, com carinho, saúde e equilíbrio — tudo no universo Romeu & Julieta Pet&Spa!',
+             color: 'text-rose-600'
+           },
+           {
+             icon: Sparkles,
+             title: 'Ritual de Bem-estar',
+             description: 'Combinação perfeita de todos os nossos serviços premium em um único dia especial para seu pet.',
+             color: 'text-purple-600'
+           }
+         ],
+         includes: [
+           'Banho comum com produtos premium',
+           'Banho de ozônio terapêutico',
+           'Hidratação profunda com linha Hydra',
+           'Banho de ofurô relaxante',
+           'Sessão de reiki energizante',
+           'Ambiente exclusivo e acolhedor'
+         ]
        }
   ];
 

@@ -43,46 +43,48 @@ function App() {
           <Header />
           <Suspense fallback={<LoadingSpinner fullScreen text="Carregando página..." />}>
             <Routes>
+              {/* Rotas públicas */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/booking" element={<Booking />} />
-              <Route path="/check-in/:appointmentId" element={<CheckIn />} />
               <Route path="/services" element={<Services />} />
               <Route path="/store" element={<Store />} />
               <Route path="/offers" element={<Offers />} />
+              <Route path="/banho-tosa-spa" element={<BanhoTosaSpa />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+              <Route path="/whatsapp-test" element={<WhatsAppTest />} />
+              
+              {/* Rotas protegidas */}
               <Route path="/profile" element={<Profile />} />
               <Route path="/profile-new" element={<ProfileNew />} />
               <Route path="/pet-profile" element={<PetProfile />} />
               <Route path="/add-pet" element={<AddPet />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/subscription" element={<Subscription />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
-              <Route path="/banho-tosa-spa" element={<BanhoTosaSpa />} />
-            <Route path="/journey/:petId" element={<GrowthJourney />} />
-            <Route path="/monitoring" element={<Monitoring />} />
-            <Route path="/test-supabase" element={<TestSupabase />} />
-            <Route path="/test-simple" element={<TestSimple />} />
-            <Route path="/photo-test" element={<PhotoTest />} />
-            <Route path="/whatsapp-test" element={<WhatsAppTest />} />
-            <Route
-              path="/theme-customizer"
-              element={<ThemeCustomizer />}
-            />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="users" element={
-                <AdminRouteGuard requiredPermission="users">
-                  <AdminUsers />
-                </AdminRouteGuard>
-              } />
-              <Route path="reports" element={
-                <AdminRouteGuard requiredPermission="reports">
-                  <AdminReports />
-                </AdminRouteGuard>
-              } />
-            </Route>
+              <Route path="/check-in/:appointmentId" element={<CheckIn />} />
+              <Route path="/journey/:petId" element={<GrowthJourney />} />
+              <Route path="/monitoring" element={<Monitoring />} />
+              <Route path="/test-supabase" element={<TestSupabase />} />
+              <Route path="/test-simple" element={<TestSimple />} />
+              <Route path="/photo-test" element={<PhotoTest />} />
+              <Route path="/theme-customizer" element={<ThemeCustomizer />} />
+              
+              {/* Rotas de administração */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="users" element={
+                  <AdminRouteGuard requiredPermission="users">
+                    <AdminUsers />
+                  </AdminRouteGuard>
+                } />
+                <Route path="reports" element={
+                  <AdminRouteGuard requiredPermission="reports">
+                    <AdminReports />
+                  </AdminRouteGuard>
+                } />
+              </Route>
             </Routes>
           </Suspense>
         </div>

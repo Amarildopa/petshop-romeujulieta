@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { settingsService } from '../services/settingsService';
 import Testimonials from '../components/Testimonials';
 import WeeklyBaths from '../components/WeeklyBaths';
-import WeeklyPoll from '../components/WeeklyPoll';
+
 import WeeklyTip from '../components/WeeklyTip';
 import SpecialOffers from '../components/SpecialOffers';
 import VIPPackages from '../components/VIPPackages';
@@ -17,11 +17,11 @@ import {
   ArrowRight,
   Scissors,
   ShoppingBag,
-  MessageCircle,
-  Instagram,
   Home as HomeIcon,
   Car,
 } from 'lucide-react';
+import WhatsAppIcon from '../components/icons/WhatsAppIcon';
+import InstagramIcon from '../components/icons/InstagramIcon';
 
 const Home: React.FC = () => {
   const [whatsappNumber, setWhatsappNumber] = useState('5511999999999'); // Valor padrão
@@ -70,9 +70,8 @@ const Home: React.FC = () => {
 
   return (
     <div className="bg-surface text-text-color">
-      {/* Hero Section - Verde muito claro */}
-      <section className="relative min-h-screen bg-green-50 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100"></div>
+      {/* Hero Section - Amarelo muito claro */}
+      <section id="hero" className="relative min-h-screen bg-yellow-50 flex items-center justify-center overflow-hidden">
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
@@ -80,7 +79,7 @@ const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-4xl md:text-6xl font-bold text-text-color-dark mb-6"
+                className="text-3xl md:text-5xl font-bold text-text-color-dark mb-6"
               >
                 Cuidado e Amor para seu <span className="text-primary">Pet</span>
               </motion.h1>
@@ -100,28 +99,28 @@ const Home: React.FC = () => {
               >
                 <Link
                   to="/booking"
-                  className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                  className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                 >
                   Agende seu Horário
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
                 <a
                   href={`https://wa.me/${whatsappNumber}?text=Olá! Gostaria de saber mais sobre os serviços do Romeu & Julieta Pet&Spa`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                  className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                 >
                   WhatsApp
-                  <MessageCircle className="w-5 h-5" />
+                  <WhatsAppIcon className="w-4 h-4" />
                 </a>
                 <a
                   href="https://www.instagram.com/romeuejulieta_petspa/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
                 >
                   Instagram
-                  <Instagram className="w-5 h-5" />
+                  <InstagramIcon className="w-4 h-4" />
                 </a>
               </motion.div>
             </div>
@@ -151,7 +150,7 @@ const Home: React.FC = () => {
       <AboutSection />
 
       {/* Services Section - Amarelo muito claro */}
-      <section className="py-20 bg-yellow-50">
+      <section id="services" className="py-20 bg-yellow-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-text-color-dark">Nossos Serviços</h2>
@@ -189,8 +188,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Live Camera Section - Rosa muito claro */}
-      <section className="bg-pink-50">
+      {/* Live Camera Section - Amarelo muito claro */}
+      <section className="bg-yellow-50">
         <LiveCameraSection />
       </section>
 
@@ -199,8 +198,8 @@ const Home: React.FC = () => {
         <VIPPackages />
       </section>
 
-      {/* Weekly Content Section - Azul muito claro */}
-      <section className="py-20 bg-blue-50">
+      {/* Weekly Content Section - Amarelo muito claro */}
+      <section className="py-20 bg-yellow-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-text-color-dark">Dicas da Semana e Super Ofertas</h2>
@@ -222,23 +221,18 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Weekly Baths Section - Rosa muito claro */}
-      <section className="bg-pink-50">
+      {/* Weekly Baths Section - Amarelo muito claro */}
+      <section className="bg-yellow-50">
         <WeeklyBaths />
       </section>
 
-      {/* Weekly Poll Section - Amarelo muito claro */}
+      {/* Testimonials Section - Amarelo muito claro */}
       <section className="bg-yellow-50">
-        <WeeklyPoll />
-      </section>
-
-      {/* Testimonials Section - Azul muito claro */}
-      <section className="bg-blue-50">
         <Testimonials />
       </section>
 
-      {/* CTA Section - Rosa muito claro */}
-      <section className="py-20 bg-pink-50">
+      {/* CTA Section - Amarelo muito claro */}
+      <section className="py-20 bg-yellow-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -281,7 +275,7 @@ const Home: React.FC = () => {
           className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center group overflow-hidden hover:rounded-full hover:px-6"
           aria-label="Falar no WhatsApp"
         >
-          <MessageCircle size={24} className="flex-shrink-0" />
+          <WhatsAppIcon size={24} className="flex-shrink-0" />
           <span className="max-w-0 group-hover:max-w-xs group-hover:ml-3 overflow-hidden transition-all duration-300 whitespace-nowrap text-sm font-medium">
             Falar no WhatsApp
           </span>
