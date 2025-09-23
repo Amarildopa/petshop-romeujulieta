@@ -20,7 +20,8 @@ export const Header: React.FC = () => {
   const { user, signOut } = useAuth();
   const { profile } = useUserProfile();
 
-  const navItems = [
+  // Menu para usuários não logados (mar aberto)
+  const publicNavItems = [
     { path: '/', label: 'Home' },
     { path: '/#location', label: 'Onde Estamos' },
     { path: '/#about', label: 'Sobre Nós' },
@@ -29,6 +30,17 @@ export const Header: React.FC = () => {
     { path: '/store', label: 'E-commerce' }
   ];
 
+  // Menu para usuários logados (área restrita)
+  const authenticatedNavItems = [
+    { path: '/', label: 'Home' },
+    { path: '/store', label: 'E-Commerce' },
+    { path: '/#vip-packages', label: 'Clube' },
+    { path: '/dashboard', label: 'Dashboard' }
+  ];
+
+  // Seleciona o menu baseado no status de autenticação
+  const navItems = user ? authenticatedNavItems : publicNavItems;
+
   const handleNavClick = (path: string, e: React.MouseEvent) => {
     e.preventDefault();
     
@@ -36,16 +48,11 @@ export const Header: React.FC = () => {
       // Se for uma âncora, navegar para home e fazer scroll
       const sectionId = path.substring(2); // Remove '/#'
       
-      if (location.pathname !== '/') {
-        // Se não estiver na home, navegar primeiro
-        navigate('/');
-        setTimeout(() => {
-          scrollToSection(sectionId);
-        }, 100);
-      } else {
-        // Se já estiver na home, fazer scroll direto
+      // Sempre navegar para home primeiro quando for uma âncora
+      navigate('/');
+      setTimeout(() => {
         scrollToSection(sectionId);
-      }
+      }, 100);
     } else if (path === '/') {
       // Para o item Home, navegar para home e fazer scroll para o topo
       navigate('/');
@@ -58,6 +65,13 @@ export const Header: React.FC = () => {
     } else {
       // Navegação normal para outras páginas
       navigate(path);
+      // Fazer scroll para o topo após navegar para qualquer página
+      setTimeout(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }, 100);
     }
     
     setIsMenuOpen(false);
