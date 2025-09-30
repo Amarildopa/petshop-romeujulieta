@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import type { User } from '@supabase/supabase-js'
 
 export interface Profile {
   id: string
@@ -7,8 +8,15 @@ export interface Profile {
   full_name: string
   email: string
   phone: string
-  address: string
+  cpf: string
   cep: string
+  street: string
+  number: string
+  neighborhood: string
+  city: string
+  state: string
+  complement: string
+  address: string
   avatar_url: string | null
 }
 
@@ -88,7 +96,7 @@ export const profileService = {
   },
 
   // Create basic profile from user data
-  createBasicProfile(user: unknown): Profile {
+  createBasicProfile(user: User): Profile {
     return {
       id: user.id,
       created_at: new Date().toISOString(),
@@ -96,8 +104,15 @@ export const profileService = {
       full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário',
       email: user.email || '',
       phone: user.user_metadata?.phone || '',
-      address: '',
+      cpf: '',
       cep: '',
+      street: '',
+      number: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+      complement: '',
+      address: '',
       avatar_url: user.user_metadata?.avatar_url || null
     }
   },
@@ -157,94 +172,50 @@ export const profileService = {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      throw new Error('User not authenticated')
+      throw new Error('Usuário não autenticado')
+    }
+
+    // Validações básicas
+    if (!file.type.startsWith('image/')) {
+      throw new Error('Por favor, selecione apenas arquivos de imagem.')
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB
+      throw new Error('A imagem deve ter no máximo 5MB.')
     }
 
     try {
-      // Criar URL local temporária como fallback
-      const localUrl = URL.createObjectURL(file)
-      
-      // Tentar upload para o Supabase Storage
+      // Gerar nome único para o arquivo
       const fileExt = file.name.split('.').pop()
       const fileName = `${user.id}-${Date.now()}.${fileExt}`
-      const filePath = `avatars/${fileName}`
 
-      console.log('Tentando upload para:', filePath)
+      // Upload direto para o bucket 'avatars'
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        })
 
-      // Verificar se o storage está disponível
-      try {
-        const { data: buckets, error: listError } = await supabase.storage.listBuckets()
-        
-        if (listError) {
-          console.warn('Storage não disponível, usando URL local:', listError.message)
-          await this.updateProfile({ avatar_url: localUrl })
-          return localUrl
-        }
-
-        // Procurar por bucket 'avatars' ou 'avatars_novo'
-        let avatarBucket = buckets?.find(bucket => bucket.name === 'avatars')
-        let bucketName = 'avatars'
-        
-        if (!avatarBucket) {
-          avatarBucket = buckets?.find(bucket => bucket.name === 'avatars_novo')
-          bucketName = 'avatars_novo'
-        }
-        
-        if (!avatarBucket) {
-          console.warn('Nenhum bucket de avatars encontrado (avatars ou avatars_novo), criando avatars...')
-          const { error: createError } = await supabase.storage.createBucket('avatars', {
-            public: true,
-            allowedMimeTypes: ['image/*'],
-            fileSizeLimit: 5242880 // 5MB
-          })
-          
-          if (createError) {
-            console.warn('Falha ao criar bucket, usando URL local:', createError.message)
-            await this.updateProfile({ avatar_url: localUrl })
-            return localUrl
-          }
-          bucketName = 'avatars'
-        }
-        
-        console.log('Usando bucket:', bucketName)
-
-        // Tentar fazer upload
-        const { error: uploadError } = await supabase.storage
-          .from(bucketName)
-          .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: true
-          })
-
-        if (uploadError) {
-          console.warn('Erro no upload, usando URL local:', uploadError.message)
-          await this.updateProfile({ avatar_url: localUrl })
-          return localUrl
-        }
-
-        // Obter URL pública
-        const { data: { publicUrl } } = supabase.storage
-          .from(bucketName)
-          .getPublicUrl(filePath)
-
-        console.log('Upload realizado com sucesso:', publicUrl)
-        
-        // Atualizar perfil com URL do Supabase
-        await this.updateProfile({ avatar_url: publicUrl })
-        return publicUrl
-        
-      } catch (storageError) {
-        console.warn('Erro no sistema de storage, usando URL local:', storageError)
-        await this.updateProfile({ avatar_url: localUrl })
-        return localUrl
+      if (uploadError) {
+        throw new Error(`Erro no upload: ${uploadError.message}`)
       }
+
+      // Obter URL pública
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName)
+
+      const publicUrl = urlData.publicUrl
+
+      // Atualizar perfil com a nova URL
+      await this.updateProfile({ avatar_url: publicUrl })
+      
+      return publicUrl
       
     } catch (error) {
-      console.error('Erro geral no upload:', error)
-      // Em caso de erro total, criar URL local
-      const localUrl = URL.createObjectURL(file)
-      await this.updateProfile({ avatar_url: localUrl })
-      return localUrl
+      console.error('Erro no upload do avatar:', error)
+      throw error
     }
   }
 }

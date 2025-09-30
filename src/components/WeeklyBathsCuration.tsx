@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Check, X, Edit3, Calendar, Dog, Clock, AlertCircle, Plus, Trash2 } from 'lucide-react';
-import { weeklyBathsService, WeeklyBath, WeeklyBathCreate } from '../services/weeklyBathsService';
+import { weeklyBathsService, WeeklyBath, WeeklyBathCreate, getCurrentWeekStart } from '../services/weeklyBathsService';
 import PhotoUpload from './PhotoUpload';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -26,7 +26,7 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
     try {
       setLoading(true);
       setError(null);
-      const data = await weeklyBathsService.getAllWeeklyBaths();
+      const data = await weeklyBathsService.getPendingBaths();
       setBaths(data);
     } catch (err) {
       console.error('Erro ao carregar banhos:', err);
@@ -38,9 +38,9 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
 
   const handleApprove = async (id: string) => {
     try {
-      await weeklyBathsService.updateWeeklyBath(id, { is_approved: true });
+      await weeklyBathsService.updateWeeklyBath(id, { approved: true });
       setBaths(prev => prev.map(bath => 
-        bath.id === id ? { ...bath, is_approved: true } : bath
+        bath.id === id ? { ...bath, approved: true } : bath
       ));
     } catch (err) {
       console.error('Erro ao aprovar banho:', err);
@@ -50,9 +50,9 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
 
   const handleReject = async (id: string) => {
     try {
-      await weeklyBathsService.updateWeeklyBath(id, { is_approved: false });
+      await weeklyBathsService.updateWeeklyBath(id, { approved: false });
       setBaths(prev => prev.map(bath => 
-        bath.id === id ? { ...bath, is_approved: false } : bath
+        bath.id === id ? { ...bath, approved: false } : bath
       ));
     } catch (err) {
       console.error('Erro ao rejeitar banho:', err);
@@ -107,8 +107,8 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
         image_url: newBath.image_url,
         pet_name: newBath.pet_name,
         bath_date: newBath.bath_date,
-        description: newBath.description || '',
-        is_approved: false
+        week_start: getCurrentWeekStart(),
+        curator_notes: newBath.curator_notes || ''
       };
       
       const createdBath = await weeklyBathsService.createWeeklyBath(bathData);
@@ -235,14 +235,14 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Descrição
+                  Notas do Curador
                 </label>
                 <textarea
-                  value={newBath.description || ''}
-                  onChange={(e) => setNewBath({ ...newBath, description: e.target.value })}
+                  value={newBath.curator_notes || ''}
+                  onChange={(e) => setNewBath({ ...newBath, curator_notes: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                   rows={3}
-                  placeholder="Descrição opcional do banho"
+                  placeholder="Notas opcionais sobre o banho"
                 />
               </div>
             </div>
@@ -338,10 +338,11 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
                       className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                     />
                     <textarea
-                      value={editingBath.description || ''}
-                      onChange={(e) => setEditingBath({ ...editingBath, description: e.target.value })}
+                      value={editingBath.curator_notes || ''}
+                      onChange={(e) => setEditingBath({ ...editingBath, curator_notes: e.target.value })}
                       className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       rows={2}
+                      placeholder="Notas do curador"
                     />
                     <div className="flex space-x-2">
                       <button
@@ -372,13 +373,13 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
                       </p>
                     </div>
                     
-                    {bath.description && (
-                      <p className="text-sm text-gray-700">{bath.description}</p>
+                    {bath.curator_notes && (
+                      <p className="text-sm text-gray-700">{bath.curator_notes}</p>
                     )}
                     
                     {/* Actions */}
                     <div className="flex space-x-2 pt-2">
-                      {bath.is_approved !== true && (
+                      {bath.approved !== true && (
                         <button
                           onClick={() => handleApprove(bath.id)}
                           className="flex-1 px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 transition-colors flex items-center justify-center"
@@ -388,7 +389,7 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
                         </button>
                       )}
                       
-                      {bath.is_approved !== false && (
+                      {bath.approved !== false && (
                         <button
                           onClick={() => handleReject(bath.id)}
                           className="flex-1 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors flex items-center justify-center"

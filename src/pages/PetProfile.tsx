@@ -13,8 +13,9 @@ import {
   Star,
   Activity
 } from 'lucide-react';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuth } from '../hooks/useAuth';
-import { petsService, type Pet } from '../services/petsService';
+import { petsService, type Pet, type Vaccination } from '../services/petsService';
 import { getImageUrl } from '../config/images';
 
 const PetProfile: React.FC = () => {
@@ -109,12 +110,12 @@ const PetProfile: React.FC = () => {
     }
     
     const upcoming = currentPet.vaccinations
-      .map(vacc => ({
+      .map((vacc: Vaccination) => ({
         ...vacc,
         daysUntil: Math.ceil((new Date(vacc.nextDue).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
       }))
-      .filter(vacc => vacc.daysUntil > 0)
-      .sort((a, b) => a.daysUntil - b.daysUntil)[0];
+      .filter((vacc: Vaccination & { daysUntil: number }) => vacc.daysUntil > 0)
+      .sort((a: Vaccination & { daysUntil: number }, b: Vaccination & { daysUntil: number }) => a.daysUntil - b.daysUntil)[0];
     
     return upcoming;
   };
@@ -131,7 +132,7 @@ const PetProfile: React.FC = () => {
     return (
       <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <LoadingSpinner size="lg" />
           <p className="mt-4 text-text-color">Verificando autenticação...</p>
         </div>
       </div>
@@ -148,7 +149,7 @@ const PetProfile: React.FC = () => {
     return (
       <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <LoadingSpinner size="lg" />
           <p className="mt-4 text-text-color">Nenhum pet encontrado...</p>
         </div>
       </div>
@@ -159,8 +160,7 @@ const PetProfile: React.FC = () => {
     return (
       <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-text-color">Carregando pets...</p>
+          <LoadingSpinner size="lg" message="Carregando pets..." />
         </div>
       </div>
     );
@@ -341,7 +341,7 @@ const PetProfile: React.FC = () => {
                   {isEditing ? (
                     <input
                       type="text"
-                      value={editedPet.age || currentPet.age}
+                      value={editedPet.age || currentPet.age || ''}
                       onChange={(e) => setEditedPet(prev => ({ ...prev, age: e.target.value }))}
                       className="font-semibold text-text-color-dark bg-white border border-gray-300 rounded px-2 py-1 text-center text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                     />
@@ -355,8 +355,11 @@ const PetProfile: React.FC = () => {
                   {isEditing ? (
                     <input
                       type="text"
-                      value={editedPet.weight || currentPet.weight}
-                      onChange={(e) => setEditedPet(prev => ({ ...prev, weight: e.target.value }))}
+                      value={editedPet.weight || currentPet.weight || ''}
+                      onChange={(e) => setEditedPet(prev => ({ 
+                        ...prev, 
+                        weight: e.target.value ? parseFloat(e.target.value) || null : null 
+                      }))}
                       className="font-semibold text-text-color-dark bg-white border border-gray-300 rounded px-2 py-1 text-center text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   ) : (

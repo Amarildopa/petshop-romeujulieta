@@ -11,6 +11,7 @@ import {
   CreditCard,
   TrendingUp
 } from 'lucide-react';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuth } from '../hooks/useAuth';
 import { subscriptionPlansService, type SubscriptionPlan } from '../services/subscriptionPlansService';
 import { userSubscriptionsService, type UserSubscription } from '../services/userSubscriptionsService';
@@ -135,10 +136,7 @@ const Subscription: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface pt-8 pb-12 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-text-color">Carregando planos...</p>
-        </div>
+        <LoadingSpinner size="lg" message="Carregando planos..." />
       </div>
     );
   }

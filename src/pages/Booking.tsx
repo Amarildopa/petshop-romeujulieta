@@ -11,6 +11,7 @@ import { appointmentsService } from '../services/appointmentsService';
 import { getImageUrl } from '../config/images';
 import { BreedSelector } from '../components/BreedSelector';
 import PhotoUpload from '../components/PhotoUpload';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 // Função para calcular idade baseada na data de nascimento
 const calculateAge = (birthDate: string): string => {
@@ -668,7 +669,7 @@ const Booking: React.FC = () => {
                     >
                       {petFormLoading ? (
                         <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <LoadingSpinner size="sm" />
                           <span>Cadastrando...</span>
                         </>
                       ) : (

@@ -25,15 +25,36 @@ const Monitoring = lazy(() => import('./pages/Monitoring'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminReports = lazy(() => import('./pages/AdminReports'));
+const AdminTickets = lazy(() => import('./pages/AdminTickets'));
+const AdminNotifications = lazy(() => import('./pages/AdminNotifications'));
+const AdminLogs = lazy(() => import('./pages/AdminLogs'));
+const AdminSettings = lazy(() => import('./pages/AdminSettings'));
+const AdminSecurity = lazy(() => import('./pages/AdminSecurity'));
+const AdminProducts = lazy(() => import('./pages/AdminProducts'));
+const AdminOrders = lazy(() => import('./pages/AdminOrders'));
 const AdminLayout = lazy(() => import('./components/AdminLayout'));
 const TestSupabase = lazy(() => import('./pages/TestSupabase'));
 const TestSimple = lazy(() => import('./pages/TestSimple'));
 const PhotoTest = lazy(() => import('./pages/PhotoTest'));
 const ThemeCustomizer = lazy(() => import('./pages/ThemeCustomizer'));
 const Checkout = lazy(() => import('./pages/Checkout'));
+const ProductCheckout = lazy(() => import('./pages/ProductCheckout'));
 const PaymentConfirmation = lazy(() => import('./pages/PaymentConfirmation'));
+const Orders = lazy(() => import('./pages/Orders'));
+const Reviews = lazy(() => import('./pages/Reviews'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
+const ProductComparison = lazy(() => import('./pages/ProductComparison'));
 const WhatsAppTest = lazy(() => import('./pages/WhatsAppTest'));
 const BanhoTosaSpa = lazy(() => import('./pages/BanhoTosaSpa'));
+const RTSPStreaming = lazy(() => import('./pages/RTSPStreaming'));
+const Loyalty = lazy(() => import('./pages/Loyalty'));
+const Affiliates = lazy(() => import('./pages/Affiliates'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+const LiveChat = lazy(() => import('./pages/LiveChat'));
+const Marketplace = lazy(() => import('./pages/Marketplace'));
+const SocialIntegration = lazy(() => import('./pages/SocialIntegration'));
+const Subscriptions = lazy(() => import('./pages/Subscriptions'));
+const SharedJourney = lazy(() => import('./pages/SharedJourney'));
 
 function App() {
   return (
@@ -53,8 +74,22 @@ function App() {
               <Route path="/offers" element={<Offers />} />
               <Route path="/banho-tosa-spa" element={<BanhoTosaSpa />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/product-checkout" element={<ProductCheckout />} />
               <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/comparison" element={<ProductComparison />} />
+              <Route path="/loyalty" element={<Loyalty />} />
+              <Route path="/affiliates" element={<Affiliates />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/live-chat" element={<LiveChat />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/social-integration" element={<SocialIntegration />} />
+              <Route path="/subscriptions" element={<Subscriptions />} />
               <Route path="/whatsapp-test" element={<WhatsAppTest />} />
+              <Route path="/rtsp-test" element={<RTSPStreaming />} />
+              <Route path="/shared/:shareToken" element={<SharedJourney />} />
               
               {/* Rotas protegidas */}
               <Route path="/profile" element={<Profile />} />
@@ -82,6 +117,41 @@ function App() {
                 <Route path="reports" element={
                   <AdminRouteGuard requiredPermission="reports">
                     <AdminReports />
+                  </AdminRouteGuard>
+                } />
+                <Route path="tickets" element={
+                  <AdminRouteGuard requiredPermission="tickets">
+                    <AdminTickets />
+                  </AdminRouteGuard>
+                } />
+                <Route path="notifications" element={
+                  <AdminRouteGuard requiredPermission="notifications">
+                    <AdminNotifications />
+                  </AdminRouteGuard>
+                } />
+                <Route path="logs" element={
+                  <AdminRouteGuard requiredPermission="logs">
+                    <AdminLogs />
+                  </AdminRouteGuard>
+                } />
+                <Route path="settings" element={
+                  <AdminRouteGuard requiredPermission="settings">
+                    <AdminSettings />
+                  </AdminRouteGuard>
+                } />
+                <Route path="security" element={
+                  <AdminRouteGuard requiredPermission="security">
+                    <AdminSecurity />
+                  </AdminRouteGuard>
+                } />
+                <Route path="products" element={
+                  <AdminRouteGuard requiredPermission="products">
+                    <AdminProducts />
+                  </AdminRouteGuard>
+                } />
+                <Route path="orders" element={
+                  <AdminRouteGuard requiredPermission="orders">
+                    <AdminOrders />
                   </AdminRouteGuard>
                 } />
               </Route>

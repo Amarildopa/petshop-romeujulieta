@@ -45,14 +45,20 @@ export const Header: React.FC = () => {
     e.preventDefault();
     
     if (path.startsWith('/#')) {
-      // Se for uma âncora, navegar para home e fazer scroll
+      // Se for uma âncora, verificar se já está na home
       const sectionId = path.substring(2); // Remove '/#'
       
-      // Sempre navegar para home primeiro quando for uma âncora
-      navigate('/');
-      setTimeout(() => {
+      if (location.pathname === '/') {
+        // Já está na home, apenas fazer scroll
         scrollToSection(sectionId);
-      }, 100);
+      } else {
+        // Não está na home, navegar para home e depois fazer scroll
+        navigate('/');
+        // Aumentar o timeout para garantir que a página carregue completamente
+        setTimeout(() => {
+          scrollToSection(sectionId);
+        }, 300);
+      }
     } else if (path === '/') {
       // Para o item Home, navegar para home e fazer scroll para o topo
       navigate('/');
@@ -87,6 +93,20 @@ export const Header: React.FC = () => {
         top: elementPosition,
         behavior: 'smooth'
       });
+    } else {
+      // Se o elemento não for encontrado imediatamente, tentar novamente após um pequeno delay
+      setTimeout(() => {
+        const retryElement = document.getElementById(sectionId);
+        if (retryElement) {
+          const headerHeight = 80;
+          const elementPosition = retryElement.offsetTop - headerHeight;
+          
+          window.scrollTo({
+            top: elementPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
     }
   };
 

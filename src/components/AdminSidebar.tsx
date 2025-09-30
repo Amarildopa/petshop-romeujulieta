@@ -11,7 +11,9 @@ import {
   Activity,
   Home,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Package,
+  ShoppingCart
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -34,6 +36,18 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggle }) =>
       label: 'Usuários',
       icon: <Users className="h-5 w-5" />,
       description: 'Gerenciar usuários'
+    },
+    {
+      path: '/admin/products',
+      label: 'Produtos',
+      icon: <Package className="h-5 w-5" />,
+      description: 'Gerenciar produtos'
+    },
+    {
+      path: '/admin/orders',
+      label: 'Pedidos',
+      icon: <ShoppingCart className="h-5 w-5" />,
+      description: 'Gerenciar pedidos'
     },
     {
       path: '/admin/reports',

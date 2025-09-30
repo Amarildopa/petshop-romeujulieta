@@ -1,0 +1,13 @@
+# Ignore HLS streaming files
+server/hls/
+
+# Ignore node_modules
+node_modules/
+
+# Ignore build outputs
+dist/
+build/
+
+# Ignore temporary files
+*.tmp
+*.temp

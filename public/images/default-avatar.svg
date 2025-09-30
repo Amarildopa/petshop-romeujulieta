@@ -1,0 +1,39 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="60" fill="#f3f4f6"/>
+  
+  <!-- Dog head -->
+  <ellipse cx="60" cy="55" rx="25" ry="22" fill="#8B4513"/>
+  
+  <!-- Dog ears -->
+  <ellipse cx="45" cy="40" rx="8" ry="15" fill="#654321" transform="rotate(-20 45 40)"/>
+  <ellipse cx="75" cy="40" rx="8" ry="15" fill="#654321" transform="rotate(20 75 40)"/>
+  
+  <!-- Dog snout -->
+  <ellipse cx="60" cy="65" rx="12" ry="8" fill="#D2B48C"/>
+  
+  <!-- Dog nose -->
+  <ellipse cx="60" cy="62" rx="3" ry="2" fill="#000"/>
+  
+  <!-- Dog eyes -->
+  <circle cx="52" cy="50" r="3" fill="#000"/>
+  <circle cx="68" cy="50" r="3" fill="#000"/>
+  <circle cx="53" cy="49" r="1" fill="#fff"/>
+  <circle cx="69" cy="49" r="1" fill="#fff"/>
+  
+  <!-- Dog mouth -->
+  <path d="M60 68 Q55 72 50 70" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M60 68 Q65 72 70 70" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  
+  <!-- Tie -->
+  <polygon points="60,75 55,85 60,95 65,85" fill="#1e40af"/>
+  <polygon points="55,75 65,75 62,80 58,80" fill="#3b82f6"/>
+  
+  <!-- Tie pattern -->
+  <circle cx="60" cy="82" r="1.5" fill="#60a5fa"/>
+  <circle cx="60" cy="88" r="1.5" fill="#60a5fa"/>
+  
+  <!-- Collar -->
+  <rect x="45" y="75" width="30" height="4" rx="2" fill="#4b5563"/>
+  <circle cx="60" cy="77" r="1" fill="#fbbf24"/>
+</svg>

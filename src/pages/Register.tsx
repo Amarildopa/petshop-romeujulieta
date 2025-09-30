@@ -8,6 +8,7 @@ import { DISCOUNT_CONFIG } from '../config/discounts';
 import { profileService } from '../services/profileService';
 import { petsService } from '../services/petsService';
 import { BreedSelector } from '../components/BreedSelector';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 interface Pet {
   name: string;
@@ -538,7 +539,14 @@ const Register: React.FC = () => {
                       : 'bg-primary text-white hover:bg-primary-dark hover:shadow-lg'
                   }`}
                 >
-                  {loading ? 'Criando conta...' : 'Continuar'}
+                  {loading ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <LoadingSpinner size="sm" />
+                      <span>Criando conta...</span>
+                    </div>
+                  ) : (
+                    'Continuar'
+                  )}
                 </button>
               </form>
 
@@ -796,7 +804,14 @@ const Register: React.FC = () => {
                     : 'bg-primary text-white hover:bg-primary-dark'
                 }`}
               >
-                {loading ? 'Criando conta...' : 'Finalizar Cadastro'}
+                {loading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <LoadingSpinner size="sm" />
+                    <span>Criando conta...</span>
+                  </div>
+                ) : (
+                  'Finalizar Cadastro'
+                )}
               </button>
             </div>
           </motion.div>

@@ -17,6 +17,12 @@ const calculateAge = (birthDate: string): string => {
   return age > 0 ? `${age} anos` : 'Menos de 1 ano';
 };
 
+export interface Vaccination {
+  name: string
+  nextDue: string
+  lastGiven?: string
+}
+
 export interface Pet {
   id: string
   created_at: string
@@ -26,6 +32,7 @@ export interface Pet {
   species: string
   breed: string
   birth_date?: string | null
+  death_date?: string | null  // Data de óbito do pet
   age?: string | null
   weight?: number | null  // NUMERIC no banco
   height?: string | null  // TEXT no banco
@@ -38,6 +45,7 @@ export interface Pet {
   personality?: string[]
   allergies?: string[]
   medications?: string[]
+  vaccinations?: Vaccination[]
 }
 
 export const petsService = {
@@ -57,6 +65,7 @@ export const petsService = {
     const { data, error } = await supabase
       .from('pets_pet')
       .select('*')
+      .eq('owner_id', session.user.id)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -83,6 +92,7 @@ export const petsService = {
       .from('pets_pet')
       .select('*')
       .eq('id', id)
+      .eq('owner_id', session.user.id)
       .single()
 
     if (error) {
@@ -181,6 +191,7 @@ export const petsService = {
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
+      .eq('owner_id', session.user.id)
       .select()
       .single()
 
@@ -208,6 +219,7 @@ export const petsService = {
       .from('pets_pet')
       .delete()
       .eq('id', id)
+      .eq('owner_id', session.user.id)
 
     if (error) {
       throw new Error(`Erro ao deletar pet: ${error.message}`)

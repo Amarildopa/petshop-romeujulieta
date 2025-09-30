@@ -29,15 +29,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Verificar se há uma sessão ativa
     const getSession = async () => {
       try {
+        console.log('🔍 AuthContext: Verificando sessão...');
         const { data: { session }, error } = await supabase.auth.getSession()
         if (error) {
-          console.error('Erro ao obter sessão:', error)
+          console.error('❌ AuthContext: Erro ao obter sessão:', error)
         } else {
+          console.log('✅ AuthContext: Sessão obtida:', session ? 'Logado' : 'Não logado');
+          console.log('👤 AuthContext: User:', session?.user?.email || 'Nenhum');
           setSession(session)
           setUser(session?.user ?? null)
         }
       } catch (error) {
-        console.error('Erro ao verificar sessão:', error)
+        console.error('❌ AuthContext: Erro ao verificar sessão:', error)
       } finally {
         setLoading(false)
       }

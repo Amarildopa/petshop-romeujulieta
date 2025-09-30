@@ -12,3 +12,6 @@ petshop-romeujulieta-firebase-adminsdk-key.json
 # Build outputs
 dist/
 build/
+
+# HLS streaming files (temporary)
+server/hls/

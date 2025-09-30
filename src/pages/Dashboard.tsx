@@ -20,13 +20,16 @@ import {
 } from 'lucide-react';
 import { LiveFeedModal } from '../components/LiveFeedModal';
 import { ServiceProgressBar } from '../components/ServiceProgressBar';
+import { PetSelector } from '../components/PetSelector';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { petsService, type Pet } from '../services/petsService';
 import { appointmentsService, type Appointment } from '../services/appointmentsService';
+import { userSubscriptionsService } from '../services/userSubscriptionsService';
 import { useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../config/images';
 import { generatePlaceholderImages } from '../utils/placeholderImages';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Dashboard: React.FC = () => {
   const [isLiveFeedOpen, setIsLiveFeedOpen] = useState(false);
@@ -36,6 +39,8 @@ const Dashboard: React.FC = () => {
   const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null);
+  const [selectedPetId, setSelectedPetId] = useState<string>('');
   const { user, loading: authLoading } = useAuth();
   const { profile } = useUserProfile();
   const navigate = useNavigate();
@@ -60,15 +65,28 @@ const Dashboard: React.FC = () => {
       
       try {
         setLoading(true);
-        const [petsData, appointmentsData] = await Promise.all([
+        console.log('🔍 Dashboard - Carregando dados para usuário:', user.id);
+        const [petsData, appointmentsData, activeSubscription] = await Promise.all([
           petsService.getPets(),
-          appointmentsService.getUpcomingAppointments()
+          appointmentsService.getUpcomingAppointments(),
+          userSubscriptionsService.getActiveSubscription(user.id)
         ]);
         
+        console.log('🐕 Dashboard - Pets carregados:', petsData);
+        console.log('📊 Dashboard - Total de pets:', petsData.length);
+        console.info('🔍 Dashboard - IDs dos pets:', JSON.stringify(petsData.map(p => ({ id: p.id, name: p.name })), null, 2));
         setPets(petsData);
         setUpcomingAppointments(appointmentsData);
+        setHasActiveSubscription(!!activeSubscription);
+        
+        // Set default selected pet to first pet
+        if (petsData.length > 0 && !selectedPetId) {
+          setSelectedPetId(petsData[0].id);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+        // Em caso de erro na verificação de assinatura, assumir que não tem
+        setHasActiveSubscription(false);
       } finally {
         setLoading(false);
       }
@@ -120,11 +138,8 @@ const Dashboard: React.FC = () => {
   // Show loading while checking authentication
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-surface-dark pt-8 pb-12 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-text-color">Verificando autenticação...</p>
-        </div>
+      <div className="min-h-screen bg-yellow-50 pt-8 pb-12 flex items-center justify-center">
+        <LoadingSpinner size="lg" message="Verificando autenticação..." />
       </div>
     );
   }
@@ -136,11 +151,8 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-dark pt-8 pb-12 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-text-color">Carregando dados...</p>
-        </div>
+      <div className="min-h-screen bg-yellow-50 pt-8 pb-12 flex items-center justify-center">
+        <LoadingSpinner size="lg" message="Carregando dados..." />
       </div>
     );
   }
@@ -162,7 +174,7 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-surface-dark pt-8 pb-12">
+    <div className="min-h-screen bg-yellow-50 pt-8 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -200,6 +212,42 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
         </motion.div>
+
+        {/* Subscription Banner for users without active subscription */}
+        {hasActiveSubscription === false && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8 bg-gradient-to-r from-primary to-primary-dark rounded-2xl shadow-lg border border-primary/20 p-6 text-white"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <div className="flex items-center mb-2">
+                  <Sparkles className="h-6 w-6 mr-2" />
+                  <h3 className="text-xl font-bold">Desbloqueie Todo o Potencial!</h3>
+                </div>
+                <p className="text-primary-light mb-4">
+                  Aproveite serviços ilimitados, acompanhamento em tempo real, álbum de memórias e muito mais com nossos planos premium.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">✨ Serviços Ilimitados</span>
+                  <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">📹 Câmera ao Vivo</span>
+                  <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">📸 Álbum de Memórias</span>
+                  <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">💰 Cashback</span>
+                </div>
+              </div>
+              <div className="ml-6">
+                <Link
+                  to="/subscription"
+                  className="bg-white text-primary px-6 py-3 rounded-lg font-bold hover:bg-gray-50 transition-colors shadow-lg"
+                >
+                  Ver Planos
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -276,16 +324,31 @@ const Dashboard: React.FC = () => {
                       <BookOpen className="h-6 w-6 mr-3 text-primary-dark" />
                       Jornada de Crescimento
                     </h2>
-                    <span className="flex items-center text-xs font-bold text-status-warning bg-status-warning-light px-3 py-1 rounded-full">
-                      <Sparkles className="h-4 w-4 mr-1" />
-                      VIP
-                    </span>
                   </div>
+                  
+                  {/* Pet Selector - only show if multiple pets */}
+                  {pets.length > 1 && (
+                    <div className="mb-4">
+                      <PetSelector
+                        pets={pets}
+                        selectedPetId={selectedPetId}
+                        onPetSelect={setSelectedPetId}
+                        showLabel={false}
+                        className="w-full"
+                      />
+                    </div>
+                  )}
+                  
                   <div className="flex flex-col md:flex-row items-center gap-6">
                     <div className="flex-1">
-                      <h3 className="text-lg font-bold text-text-color-dark">Álbum de Memórias da Luna</h3>
+                      <h3 className="text-lg font-bold text-text-color-dark">
+                        Álbum de Memórias dos seus Pets
+                      </h3>
                       <p className="text-text-color mt-2 mb-4">
-                        Reviva os melhores momentos, desde o primeiro dia até hoje.
+                        {pets.length > 0 
+                          ? 'Reviva os melhores momentos, desde o primeiro dia até hoje.'
+                          : 'Adicione um pet para começar a documentar sua jornada de crescimento.'
+                        }
                       </p>
                     </div>
                     <div className="relative h-24 w-32 flex-shrink-0">
@@ -308,12 +371,21 @@ const Dashboard: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <Link
-                  to="/journey/luna"
-                  className="inline-flex items-center justify-center bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-shadow shadow-md mt-4"
-                >
-                  Ver Jornada Completa <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+                {pets.length > 0 ? (
+                  <Link
+                    to={`/journey/${selectedPetId || pets[0].id}`}
+                    className="inline-flex items-center justify-center bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-shadow shadow-md mt-4"
+                  >
+                    Ver Jornada Completa <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                ) : (
+                  <Link
+                    to="/pet-profile"
+                    className="inline-flex items-center justify-center bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-dark transition-shadow shadow-md mt-4"
+                  >
+                    Adicionar Pet <Plus className="ml-2 h-4 w-4" />
+                  </Link>
+                )}
               </motion.div>
             </div>
             

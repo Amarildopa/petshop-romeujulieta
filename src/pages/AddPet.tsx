@@ -5,6 +5,7 @@ import { ArrowLeft, Plus, User, Loader2 } from 'lucide-react';
 import { petsService } from '../services/petsService';
 import { BreedSelector } from '../components/BreedSelector';
 import PhotoUpload from '../components/PhotoUpload';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 const AddPet: React.FC = () => {
   const navigate = useNavigate();
@@ -389,7 +390,7 @@ const AddPet: React.FC = () => {
             >
               {loading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <LoadingSpinner size="sm" />
                   <span>Cadastrando...</span>
                 </>
               ) : (

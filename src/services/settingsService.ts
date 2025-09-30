@@ -92,7 +92,34 @@ class SettingsService {
       if (error) throw error
 
       if (data?.value) {
-        return JSON.parse(data.value) as BusinessHours
+        try {
+          // Verifica se o valor não é um JWT (que começa com "eyJ")
+          if (data.value.startsWith('eyJ')) {
+            logger.warn('Tentativa de parsear JWT como JSON em business_hours', { value: data.value.substring(0, 20) + '...' })
+            // Retorna valores padrão se for um JWT
+            return {
+              monday: { open: '08:00', close: '18:00' },
+              tuesday: { open: '08:00', close: '18:00' },
+              wednesday: { open: '08:00', close: '18:00' },
+              thursday: { open: '08:00', close: '18:00' },
+              friday: { open: '08:00', close: '18:00' },
+              saturday: { open: '08:00', close: '17:00' }
+            }
+          }
+          
+          return JSON.parse(data.value) as BusinessHours
+        } catch (error) {
+          logger.error('Erro ao parsear business_hours JSON', error as Error, { value: data.value })
+          // Retorna valores padrão em caso de erro
+          return {
+            monday: { open: '08:00', close: '18:00' },
+            tuesday: { open: '08:00', close: '18:00' },
+            wednesday: { open: '08:00', close: '18:00' },
+            thursday: { open: '08:00', close: '18:00' },
+            friday: { open: '08:00', close: '18:00' },
+            saturday: { open: '08:00', close: '17:00' }
+          }
+        }
       }
 
       // Valores padrão

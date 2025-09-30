@@ -18,6 +18,7 @@ import {
   RefreshCw
 } from 'lucide-react'
 import { adminService, AdminNotification, SupportTicket } from '../services/adminService'
+import { ordersService } from '../services/ordersService'
 import { logger } from '../lib/logger'
 import { metrics } from '../lib/metrics'
 
@@ -32,46 +33,103 @@ interface DashboardStats {
   unreadNotifications: number
 }
 
+interface SalesMetrics {
+  totalRevenue: number
+  totalOrders: number
+  averageOrderValue: number
+  revenueByDay: Array<{ date: string; revenue: number }>
+  ordersByStatus: Array<{ status: string; count: number }>
+  topProducts: Array<{ name: string; sales: number; revenue: number }>
+}
+
+interface PerformanceMetrics {
+  systemUptime: number
+  responseTime: number
+  pageViews: number
+}
+
 const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [salesMetrics, setSalesMetrics] = useState<SalesMetrics>({
+    totalRevenue: 0,
+    totalOrders: 0,
+    averageOrderValue: 0,
+    revenueByDay: [],
+    ordersByStatus: [],
+    topProducts: []
+  })
+  const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics | null>(null)
   const [notifications, setNotifications] = useState<AdminNotification[]>([])
   const [recentTickets, setRecentTickets] = useState<SupportTicket[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
+  const loadSalesMetrics = async () => {
+    try {
+      const [revenueStats, ordersByStatus] = await Promise.all([
+        ordersService.getRevenueStats(),
+        ordersService.getOrdersCountByStatus()
+      ])
+
+      setSalesMetrics({
+        totalRevenue: revenueStats.totalRevenue,
+        totalOrders: revenueStats.totalOrders,
+        averageOrderValue: revenueStats.averageOrderValue,
+        revenueByDay: revenueStats.revenueByDay,
+        ordersByStatus: Object.entries(ordersByStatus).map(([status, count]) => ({
+          status,
+          count: count as number
+        })),
+        topProducts: [] // TODO: Implementar quando tivermos dados de produtos mais vendidos
+      })
+    } catch (error) {
+      console.error('Erro ao carregar métricas de vendas:', error)
+    }
+  }
+
   const loadDashboardData = async () => {
     try {
       setLoading(true)
       
-      // Carregar estatísticas básicas
-      const [notificationsData, ticketsData] = await Promise.all([
+      // Carregar dados reais do dashboard
+      const [notificationsData, ticketsData, dashboardStats, performanceData] = await Promise.all([
         adminService.getAdminNotifications(),
-        adminService.getSupportTickets(5, 0)
+        adminService.getSupportTickets(5, 0),
+        adminService.getDashboardStats(),
+        adminService.getPerformanceMetrics(),
+        loadSalesMetrics()
       ])
 
       setNotifications(notificationsData)
       setRecentTickets(ticketsData)
-
-      // Simular dados de estatísticas (em produção, viria de uma API)
-      const mockStats: DashboardStats = {
-        totalUsers: 1247,
-        totalPets: 2156,
-        totalAppointments: 342,
-        totalOrders: 189,
-        totalRevenue: 45678.90,
-        activeAdmins: 3,
-        openTickets: 12,
-        unreadNotifications: notificationsData.filter(n => !n.is_read).length
-      }
-
-      setStats(mockStats)
+      setStats(dashboardStats)
+      setPerformanceMetrics(performanceData)
 
       // Log da ação
-      logger.info('Admin dashboard loaded', { stats: mockStats }, 'ADMIN')
+      logger.info('Admin dashboard loaded', { stats: dashboardStats, performance: performanceData }, 'ADMIN')
       metrics.recordBusinessEvent('admin_dashboard_viewed', 1, 'admin')
 
     } catch (error) {
       logger.error('Error loading dashboard data', error as Error, {}, 'ADMIN')
+      
+      // Em caso de erro, usar dados padrão
+      const fallbackStats: DashboardStats = {
+        totalUsers: 0,
+        totalPets: 0,
+        totalAppointments: 0,
+        totalOrders: 0,
+        totalRevenue: 0,
+        activeAdmins: 0,
+        openTickets: 0,
+        unreadNotifications: 0
+      }
+      const fallbackPerformance: PerformanceMetrics = {
+        systemUptime: 98.5,
+        responseTime: 2.3,
+        pageViews: 1200
+      }
+      setStats(fallbackStats)
+      setPerformanceMetrics(fallbackPerformance)
     } finally {
       setLoading(false)
     }
@@ -242,6 +300,62 @@ const AdminDashboard: React.FC = () => {
           </motion.div>
         </div>
 
+        {/* Métricas de Vendas */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-8 bg-white rounded-2xl shadow-lg p-6 border border-accent/20"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-text-color-dark">Métricas de Vendas</h2>
+            <TrendingUp className="h-5 w-5 text-green-600" />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div className="text-center">
+              <p className="text-sm text-text-color mb-1">Receita Total</p>
+              <p className="text-2xl font-bold text-green-600">{formatCurrency(salesMetrics.totalRevenue)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-text-color mb-1">Total de Pedidos</p>
+              <p className="text-2xl font-bold text-blue-600">{salesMetrics.totalOrders}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-text-color mb-1">Valor Médio do Pedido</p>
+              <p className="text-2xl font-bold text-purple-600">{formatCurrency(salesMetrics.averageOrderValue)}</p>
+            </div>
+          </div>
+
+          {/* Pedidos por Status */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-text-color-dark mb-4">Pedidos por Status</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {salesMetrics.ordersByStatus.map((item) => (
+                <div key={item.status} className="bg-gray-50 rounded-lg p-4 text-center">
+                  <p className="text-sm text-text-color capitalize">{item.status.replace('_', ' ')}</p>
+                  <p className="text-xl font-bold text-text-color-dark">{item.count}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Receita por Dia (últimos 7 dias) */}
+          {salesMetrics.revenueByDay.length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold text-text-color-dark mb-4">Receita dos Últimos 7 Dias</h3>
+              <div className="grid grid-cols-7 gap-2">
+                {salesMetrics.revenueByDay.slice(-7).map((day, index) => (
+                  <div key={index} className="bg-gray-50 rounded-lg p-3 text-center">
+                    <p className="text-xs text-text-color">{new Date(day.date).toLocaleDateString('pt-BR', { weekday: 'short' })}</p>
+                    <p className="text-sm font-bold text-green-600">{formatCurrency(day.revenue)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </motion.div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Notificações Recentes */}
           <motion.div
@@ -395,15 +509,26 @@ const AdminDashboard: React.FC = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">98.5%</div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">
+                {performanceMetrics ? `${performanceMetrics.systemUptime}%` : '98.5%'}
+              </div>
               <p className="text-sm text-text-color">Uptime do Sistema</p>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">2.3s</div>
+              <div className="text-3xl font-bold text-green-600 mb-2">
+                {performanceMetrics ? `${performanceMetrics.responseTime}s` : '2.3s'}
+              </div>
               <p className="text-sm text-text-color">Tempo de Resposta</p>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600 mb-2">1.2k</div>
+              <div className="text-3xl font-bold text-purple-600 mb-2">
+                {performanceMetrics ? 
+                  performanceMetrics.pageViews > 1000 ? 
+                    `${(performanceMetrics.pageViews / 1000).toFixed(1)}k` : 
+                    performanceMetrics.pageViews.toString()
+                  : '1.2k'
+                }
+              </div>
               <p className="text-sm text-text-color">Páginas Visualizadas</p>
             </div>
           </div>

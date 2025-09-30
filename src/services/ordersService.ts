@@ -297,6 +297,183 @@ export class OrdersService {
 
     return order;
   }
+
+  // Métodos administrativos
+  async getAllOrders(limit: number = 100, offset: number = 0): Promise<Order[]> {
+    const { data, error } = await supabase
+      .from('orders_pet')
+      .select(`
+        *,
+        profiles(full_name, email)
+      `)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      throw new Error(`Erro ao buscar todos os pedidos: ${error.message}`);
+    }
+
+    return data || [];
+  }
+
+  async getOrdersWithFilters(filters: {
+    status?: string;
+    paymentStatus?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    searchTerm?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<Order[]> {
+    let query = supabase
+      .from('orders_pet')
+      .select(`
+        *,
+        profiles(full_name, email)
+      `);
+
+    if (filters.status) {
+      query = query.eq('status', filters.status);
+    }
+
+    if (filters.paymentStatus) {
+      query = query.eq('payment_status', filters.paymentStatus);
+    }
+
+    if (filters.dateFrom) {
+      query = query.gte('created_at', filters.dateFrom);
+    }
+
+    if (filters.dateTo) {
+      query = query.lte('created_at', filters.dateTo);
+    }
+
+    if (filters.searchTerm) {
+      query = query.or(`order_number.ilike.%${filters.searchTerm}%,profiles.full_name.ilike.%${filters.searchTerm}%,profiles.email.ilike.%${filters.searchTerm}%`);
+    }
+
+    const { data, error } = await query
+      .order('created_at', { ascending: false })
+      .range(filters.offset || 0, (filters.offset || 0) + (filters.limit || 50) - 1);
+
+    if (error) {
+      throw new Error(`Erro ao buscar pedidos com filtros: ${error.message}`);
+    }
+
+    return data || [];
+  }
+
+  async getOrdersCount(): Promise<number> {
+    const { count, error } = await supabase
+      .from('orders_pet')
+      .select('*', { count: 'exact', head: true });
+
+    if (error) {
+      throw new Error(`Erro ao contar pedidos: ${error.message}`);
+    }
+
+    return count || 0;
+  }
+
+  async getOrdersCountByStatus(): Promise<Record<string, number>> {
+    const { data, error } = await supabase
+      .from('orders_pet')
+      .select('status');
+
+    if (error) {
+      throw new Error(`Erro ao contar pedidos por status: ${error.message}`);
+    }
+
+    const counts: Record<string, number> = {};
+    data?.forEach(order => {
+      counts[order.status] = (counts[order.status] || 0) + 1;
+    });
+
+    return counts;
+  }
+
+  async getRevenueStats(dateFrom?: string, dateTo?: string): Promise<{
+    totalRevenue: number;
+    totalOrders: number;
+    averageOrderValue: number;
+    revenueByDay: Array<{ date: string; revenue: number; orders: number }>;
+  }> {
+    let query = supabase
+      .from('orders_pet')
+      .select('final_amount, created_at')
+      .eq('payment_status', 'paid');
+
+    if (dateFrom) {
+      query = query.gte('created_at', dateFrom);
+    }
+
+    if (dateTo) {
+      query = query.lte('created_at', dateTo);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: true });
+
+    if (error) {
+      throw new Error(`Erro ao buscar estatísticas de receita: ${error.message}`);
+    }
+
+    const totalRevenue = data?.reduce((sum, order) => sum + order.final_amount, 0) || 0;
+    const totalOrders = data?.length || 0;
+    const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+    // Agrupar por dia
+    const revenueByDay: Record<string, { revenue: number; orders: number }> = {};
+    data?.forEach(order => {
+      const date = new Date(order.created_at).toISOString().split('T')[0];
+      if (!revenueByDay[date]) {
+        revenueByDay[date] = { revenue: 0, orders: 0 };
+      }
+      revenueByDay[date].revenue += order.final_amount;
+      revenueByDay[date].orders += 1;
+    });
+
+    const revenueByDayArray = Object.entries(revenueByDay).map(([date, stats]) => ({
+      date,
+      revenue: stats.revenue,
+      orders: stats.orders
+    }));
+
+    return {
+      totalRevenue,
+      totalOrders,
+      averageOrderValue,
+      revenueByDay: revenueByDayArray
+    };
+  }
+
+  async getOrderWithDetails(orderId: string): Promise<Order & {
+    items: OrderItem[];
+    customer: { full_name: string; email: string } | null;
+  } | null> {
+    const { data: order, error: orderError } = await supabase
+      .from('orders_pet')
+      .select(`
+        *,
+        profiles(full_name, email)
+      `)
+      .eq('id', orderId)
+      .single();
+
+    if (orderError) {
+      if (orderError.code === 'PGRST116') {
+        return null;
+      }
+      throw new Error(`Erro ao buscar pedido: ${orderError.message}`);
+    }
+
+    const items = await this.getOrderItems(orderId);
+
+    return {
+      ...order,
+      items,
+      customer: order.profiles || null
+    };
+  }
 }
 
 export const ordersService = new OrdersService();

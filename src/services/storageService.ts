@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
  */
 export class StorageService {
   private static instance: StorageService;
-  private readonly bucketName = 'avatars'; // Temporariamente usando 'avatars' até criar 'pet-images'
+  private readonly bucketName = 'pet-photos'; // Bucket correto para fotos de eventos dos pets
   private readonly maxFileSize = 5 * 1024 * 1024; // 5MB
   private readonly allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
@@ -121,7 +121,7 @@ export class StorageService {
     } = {}
   ): Promise<{ url: string; path: string }> {
     const {
-      folder = 'pets', // Mudando de 'weekly-baths' para 'pets' para fotos de pets
+      folder = 'events', // Pasta para fotos de eventos dos pets
       resize = true,
       maxWidth = 800,
       maxHeight = 600,
@@ -300,7 +300,7 @@ export class StorageService {
     try {
       const { data: files, error } = await supabase.storage
         .from(this.bucketName)
-        .list('weekly-baths', {
+        .list('events', {
           limit: 1000,
           sortBy: { column: 'created_at', order: 'desc' }
         });
@@ -315,15 +315,15 @@ export class StorageService {
       return {
         totalFiles,
         totalSize,
-        weeklyBathsFiles: totalFiles
+        eventPhotosFiles: totalFiles
       };
     } catch (error) {
       console.error('Erro ao obter informações do storage:', error);
       return {
-        totalFiles: 0,
-        totalSize: 0,
-        weeklyBathsFiles: 0
-      };
+          totalFiles: 0,
+          totalSize: 0,
+          eventPhotosFiles: 0
+        };
     }
   }
 
@@ -334,7 +334,7 @@ export class StorageService {
     try {
       const { data: files, error } = await supabase.storage
         .from(this.bucketName)
-        .list('weekly-baths', {
+        .list('events', {
           limit: 1000,
           sortBy: { column: 'created_at', order: 'asc' }
         });
@@ -352,7 +352,7 @@ export class StorageService {
       });
 
       if (filesToDelete.length > 0) {
-        const pathsToDelete = filesToDelete.map(file => `weekly-baths/${file.name}`);
+        const pathsToDelete = filesToDelete.map(file => `events/${file.name}`);
         await this.deleteMultipleImages(pathsToDelete);
       }
 
@@ -380,5 +380,5 @@ export interface MultipleUploadResult extends UploadResult {
 export interface StorageInfo {
   totalFiles: number;
   totalSize: number;
-  weeklyBathsFiles: number;
+  eventPhotosFiles: number;
 }
