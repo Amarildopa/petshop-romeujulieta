@@ -5,9 +5,11 @@ import { query, param, validationResult } from 'express-validator';
 import { 
   Product, 
   Category, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ProductListQuery, 
   ProductListResponse,
   ProductReview,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   CreateReviewData,
   ProductRecommendation
 } from '../types/product';

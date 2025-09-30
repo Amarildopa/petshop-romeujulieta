@@ -279,6 +279,7 @@ router.get('/', [
 
     // Remover contagem de produtos se não solicitado
     if (!withProductCount) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       categories = categories.map(({ productCount, ...cat }) => cat);
     }
 

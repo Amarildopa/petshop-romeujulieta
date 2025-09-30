@@ -511,6 +511,7 @@ router.get('/shipping-methods', [
   query('value').optional().isFloat({ min: 0 })
 ], async (req, res, next) => {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { zipCode, weight, value } = req.query;
     
     let availableShippingMethods = mockShippingMethods.filter(sm => sm.isActive);
