@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Star, Filter, Sort, MessageCircle, User } from 'lucide-react';
+import { Star, Filter, ArrowUpDown, MessageCircle, User } from 'lucide-react';
 import { reviewsService, Review, ReviewStats } from '../services/reviewsService';
 import { productsService, Product } from '../services/productsService';
 import { authService } from '../services/authService';
@@ -382,7 +382,7 @@ const Reviews: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center space-x-2">
-                  <Sort className="w-5 h-5 text-gray-500" />
+                  <ArrowUpDown className="w-5 h-5 text-gray-500" />
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest' | 'rating_high' | 'rating_low')}
