@@ -446,8 +446,8 @@ router.post('/', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
-    const user = (req as any).user;
+    const userId = req.user?.id as string;
+    const user = req.user;
     const reviewData = req.body;
 
     // Verificar se o usuário já avaliou este item
@@ -530,7 +530,7 @@ router.put('/:reviewId', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { reviewId } = req.params;
     const updateData = req.body;
 
@@ -578,7 +578,7 @@ router.delete('/:reviewId', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { reviewId } = req.params;
 
     const review = mockReviews.get(reviewId);
@@ -615,7 +615,7 @@ router.post('/:reviewId/helpful', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { reviewId } = req.params;
     const { isHelpful } = req.body;
 
@@ -674,7 +674,7 @@ router.post('/:reviewId/report', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { reviewId } = req.params;
     const { reason, description } = req.body;
 
@@ -731,7 +731,7 @@ router.get('/user/my-reviews', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const {
       page = 1,
       limit = 20,

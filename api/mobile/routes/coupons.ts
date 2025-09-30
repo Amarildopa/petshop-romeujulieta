@@ -473,19 +473,22 @@ const validateCoupon = (coupon: Coupon, userId: string, orderValue: number): { v
 };
 
 // Função para calcular desconto do cupom
-const calculateCouponDiscount = (coupon: Coupon, orderValue: number, items: any[]): number => {
+const calculateCouponDiscount = (coupon: Coupon, orderValue: number, items: unknown[]): number => {
   switch (coupon.type) {
-    case 'percentage':
+    case 'percentage': {
       const percentageDiscount = (orderValue * coupon.value) / 100;
       return coupon.maxDiscount ? Math.min(percentageDiscount, coupon.maxDiscount) : percentageDiscount;
+    }
     
-    case 'fixed':
+    case 'fixed': {
       return Math.min(coupon.value, orderValue);
+    }
     
-    case 'free_shipping':
+    case 'free_shipping': {
       return 0; // O desconto do frete é calculado separadamente
+    }
     
-    case 'buy_x_get_y':
+    case 'buy_x_get_y': {
       // Lógica simplificada para buy_x_get_y
       if (coupon.applicableCategories && coupon.buyQuantity && coupon.getQuantity) {
         const applicableItems = items.filter(item => 
@@ -510,9 +513,17 @@ const calculateCouponDiscount = (coupon: Coupon, orderValue: number, items: any[
         return discount;
       }
       return 0;
+    }
     
-    default:
+    case 'FIRST_PURCHASE': {
+      const discount = 15;
+      const percentageDiscount = (orderValue * discount) / 100;
+      return coupon.maxDiscount ? Math.min(percentageDiscount, coupon.maxDiscount) : percentageDiscount;
+    }
+    
+    default: {
       return 0;
+    }
   }
 };
 
@@ -606,7 +617,7 @@ router.post('/validate', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { code, orderValue, items = [] } = req.body;
 
     // Buscar cupom pelo código
@@ -693,7 +704,7 @@ router.get('/promotions', [
 
     // Adicionar informações de tempo restante para flash sales
     const promotionsWithTimeLeft = paginatedPromotions.map(promotion => {
-      const result: any = { ...promotion };
+      const result: unknown = { ...promotion };
       
       if (promotion.type === 'flash_sale' && promotion.flashSaleEndTime) {
         const timeLeft = promotion.flashSaleEndTime.getTime() - now.getTime();
@@ -741,7 +752,7 @@ router.get('/promotions/:promotionId', [
     }
 
     // Adicionar informações de tempo restante
-    const result: any = { ...promotion };
+    const result: unknown = { ...promotion };
     
     if (promotion.type === 'flash_sale' && promotion.flashSaleEndTime) {
       const timeLeft = promotion.flashSaleEndTime.getTime() - now.getTime();
@@ -777,7 +788,7 @@ router.get('/loyalty/program', async (req, res, next) => {
 // Obter dados de fidelidade do usuário
 router.get('/loyalty/my-points', authMiddleware, async (req, res, next) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const userLoyalty = mockUserLoyalty.get(userId);
 
     if (!userLoyalty) {
@@ -822,7 +833,7 @@ router.get('/loyalty/points-history', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const {
       page = 1,
       limit = 20,
@@ -868,7 +879,7 @@ router.post('/loyalty/redeem', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { points, orderId } = req.body;
 
     const userLoyalty = mockUserLoyalty.get(userId);

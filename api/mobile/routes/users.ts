@@ -1,4 +1,5 @@
 import express from 'express';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { body, param, query, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import { 
@@ -71,7 +72,7 @@ const mockUsers: Map<string, User> = new Map([
 // Obter perfil do usuário
 router.get('/profile', async (req, res, next) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const user = mockUsers.get(userId);
 
     if (!user) {
@@ -79,7 +80,8 @@ router.get('/profile', async (req, res, next) => {
     }
 
     // Remover dados sensíveis
-    const { password, ...userProfile } = user as any;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { password, ...userProfile } = user as Record<string, unknown>;
 
     res.json({
       data: userProfile
@@ -103,7 +105,7 @@ router.put('/profile', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const updateData: UpdateUserData = req.body;
 
     const user = mockUsers.get(userId);
@@ -131,7 +133,8 @@ router.put('/profile', [
     mockUsers.set(userId, user);
 
     // Remover dados sensíveis
-    const { password, ...userProfile } = user as any;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { password, ...userProfile } = user as Record<string, unknown>;
 
     res.json({
       message: 'Perfil atualizado com sucesso',
@@ -159,8 +162,8 @@ router.put('/password', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
-    const { currentPassword, newPassword }: ChangePasswordData = req.body;
+    const userId = req.user?.id as string;
+    const { currentPassword, newPassword }: ChangePasswordData = req.body as Record<string, unknown>;
 
     const user = mockUsers.get(userId);
     if (!user) {
@@ -174,7 +177,8 @@ router.put('/password', [
     }
 
     // Hash da nova senha
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     
     // Atualizar senha (em um sistema real, seria salva no banco)
     user.updatedAt = new Date();
@@ -190,7 +194,7 @@ router.put('/password', [
 // Obter preferências do usuário
 router.get('/preferences', async (req, res, next) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const user = mockUsers.get(userId);
 
     if (!user) {
@@ -223,7 +227,7 @@ router.put('/preferences', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const preferencesData: Partial<UserPreferences> = req.body;
 
     const user = mockUsers.get(userId);
@@ -260,7 +264,7 @@ router.put('/preferences', [
 // Listar endereços do usuário
 router.get('/addresses', async (req, res, next) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const user = mockUsers.get(userId);
 
     if (!user) {
@@ -294,7 +298,7 @@ router.post('/addresses', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const addressData = req.body;
 
     const user = mockUsers.get(userId);
@@ -350,7 +354,7 @@ router.put('/addresses/:addressId', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { addressId } = req.params;
     const updateData = req.body;
 
@@ -398,7 +402,7 @@ router.delete('/addresses/:addressId', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { addressId } = req.params;
 
     const user = mockUsers.get(userId);
@@ -440,7 +444,7 @@ router.post('/addresses/:addressId/set-default', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { addressId } = req.params;
 
     const user = mockUsers.get(userId);
@@ -483,7 +487,7 @@ router.post('/deactivate', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { reason, password } = req.body;
 
     const user = mockUsers.get(userId);

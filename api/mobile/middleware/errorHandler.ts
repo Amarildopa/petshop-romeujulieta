@@ -1,32 +1,34 @@
 import { Request, Response, NextFunction } from 'express';
-import { ValidationError } from 'express-validator';
+import { ValidationError, validationResult } from 'express-validator';
 
 // Interface para erros customizados
 export interface CustomError extends Error {
   statusCode?: number;
   code?: string;
-  details?: any;
+  details?: unknown;
   isOperational?: boolean;
+  errorCode?: string;
 }
 
 // Classe para erros de API
 export class ApiError extends Error implements CustomError {
-  public statusCode: number;
-  public code: string;
-  public details?: any;
-  public isOperational: boolean;
+  statusCode: number;
+  isOperational: boolean;
+  details: unknown;
+  errorCode: string;
 
   constructor(
     message: string,
     statusCode: number = 500,
     code: string = 'INTERNAL_SERVER_ERROR',
-    details?: any
+    details?: unknown
   ) {
     super(message);
     this.statusCode = statusCode;
     this.code = code;
     this.details = details;
     this.isOperational = true;
+    this.errorCode = code;
 
     Error.captureStackTrace(this, this.constructor);
   }
@@ -34,7 +36,7 @@ export class ApiError extends Error implements CustomError {
 
 // Erros específicos da aplicação
 export class ValidationApiError extends ApiError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, details?: unknown) {
     super(message, 400, 'VALIDATION_ERROR', details);
   }
 }
@@ -81,7 +83,6 @@ export const handleValidationErrors = (
   res: Response,
   next: NextFunction
 ): void => {
-  const { validationResult } = require('express-validator');
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -109,7 +110,8 @@ export const errorHandler = (
   error: CustomError,
   req: Request,
   res: Response,
-  next: NextFunction
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction
 ): void => {
   // Log do erro
   console.error('Erro capturado pelo errorHandler:', {
@@ -168,7 +170,7 @@ export const errorHandler = (
   }
 
   // Resposta de erro padronizada
-  const errorResponse: any = {
+  const errorResponse: Record<string, unknown> = {
     error: message,
     code: errorCode,
     timestamp: new Date().toISOString(),
@@ -209,7 +211,7 @@ export const notFoundHandler = (
 
 // Middleware para capturar erros assíncronos
 export const asyncHandler = (
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
 ) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     Promise.resolve(fn(req, res, next)).catch(next);
@@ -225,12 +227,12 @@ function generateTraceId(): string {
 // Função utilitária para criar respostas de sucesso padronizadas
 export const successResponse = (
   res: Response,
-  data: any,
+  data: unknown,
   message?: string,
   statusCode: number = 200,
-  pagination?: any
+  pagination?: unknown
 ): void => {
-  const response: any = {
+  const response: Record<string, unknown> = {
     data,
     timestamp: new Date().toISOString()
   };
@@ -252,9 +254,9 @@ export const errorResponse = (
   message: string,
   statusCode: number = 500,
   code?: string,
-  details?: any
+  details?: unknown
 ): void => {
-  const response: any = {
+  const response: Record<string, unknown> = {
     error: message,
     code: code || 'INTERNAL_SERVER_ERROR',
     timestamp: new Date().toISOString()
@@ -310,7 +312,7 @@ export const logErrorRequests = (
 };
 
 // Função para sanitizar dados sensíveis do body da requisição
-function sanitizeRequestBody(body: any): any {
+function sanitizeRequestBody(body: unknown): unknown {
   if (!body || typeof body !== 'object') {
     return body;
   }
@@ -347,7 +349,7 @@ export const createError = (
   message: string,
   statusCode: number = 500,
   code: string = 'INTERNAL_SERVER_ERROR',
-  details?: any
+  details?: unknown
 ): ApiError => {
   return new ApiError(message, statusCode, code, details);
 };

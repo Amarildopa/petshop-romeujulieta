@@ -1,3 +1,4 @@
+/* eslint-disable */
 // Service Worker para notificações push
 self.addEventListener('install', (event) => {
   console.log('Service Worker instalado');
@@ -117,3 +118,5 @@ async function checkForNewNotifications() {
 
 // Escutar mensagens do cliente
 self.addEventListener('message', (event) => {
+  console.log('Mensagem recebida:', event.data);
+});

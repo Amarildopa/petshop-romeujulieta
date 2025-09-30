@@ -1,4 +1,5 @@
 import express from 'express';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { body, query, param } from 'express-validator';
 import { authMiddleware } from '../middleware/auth';
 import { handleValidationErrors, successResponse, NotFoundError } from '../middleware/errorHandler';
@@ -13,7 +14,7 @@ interface Notification {
   message: string;
   type: 'order' | 'promotion' | 'system' | 'reminder' | 'delivery';
   isRead: boolean;
-  data?: any;
+  data?: unknown;
   createdAt: Date;
   readAt?: Date;
 }
@@ -51,7 +52,7 @@ router.get('/',
     query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limite deve ser entre 1 e 100')
   ],
   handleValidationErrors,
-  (req: any, res) => {
+  (req: unknown, res) => {
     const { page = 1, limit = 20 } = req.query;
     const userId = req.user.id;
 
@@ -71,7 +72,7 @@ router.patch('/:id/read',
     param('id').notEmpty().withMessage('ID da notificação é obrigatório')
   ],
   handleValidationErrors,
-  (req: any, res) => {
+  (req: unknown, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 

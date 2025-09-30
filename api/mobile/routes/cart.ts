@@ -71,7 +71,7 @@ const calculateCartTotals = (cart: Cart): void => {
 // Obter carrinho
 router.get('/', async (req, res, next) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     let cart = mockCarts.get(userId);
 
     if (!cart) {
@@ -109,7 +109,7 @@ router.post('/items', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { productId, quantity, variantId, notes }: AddToCartData = req.body;
 
     // Verificar se produto existe
@@ -213,7 +213,7 @@ router.put('/items/:itemId', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { itemId } = req.params;
     const { quantity, notes }: UpdateCartItemData = req.body;
 
@@ -276,7 +276,7 @@ router.delete('/items/:itemId', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { itemId } = req.params;
 
     const cart = mockCarts.get(userId);
@@ -305,7 +305,7 @@ router.delete('/items/:itemId', [
 // Limpar carrinho
 router.delete('/', async (req, res, next) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     
     const cart = mockCarts.get(userId);
     if (!cart) {
@@ -335,7 +335,7 @@ router.post('/coupon', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { code }: ApplyCouponData = req.body;
 
     const cart = mockCarts.get(userId);
@@ -415,7 +415,7 @@ router.post('/coupon', [
 // Obter resumo do carrinho
 router.get('/summary', async (req, res, next) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const cart = mockCarts.get(userId);
 
     if (!cart) {

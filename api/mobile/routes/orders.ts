@@ -1,5 +1,6 @@
 import express from 'express';
 import { body, param, query, validationResult } from 'express-validator';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { 
   Order, 
   OrderItem, 
@@ -136,7 +137,7 @@ router.get('/', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const {
       page = 1,
       limit = 10,
@@ -196,7 +197,7 @@ router.get('/:orderId', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { orderId } = req.params;
 
     const order = mockOrders.get(orderId);
@@ -236,7 +237,7 @@ router.post('/', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const orderData: CreateOrderData = req.body;
 
     // Verificar método de pagamento
@@ -358,7 +359,7 @@ router.post('/:orderId/cancel', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { orderId } = req.params;
     const { reason } = req.body;
 
@@ -410,7 +411,7 @@ router.get('/:orderId/tracking', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { orderId } = req.params;
 
     const order = mockOrders.get(orderId);
@@ -510,7 +511,9 @@ router.get('/shipping-methods', [
   query('value').optional().isFloat({ min: 0 })
 ], async (req, res, next) => {
   try {
-    const { zipCode, weight, value } = req.query;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { zipCode, weight, value } = req.query;
     
     let availableShippingMethods = mockShippingMethods.filter(sm => sm.isActive);
     

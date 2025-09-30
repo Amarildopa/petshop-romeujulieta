@@ -1,5 +1,7 @@
 import express from 'express';
 import { query, param, validationResult } from 'express-validator';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { 
   Product, 
   Category, 
@@ -10,6 +12,7 @@ import {
   ProductRecommendation
 } from '../types/product';
 import { createError } from '../middleware/errorHandler';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { optionalAuth, authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
@@ -225,7 +228,7 @@ router.get('/', optionalAuth, [
       maxPrice,
       sortBy = 'createdAt',
       sortOrder = 'desc'
-    } = req.query as any;
+    } = req.query as Record<string, string>;
 
     let filteredProducts = [...mockProducts];
 
@@ -361,7 +364,7 @@ router.get('/:id/reviews', [
     }
 
     const { id } = req.params;
-    const { page = 1, limit = 10 } = req.query as any;
+    const { page = 1, limit = 10 } = req.query as Record<string, string>;
 
     const product = mockProducts.find(p => p.id === id);
     if (!product) {

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
@@ -207,7 +207,7 @@ router.post('/refresh', [
     const { refreshToken }: RefreshTokenData = req.body;
 
     // Verificar refresh token
-    const decoded = jwt.verify(refreshToken, JWT_SECRET) as any;
+    const decoded = jwt.verify(refreshToken, JWT_SECRET) as Record<string, unknown>;
     
     if (decoded.type !== 'refresh') {
       throw createError('Token inválido', 401, 'INVALID_TOKEN');
@@ -239,7 +239,7 @@ router.post('/refresh', [
 });
 
 // Logout
-router.post('/logout', authMiddleware, async (req, res, next) => {
+router.post('/logout', authMiddleware, async (req: Request, res, next) => {
   try {
     // Em uma implementação real, você invalidaria o token no banco de dados
     res.json({
@@ -251,10 +251,7 @@ router.post('/logout', authMiddleware, async (req, res, next) => {
 });
 
 // Alterar senha
-router.post('/change-password', authMiddleware, [
-  body('currentPassword').notEmpty().withMessage('Senha atual é obrigatória'),
-  body('newPassword').isLength({ min: 6 }).withMessage('Nova senha deve ter pelo menos 6 caracteres')
-], async (req, res, next) => {
+router.post('/change-password', authMiddleware, async (req: Request, res, next) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -262,7 +259,7 @@ router.post('/change-password', authMiddleware, [
     }
 
     const { currentPassword, newPassword }: ChangePasswordData = req.body;
-    const user = (req as any).user;
+    const user = req.user;
 
     // Verificar senha atual
     const hashedPassword = mockPasswords.get(user.email);
@@ -322,9 +319,9 @@ router.post('/forgot-password', [
 });
 
 // Verificar perfil
-router.get('/me', authMiddleware, async (req, res, next) => {
+router.get('/me', authMiddleware, async (req: Request, res, next) => {
   try {
-    const user = (req as any).user;
+    const user = req.user;
     res.json({
       data: user
     });

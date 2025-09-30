@@ -79,7 +79,7 @@ export const authMiddleware = (
     const token = tokenParts[1];
 
     // Verificar e decodificar o token
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; type: string };
 
     // Buscar usuário pelos dados do token
     const user = USERS.find(u => u.id === decoded.userId && u.isActive);
@@ -146,7 +146,7 @@ export const optionalAuth = (
     }
 
     const token = tokenParts[1];
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string; type: string };
     const user = USERS.find(u => u.id === decoded.userId && u.isActive);
 
     if (user && user.emailVerified) {
@@ -164,7 +164,7 @@ export const optionalAuth = (
     }
 
     next();
-  } catch (error) {
+  } catch {
     // Em caso de erro, continua sem usuário autenticado
     next();
   }
@@ -272,14 +272,14 @@ export const generateTokens = (userId: string) => {
 // Função para verificar refresh token
 export const verifyRefreshToken = (token: string): { userId: string } | null => {
   try {
-    const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as any;
+    const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as { userId: string; type: string };
     
     if (decoded.type !== 'refresh') {
       return null;
     }
 
     return { userId: decoded.userId };
-  } catch (error) {
+  } catch {
     return null;
   }
 };

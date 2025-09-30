@@ -1,5 +1,5 @@
 import express from 'express';
-import { body, param, query, validationResult } from 'express-validator';
+import { body, param, validationResult } from 'express-validator';
 import { createError } from '../middleware/errorHandler';
 import { authMiddleware } from '../middleware/auth';
 import { Address } from '../types/user';
@@ -159,7 +159,7 @@ const getCepInfo = async (cep: string): Promise<CepInfo | null> => {
 // Listar endereços do usuário
 router.get('/', async (req, res, next) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const userAddresses = mockAddresses.get(userId) || [];
 
     // Ordenar por padrão primeiro, depois por data de criação
@@ -187,7 +187,7 @@ router.get('/:addressId', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { addressId } = req.params;
 
     const userAddresses = mockAddresses.get(userId) || [];
@@ -252,7 +252,7 @@ router.post('/', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const addressData = req.body;
 
     let userAddresses = mockAddresses.get(userId) || [];
@@ -325,7 +325,7 @@ router.put('/:addressId', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { addressId } = req.params;
     const updateData = req.body;
 
@@ -374,7 +374,7 @@ router.put('/:addressId/set-default', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { addressId } = req.params;
 
     let userAddresses = mockAddresses.get(userId) || [];
@@ -412,7 +412,7 @@ router.delete('/:addressId', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { addressId } = req.params;
 
     const userAddresses = mockAddresses.get(userId) || [];
@@ -458,7 +458,7 @@ router.post('/:addressId/validate', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { addressId } = req.params;
 
     const userAddresses = mockAddresses.get(userId) || [];

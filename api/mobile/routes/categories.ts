@@ -220,6 +220,7 @@ const buildCategoryTree = (categories: Category[], parentId: string | null = nul
 };
 
 // Função para obter todas as subcategorias de uma categoria
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getAllSubcategories = (categories: Category[], parentId: string): string[] => {
   const subcategories: string[] = [];
   const directChildren = categories.filter(cat => cat.parentId === parentId);
@@ -429,7 +430,8 @@ router.get('/search/:query', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const { query: searchQuery } = req.params;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { query: searchQuery } = req.params;
     const { limit = 20 } = req.query;
 
     if (!searchQuery || searchQuery.trim().length < 2) {

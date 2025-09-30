@@ -65,7 +65,7 @@ interface Payment {
   // Detalhes adicionais
   failureReason?: string;
   refundReason?: string;
-  metadata?: any;
+  metadata?: unknown;
 }
 
 interface PaymentIntent {
@@ -76,7 +76,7 @@ interface PaymentIntent {
   paymentMethods: string[];
   clientSecret: string;
   status: 'requires_payment_method' | 'requires_confirmation' | 'processing' | 'succeeded' | 'cancelled';
-  metadata?: any;
+  metadata?: unknown;
   expiresAt: Date;
   createdAt: Date;
 }
@@ -225,7 +225,7 @@ initMockData();
 // Listar métodos de pagamento do usuário
 router.get('/methods', async (req, res, next) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const userPaymentMethods = mockPaymentMethods.get(userId) || [];
 
     // Filtrar apenas métodos ativos e ordenar por padrão primeiro
@@ -268,7 +268,7 @@ router.post('/methods', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const methodData = req.body;
 
     let userPaymentMethods = mockPaymentMethods.get(userId) || [];
@@ -331,7 +331,7 @@ router.put('/methods/:methodId', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { methodId } = req.params;
     const updateData = req.body;
 
@@ -378,7 +378,7 @@ router.delete('/methods/:methodId', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { methodId } = req.params;
 
     const userPaymentMethods = mockPaymentMethods.get(userId) || [];
@@ -427,7 +427,7 @@ router.post('/intents', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { amount, currency, paymentMethods, metadata } = req.body;
 
     const paymentIntent: PaymentIntent = {
@@ -467,7 +467,7 @@ router.post('/intents/:intentId/confirm', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { intentId } = req.params;
     const { paymentMethodId, orderId, installments = 1 } = req.body;
 
@@ -567,7 +567,7 @@ router.get('/', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const {
       page = 1,
       limit = 20,
@@ -618,7 +618,7 @@ router.get('/:paymentId', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { paymentId } = req.params;
 
     const payment = mockPayments.get(paymentId);
@@ -650,7 +650,7 @@ router.post('/:paymentId/refund', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { paymentId } = req.params;
     const { amount, reason } = req.body;
 
@@ -719,7 +719,7 @@ router.get('/installments/fees', [
       throw createError('Parâmetros inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
-    const userId = (req as any).user.id;
+    const userId = req.user?.id as string;
     const { amount, paymentMethodId } = req.query;
 
     const userPaymentMethods = mockPaymentMethods.get(userId) || [];

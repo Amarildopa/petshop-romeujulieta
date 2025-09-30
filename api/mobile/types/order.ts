@@ -97,7 +97,7 @@ export interface PaymentMethod {
   type: 'credit_card' | 'debit_card' | 'pix' | 'boleto' | 'wallet';
   name: string;
   details: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
   isDefault: boolean;
   createdAt: Date;
