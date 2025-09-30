@@ -74,33 +74,8 @@ const Reviews: React.FC = () => {
     }
   };
 
-  const loadData = async () => {
-    if (!productId) return;
-    
-    setLoading(true);
-    try {
-      const [productData, reviewsData, statsData] = await Promise.all([
-        productsService.getProductById(productId),
-        reviewsService.getProductReviews(productId),
-        reviewsService.getProductReviewStats(productId)
-      ]);
-
-      setProduct(productData);
-      setReviews(reviewsData);
-      setStats(statsData);
-
-      // Verificar se o usuário já avaliou
-      if (currentUser) {
-        const existingReview = reviewsData.find(r => r.user_id === currentUser.id);
-        setUserReview(existingReview || null);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
-      toast.error('Erro ao carregar avaliações');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // A função loadData já foi definida acima como useCallback
+  // Não é necessário defini-la novamente
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
