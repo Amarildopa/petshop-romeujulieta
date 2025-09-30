@@ -9,9 +9,9 @@ interface LogData {
   ip: string;
   userId?: string;
   timestamp: string;
-  body?: any;
-  query?: any;
-  params?: any;
+  body?: Record<string, unknown>;
+  query?: Record<string, unknown>;
+  params?: Record<string, unknown>;
 }
 
 export const requestLogger = (
@@ -35,8 +35,11 @@ export const requestLogger = (
   };
 
   // Adicionar userId se disponível
-  if ((req as any).user?.id) {
-    logData.userId = (req as any).user.id;
+  if ((req as Record<string, unknown>).user && typeof (req as Record<string, unknown>).user === 'object') {
+    const user = (req as Record<string, unknown>).user as Record<string, unknown>;
+    if (user.id) {
+      logData.userId = user.id as string;
+    }
   }
 
   // Log da requisição
@@ -81,7 +84,7 @@ export const requestLogger = (
 };
 
 // Sanitizar dados sensíveis do body
-const sanitizeBody = (body: any): any => {
+const sanitizeBody = (body: Record<string, unknown>): Record<string, unknown> => {
   if (!body || typeof body !== 'object') {
     return body;
   }
@@ -152,7 +155,9 @@ export const errorLogger = (
     params: req.params,
     ip: req.ip,
     userAgent: req.get('User-Agent'),
-    userId: (req as any).user?.id,
+    userId: (req as Record<string, unknown>).user && typeof (req as Record<string, unknown>).user === 'object' 
+      ? ((req as Record<string, unknown>).user as Record<string, unknown>).id as string 
+      : undefined,
     timestamp: new Date().toISOString()
   });
   

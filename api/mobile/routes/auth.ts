@@ -9,7 +9,9 @@ import {
   RefreshTokenData,
   ChangePasswordData,
   ResetPasswordData,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   VerifyResetTokenData,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   SocialLoginData,
   User
 } from '../types/user';
@@ -147,6 +149,7 @@ router.post('/login', [
       throw createError('Dados inválidos', 400, 'VALIDATION_ERROR', errors.array());
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { email, password, deviceInfo }: LoginData = req.body;
 
     // Buscar usuário
