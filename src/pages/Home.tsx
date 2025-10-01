@@ -188,6 +188,102 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Nossos Diferenciais Section - Amarelo muito claro */}
+      <section id="diferenciais" className="py-20 bg-yellow-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-text-color-dark">Nossos Diferenciais</h2>
+            <p className="mt-4 text-lg text-text-color max-w-2xl mx-auto">
+              Conheça o que torna a Romeu e Julieta única e especial para o cuidado do seu pet.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0 }}
+              viewport={{ once: true }}
+              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Sistema LOWSTRESS</h3>
+              <p className="text-text-color mb-6">
+                Somos o único pet shop em Itapema com sistema que elimina o uso de gaiolas. Seu pet fica em áreas de espera individuais e confortáveis, reduzindo o estresse durante o banho e tosa.
+              </p>
+              <div className="text-center">
+                <Link
+                  to="/banho-tosa-spa"
+                  className="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold transition-colors duration-200"
+                >
+                  SAIBA MAIS CLICANDO AQUI
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Atendimento Humanizado</h3>
+              <p className="text-text-color mb-6">
+                Nossa equipe é treinada para lidar com pets de forma gentil e respeitosa, com atenção individualizada para cada animal, reconhecendo as necessidades específicas de cada raça e temperamento.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Cromoterapia</h3>
+              <p className="text-text-color mb-6">
+                Exclusividade na região! Utilizamos cromoterapia durante o banho e nas salas de espera, proporcionando benefícios terapêuticos através das cores e criando um ambiente mais relaxante para seu pet.
+              </p>
+              <div className="text-center">
+                <Link
+                  to="/banho-tosa-spa"
+                  className="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold transition-colors duration-200"
+                >
+                  SAIBA MAIS CLICANDO AQUI
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Produtos Premium</h3>
+              <p className="text-text-color mb-6">
+                Utilizamos apenas shampoos e condicionadores de alta qualidade, incluindo opções hipoalergênicas para pets sensíveis, garantindo resultados visíveis e duradouros.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+            >
+              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Ozonioterapia</h3>
+              <p className="text-text-color mb-6">
+                Tecnologia avançada que elimina bactérias, fungos e parasitas durante o banho, proporcionando benefícios para a saúde da pele e pelo do seu animal, com resultados superiores em limpeza e brilho.
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Live Camera Section - Amarelo muito claro */}
       <section className="bg-yellow-50">
         <LiveCameraSection />
