@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 interface LoyaltyData {
   points: number;
   tier: string;

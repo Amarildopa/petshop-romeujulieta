@@ -19,6 +19,9 @@ import {
   ShoppingBag,
   Home as HomeIcon,
   Car,
+  Heart,
+  Palette,
+  Award,
 } from 'lucide-react';
 import WhatsAppIcon from '../components/icons/WhatsAppIcon';
 import InstagramIcon from '../components/icons/InstagramIcon';
@@ -46,7 +49,7 @@ const Home: React.FC = () => {
   const services = [
     {
       icon: Scissors,
-      name: 'Banho, Tosa & Spa',
+      name: 'Estética e Spa',
       description: 'Nossa equipe é treinada para acolher, entender e respeitar a personalidade única do seu amigo – porque cada pet merece um cuidado só dele! Aromaterapia e Cromoterapia fazem parte de todos os serviços do Spa Romeu e Julieta. Seja bem vindo!',
     },
     {
@@ -62,16 +65,20 @@ const Home: React.FC = () => {
     {
       icon: Car,
       name: 'Delivery',
-      description: 'Tudo o que você escolher chega rapidinho até você e seu pet – em até 5km. Clique no botão Whatsapp e agende seu serviço.',
+      description: 'Tudo o que você escolher chega rapidinho até você e seu pet – em até 5km. Clique no botão Whatsapp ou em nossa loja, escolha seus produtos e entregamos para voce.',
     },
   ];
 
 
 
   return (
-    <div className="bg-surface text-text-color">
+    <div className="text-landing-primary" style={{
+      backgroundColor: 'var(--landing-bg-main)'
+    }}>
       {/* Hero Section - Amarelo muito claro */}
-      <section id="hero" className="relative min-h-screen bg-yellow-50 flex items-center justify-center overflow-hidden">
+      <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{
+        backgroundColor: 'var(--landing-bg-sections)'
+      }}>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
@@ -81,7 +88,7 @@ const Home: React.FC = () => {
                 transition={{ duration: 0.8 }}
                 className="text-3xl md:text-5xl font-bold text-text-color-dark mb-6"
               >
-                Cuidado e Amor para seu <span className="text-primary">Pet</span>
+                Cuidado e Amor para seu <span className="text-black">Pet</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
@@ -150,7 +157,9 @@ const Home: React.FC = () => {
       <AboutSection />
 
       {/* Services Section - Amarelo muito claro */}
-      <section id="services" className="py-20 bg-yellow-50">
+      <section id="services" className="py-20" style={{
+        backgroundColor: 'var(--landing-bg-sections)'
+      }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-text-color-dark">Nossos Serviços</h2>
@@ -166,14 +175,17 @@ const Home: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
+                className="p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
+                style={{
+                  backgroundColor: 'var(--landing-card-bg)'
+                }}
               >
                 <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:bg-primary transition-colors duration-300">
                   <service.icon className="w-8 h-8 text-primary group-hover:text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-text-color-dark mb-2">{service.name}</h3>
                 <p className="text-text-color mb-4">{service.description}</p>
-                {service.name === 'Banho, Tosa & Spa' && (
+                {service.name === 'Estética e Spa' && (
                   <Link
                     to="/banho-tosa-spa"
                     className="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold transition-colors duration-200"
@@ -189,47 +201,35 @@ const Home: React.FC = () => {
       </section>
 
       {/* Nossos Diferenciais Section - Amarelo muito claro */}
-      <section id="diferenciais" className="py-20 bg-yellow-50">
+      <section id="diferenciais" className="py-20" style={{
+        backgroundColor: 'var(--landing-bg-sections)'
+      }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-text-color-dark">Nossos Diferenciais</h2>
             <p className="mt-4 text-lg text-text-color max-w-2xl mx-auto">
-              Conheça o que torna a Romeu e Julieta única e especial para o cuidado do seu pet.
+              Descubra o que faz da Romeu & Julieta Pet&Spa um espaço exclusivo, onde cuidado, carinho e transparência transformam cada momento do seu pet em uma experiência única e especial.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0 }}
-              viewport={{ once: true }}
-              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Sistema LOWSTRESS</h3>
-              <p className="text-text-color mb-6">
-                Somos o único pet shop em Itapema com sistema que elimina o uso de gaiolas. Seu pet fica em áreas de espera individuais e confortáveis, reduzindo o estresse durante o banho e tosa.
-              </p>
-              <div className="text-center">
-                <Link
-                  to="/banho-tosa-spa"
-                  className="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold transition-colors duration-200"
-                >
-                  SAIBA MAIS CLICANDO AQUI
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </motion.div>
+
 
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
+              style={{
+                backgroundColor: 'var(--landing-card-bg)'
+              }}
             >
-              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Atendimento Humanizado</h3>
+              <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:bg-primary transition-colors duration-300">
+                <Heart className="w-8 h-8 text-primary group-hover:text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-text-color-dark mb-4">Atendimento humanizado e acolhedor</h3>
               <p className="text-text-color mb-6">
-                Nossa equipe é treinada para lidar com pets de forma gentil e respeitosa, com atenção individualizada para cada animal, reconhecendo as necessidades específicas de cada raça e temperamento.
+                Nossa equipe dedica tempo, carinho e respeito para atender cada pet do jeitinho que ele merece, com cuidado individual e atenção às características de cada raça e personalidade.
               </p>
             </motion.div>
 
@@ -238,18 +238,24 @@ const Home: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               viewport={{ once: true }}
-              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
+              style={{
+                backgroundColor: 'var(--landing-card-bg)'
+              }}
             >
-              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Cromoterapia</h3>
+              <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:bg-primary transition-colors duration-300">
+                <Palette className="w-8 h-8 text-primary group-hover:text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-text-color-dark mb-4">Bem-estar Sensorial</h3>
               <p className="text-text-color mb-6">
-                Exclusividade na região! Utilizamos cromoterapia durante o banho e nas salas de espera, proporcionando benefícios terapêuticos através das cores e criando um ambiente mais relaxante para seu pet.
+                Cromoterapia, aromaterapia e musicoterapia: carinho sensorial e bem-estar em cada detalhe para o seu pet.
               </p>
               <div className="text-center">
                 <Link
-                  to="/banho-tosa-spa"
+                  to="/bem-estar-sensorial"
                   className="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold transition-colors duration-200"
                 >
-                  SAIBA MAIS CLICANDO AQUI
+                  Saiba mais
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -260,42 +266,43 @@ const Home: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
               viewport={{ once: true }}
-              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
+              style={{
+                backgroundColor: 'var(--landing-card-bg)'
+              }}
             >
-              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Produtos Premium</h3>
+              <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:bg-primary transition-colors duration-300">
+                <Award className="w-8 h-8 text-primary group-hover:text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-text-color-dark mb-4">Produtos Premium</h3>
               <p className="text-text-color mb-6">
                 Utilizamos apenas shampoos e condicionadores de alta qualidade, incluindo opções hipoalergênicas para pets sensíveis, garantindo resultados visíveis e duradouros.
               </p>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <h3 className="text-xl font-semibold text-text-color-dark mb-4 text-center">Ozonioterapia</h3>
-              <p className="text-text-color mb-6">
-                Tecnologia avançada que elimina bactérias, fungos e parasitas durante o banho, proporcionando benefícios para a saúde da pele e pelo do seu animal, com resultados superiores em limpeza e brilho.
-              </p>
-            </motion.div>
+
           </div>
         </div>
       </section>
 
       {/* Live Camera Section - Amarelo muito claro */}
-      <section className="bg-yellow-50">
+      <section style={{
+        backgroundColor: 'var(--landing-bg-sections)'
+      }}>
         <LiveCameraSection />
       </section>
 
       {/* VIP Packages Section - Amarelo muito claro */}
-      <section className="bg-yellow-50">
-        <VIPPackages />
-      </section>
+        <section style={{
+          backgroundColor: 'var(--landing-bg-sections)'
+        }}>
+          <VIPPackages />
+        </section>
 
       {/* Weekly Content Section - Amarelo muito claro */}
-      <section className="py-20 bg-yellow-50">
+      <section className="py-20" style={{
+        backgroundColor: 'var(--landing-bg-sections)'
+      }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-text-color-dark">Dicas da Semana e Super Ofertas</h2>
@@ -318,17 +325,23 @@ const Home: React.FC = () => {
       </section>
 
       {/* Weekly Baths Section - Amarelo muito claro */}
-      <section className="bg-yellow-50">
-        <WeeklyBaths />
-      </section>
+        <section style={{
+          backgroundColor: 'var(--landing-bg-sections)'
+        }}>
+          <WeeklyBaths />
+        </section>
 
       {/* Testimonials Section - Amarelo muito claro */}
-      <section className="bg-yellow-50">
-        <Testimonials />
-      </section>
+        <section style={{
+          backgroundColor: 'var(--landing-bg-sections)'
+        }}>
+          <Testimonials />
+        </section>
 
       {/* CTA Section - Amarelo muito claro */}
-      <section className="py-20 bg-yellow-50">
+      <section className="py-20" style={{
+        backgroundColor: 'var(--landing-bg-sections)'
+      }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 50 }}

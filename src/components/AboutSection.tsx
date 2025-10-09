@@ -10,7 +10,7 @@ const AboutSection: React.FC = () => {
         <div>
           <h2 className="text-4xl font-bold text-text-color-dark">A Experiência {APP_CONFIG.shortName}</h2>
           <p className="mt-4 text-lg text-text-color">
-            Somos uma família apaixonada por animais, que acredita em cuidar com carinho, respeito e transparência. No Romeu & Julieta Pet&Spa, acolhemos cada tutor e seu bichinho como parte da nossa própria família, compartilhando experiências, novas descobertas e muita confiança.
+            Somos uma família apaixonada por animais, que acredita em cuidado com carinho, respeito e transparência. No Romeu e Julieta Pet&Spa, acolhemos cada tutor e seu(s) Pet(s) como parte da nossa família, compartilhando experiências, novas descobertas e muita confiança.
           </p>
           <p className="mt-4 text-lg text-text-color">
             Nossa missão é criar um espaço seguro, aberto e acolhedor, onde você sempre sabe como seu pet está sendo tratado: com amor, atenção e qualidade – como se fosse nosso também.

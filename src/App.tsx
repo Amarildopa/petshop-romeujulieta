@@ -1,9 +1,10 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { Header } from './components/Header';
+import Header from './components/Header';
 import LoadingSpinner from './components/LoadingSpinner';
 import AdminRouteGuard from './components/AdminRouteGuard';
+import { useGlobalTheme } from './hooks/useTheme';
 
 // Lazy loading para todas as páginas
 const Home = lazy(() => import('./pages/Home'));
@@ -46,6 +47,7 @@ const Wishlist = lazy(() => import('./pages/Wishlist'));
 const ProductComparison = lazy(() => import('./pages/ProductComparison'));
 const WhatsAppTest = lazy(() => import('./pages/WhatsAppTest'));
 const BanhoTosaSpa = lazy(() => import('./pages/BanhoTosaSpa'));
+const BemEstarSensorial = lazy(() => import('./pages/BemEstarSensorial'));
 const RTSPStreaming = lazy(() => import('./pages/RTSPStreaming'));
 const Loyalty = lazy(() => import('./pages/Loyalty'));
 const Affiliates = lazy(() => import('./pages/Affiliates'));
@@ -57,6 +59,9 @@ const Subscriptions = lazy(() => import('./pages/Subscriptions'));
 const SharedJourney = lazy(() => import('./pages/SharedJourney'));
 
 function App() {
+  // Inicializar tema global
+  useGlobalTheme();
+
   return (
     <AuthProvider>
       <Router>
@@ -73,6 +78,7 @@ function App() {
               <Route path="/store" element={<Store />} />
               <Route path="/offers" element={<Offers />} />
               <Route path="/banho-tosa-spa" element={<BanhoTosaSpa />} />
+              <Route path="/bem-estar-sensorial" element={<BemEstarSensorial />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/product-checkout" element={<ProductCheckout />} />
               <Route path="/payment-confirmation" element={<PaymentConfirmation />} />

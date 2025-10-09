@@ -26,4 +26,19 @@
   /* Cores de Texto - Cinza Suave */
   --color-text: #64748B;
   --color-text-dark: #334155;
+  
+  /* Cores específicas do Header */
+  --header-bg: #FEF7FF; /* bg-surface */
+  --header-bg-opacity: 0.8; /* bg-surface/80 */
+  --header-text-primary: #F8BBD9; /* text-primary */
+  --header-text-dark: #334155; /* text-text-color-dark */
+  --header-border: #FEF3C7; /* border-accent */
+  --header-border-opacity: 0.2; /* border-accent/20 */
+  
+  /* Cores específicas da Landing Page */
+  --landing-bg-main: #FEF7FF; /* bg-surface - fundo principal */
+  --landing-bg-sections: #FFFBEB; /* bg-yellow-50 - seções hero e services */
+  --landing-card-bg: #FFFFFF; /* bg-white - cards */
+  --landing-text-primary: #334155; /* text-text-color-dark */
+  --landing-text-secondary: #64748B; /* text-text-color */
 }

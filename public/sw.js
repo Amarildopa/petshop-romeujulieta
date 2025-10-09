@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 // Service Worker para notificações push
 self.addEventListener('install', (event) => {
   console.log('Service Worker instalado');

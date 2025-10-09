@@ -11,8 +11,8 @@ export const IMAGE_CONFIG = {
   // 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80'
 
   home: {
-    hero: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=800&q=80',  
-    about: 'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=800&q=80'
+    hero: 'https://hudiuukaoxxzxdcydgky.supabase.co/storage/v1/object/public/petshop-images/fotos/correndoParquev2.png',  
+    about: 'https://hudiuukaoxxzxdcydgky.supabase.co/storage/v1/object/public/petshop-images/fotos/romeujulietaparque_v2.png'
   },
 
   // Imagens padrão para fallback

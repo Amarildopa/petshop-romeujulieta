@@ -1,8 +1,13 @@
 import { ArrowLeft, Sparkles, Heart, Shield, Droplets, Zap, Leaf, Waves, Bath, Scissors, Wind, Brush, Sun } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export default function BanhoTosaSpa() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -16,12 +21,12 @@ export default function BanhoTosaSpa() {
       color: 'from-blue-500 to-blue-700',
       bgColor: 'from-blue-50 to-blue-100',
       iconColor: 'text-blue-600',
-      description: 'Ambiente tranquilo, cromoterapia e aromaterapia garantem relaxamento de verdade. Nossa equipe é treinada para acolher, entender e respeitar a personalidade única do seu amigo – porque cada pet merece um cuidado só dele!',
+      description: 'Ambiente tranquilo, cromoterapia e aromaterapia garantem relaxamento de verdade. Nossa equipe é treinada para acolher, entender e respeitar a personalidade única do seu PET – porque cada pet merece um cuidado só dele!',
       features: [
         {
           icon: Shield,
           title: 'Produtos Premium',
-          description: 'Utilizamos apenas produtos Hydra e nossas duchas Pure Shower: água ultralimpinha e suave, livre de impurezas.',
+          description: 'Utilizamos apenas produtos Hydra. \n Duchas PureSHower: Água filtrada, livre de cloro e impurezas, protegendo a pele sensível. \n Diminui alergias, coceiras e irritações após o banho. \n Deixa o pelo mais hidratado, macio e brilhante.',
           color: 'text-purple-600'
         },
         {
@@ -39,30 +44,33 @@ export default function BanhoTosaSpa() {
     {
       id: 'banho-ozonio',
       title: 'BANHO DE OZÔNIO',
-      icon: Zap,
-      color: 'from-emerald-500 to-emerald-700',
-      bgColor: 'from-emerald-50 to-emerald-100',
-      iconColor: 'text-emerald-600',
-      description: 'Mais saúde para a pele e o pelo do seu pet! O banho de ozônio ajuda a tratar alergias, dermatites, feridas e odores, promovendo uma limpeza profunda, alívio de coceiras e rápida cicatrização.',
+      icon: Droplets,
+      color: 'from-cyan-500 to-cyan-700',
+      bgColor: 'from-cyan-50 to-cyan-100',
+      iconColor: 'text-cyan-600',
+      description: 'Tratamento terapêutico com água ozonizada para problemas de pele e bem-estar geral do seu PET.',
       features: [
         {
-          icon: Leaf,
-          title: 'Tratamento Terapêutico',
-          description: 'Ideal para pets com alergias, dermatites e problemas de pele, proporcionando alívio imediato.',
-          color: 'text-emerald-600'
+          icon: Shield,
+          title: 'Produtos Premium',
+          description: 'Água ozonizada com propriedades terapêuticas',
+          color: 'text-cyan-600'
         },
         {
-          icon: Shield,
-          title: 'Ação Antimicrobiana',
-          description: 'O ozônio elimina bactérias, fungos e vírus, promovendo uma limpeza profunda e cicatrização rápida.',
+          icon: Zap,
+          title: 'Técnica Especializada',
+          description: 'Aplicação controlada do ozônio',
           color: 'text-blue-600'
+        },
+        {
+          icon: Heart,
+          title: 'Cuidado Personalizado',
+          description: 'Tratamento adaptado às necessidades específicas',
+          color: 'text-purple-600'
         }
       ],
       includes: [
-        'Limpeza profunda com ozônio',
-        'Alívio de coceiras e irritações',
-        'Tratamento de feridas e dermatites',
-        'Eliminação de odores'
+        'Banho com água ozonizada'
       ]
     },
     {
@@ -117,10 +125,9 @@ export default function BanhoTosaSpa() {
         }
       ],
       includes: [
-        'Banho em ofurô com água morna',
-        'Essências naturais relaxantes',
-        'Massagem terapêutica durante o banho',
-        'Ambiente tranquilo e acolhedor'
+        'Análise do estado dos pelos',
+        'Remoção cuidadosa de nós e emaranhados',
+        'Técnicas especializadas sem dor'
       ]
     },
     {
@@ -154,7 +161,7 @@ export default function BanhoTosaSpa() {
      },
      {
        id: 'remocao-subpelo',
-       title: 'REMOÇÃO DE SUBPELO',
+       title: 'CARDING-REMOÇÃO DE PELOS MORTOS',
        icon: Wind,
        color: 'from-teal-500 to-teal-700',
        bgColor: 'from-teal-50 to-teal-100',
@@ -176,19 +183,17 @@ export default function BanhoTosaSpa() {
        ],
        includes: [
          'Análise do tipo de pelagem',
-         'Técnicas específicas de remoção',
-         'Preservação do pelo principal',
-          'Finalização com escovação especializada'
+         'Técnicas específicas de remoção'
         ]
       },
       {
         id: 'tosa',
-        title: 'TOSA',
+        title: 'Tosa e Tosa Higiênica',
         icon: Brush,
         color: 'from-indigo-500 to-indigo-700',
         bgColor: 'from-indigo-50 to-indigo-100',
         iconColor: 'text-indigo-600',
-        description: 'A tosa vai muito além de aparência: é um cuidado essencial para a saúde, o conforto e o bem-estar do seu pet. Com técnicas delicadas e equipamentos apropriados, garantimos um corte bonito, harmônico e adaptado ao perfil de cada animal.',
+        description: 'A tosa vai muito além de aparência: é um cuidado essencial para a saúde, o conforto e o bem-estar do seu pet. Com técnicas delicadas e equipamentos apropriados, garantimos um resultado  harmônico e adaptado ao perfil de cada animal. \n A Tosa higienica vai manter seu Pet limpo e confortável, evitando o acúmulo de sujeira e resíduos. \n Previne infecções, assaduras e dermatites, especialmente em áreas sensíveis. \n Facilita a detecção precoce de parasitas e problemas de pele.',
         features: [
           {
             icon: Sparkles,

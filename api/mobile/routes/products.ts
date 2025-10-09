@@ -1,7 +1,7 @@
 import express from 'express';
 import { query, param, validationResult } from 'express-validator';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
+ 
 import { 
   Product, 
   Category, 

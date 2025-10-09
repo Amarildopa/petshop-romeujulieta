@@ -38,27 +38,31 @@ graph TD
 
 ## 2. Descrição das Tecnologias
 
-- **Frontend**: React@18 + TypeScript + TailwindCSS@3 + Vite + Framer Motion
-- **Backend**: Supabase (PostgreSQL + Storage + Auth + Real-time)
-- **Upload**: Supabase Storage com processamento de imagens
-- **Notificações**: Supabase Real-time subscriptions
+* **Frontend**: React\@18 + TypeScript + TailwindCSS\@3 + Vite + Framer Motion
+
+* **Backend**: Supabase (PostgreSQL + Storage + Auth + Real-time)
+
+* **Upload**: Supabase Storage com processamento de imagens
+
+* **Notificações**: Supabase Real-time subscriptions
 
 ## 3. Definições de Rotas
 
-| Rota | Propósito |
-|------|----------|
-| /dashboard | Dashboard principal com resumo da jornada |
-| /journey/:petId | Jornada completa de um pet específico |
-| /journey/:petId/add-event | Formulário para adicionar novo evento |
-| /pets/manage | Gerenciamento de pets do usuário |
-| /journey/shared/:shareId | Visualização pública de jornada compartilhada |
-| /journey/:petId/gallery | Galeria de fotos do pet |
+| Rota                      | Propósito                                     |
+| ------------------------- | --------------------------------------------- |
+| /dashboard                | Dashboard principal com resumo da jornada     |
+| /journey/:petId           | Jornada completa de um pet específico         |
+| /journey/:petId/add-event | Formulário para adicionar novo evento         |
+| /pets/manage              | Gerenciamento de pets do usuário              |
+| /journey/shared/:shareId  | Visualização pública de jornada compartilhada |
+| /journey/:petId/gallery   | Galeria de fotos do pet                       |
 
 ## 4. Definições de API
 
 ### 4.1 APIs Principais
 
 **Eventos do Pet**
+
 ```typescript
 // GET /api/pets/{petId}/events
 interface GetPetEventsResponse {
@@ -80,6 +84,7 @@ interface CreateEventRequest {
 ```
 
 **Upload de Fotos**
+
 ```typescript
 // POST /api/events/{eventId}/photos
 interface UploadPhotosRequest {
@@ -94,6 +99,7 @@ interface UploadPhotosResponse {
 ```
 
 **Compartilhamento**
+
 ```typescript
 // POST /api/journey/share
 interface CreateShareLinkRequest {
@@ -246,7 +252,8 @@ erDiagram
 
 ### 6.2 Linguagem de Definição de Dados
 
-**Tabela de Eventos do Pet (pet_events)**
+**Tabela de Eventos do Pet (pet\_events)**
+
 ```sql
 -- Criar tabela de eventos
 CREATE TABLE pet_events (
@@ -295,7 +302,8 @@ GRANT SELECT ON pet_events TO anon;
 GRANT ALL PRIVILEGES ON pet_events TO authenticated;
 ```
 
-**Tabela de Fotos de Eventos (event_photos)**
+**Tabela de Fotos de Eventos (event\_photos)**
+
 ```sql
 -- Criar tabela de fotos
 CREATE TABLE event_photos (
@@ -330,7 +338,8 @@ GRANT SELECT ON event_photos TO anon;
 GRANT ALL PRIVILEGES ON event_photos TO authenticated;
 ```
 
-**Tabela de Tipos de Eventos (event_types)**
+**Tabela de Tipos de Eventos (event\_types)**
+
 ```sql
 -- Criar tabela de tipos de eventos
 CREATE TABLE event_types (
@@ -358,7 +367,8 @@ GRANT SELECT ON event_types TO anon;
 GRANT SELECT ON event_types TO authenticated;
 ```
 
-**Tabela de Jornadas Compartilhadas (shared_journeys)**
+**Tabela de Jornadas Compartilhadas (shared\_journeys)**
+
 ```sql
 -- Criar tabela de compartilhamentos
 CREATE TABLE shared_journeys (
@@ -399,6 +409,7 @@ GRANT ALL PRIVILEGES ON shared_journeys TO authenticated;
 ```
 
 **Função para Gerar Eventos Automáticos**
+
 ```sql
 -- Função para criar evento automático após agendamento
 CREATE OR REPLACE FUNCTION create_auto_event_from_appointment()
@@ -444,6 +455,7 @@ CREATE TRIGGER trigger_auto_event_from_appointment
 ```
 
 **Storage Buckets para Fotos**
+
 ```sql
 -- Criar bucket para fotos de eventos
 INSERT INTO storage.buckets (id, name, public) VALUES ('pet-event-photos', 'pet-event-photos', true);
@@ -460,3 +472,4 @@ CREATE POLICY "Users can upload photos for their pet events" ON storage.objects
 CREATE POLICY "Public access to pet event photos" ON storage.objects
     FOR SELECT USING (bucket_id = 'pet-event-photos');
 ```
+

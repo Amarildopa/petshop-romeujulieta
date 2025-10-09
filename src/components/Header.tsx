@@ -13,7 +13,7 @@ import {
   LogOut
 } from 'lucide-react';
 
-export const Header: React.FC = () => {
+const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -121,13 +121,19 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-surface/80 backdrop-blur-lg shadow-sm border-b border-accent/20 sticky top-0 z-50">
+    <header className="backdrop-blur-lg shadow-sm sticky top-0 z-50" style={{
+      backgroundColor: 'var(--header-bg)',
+      borderBottom: '1px solid var(--header-border)',
+      opacity: 'var(--header-bg-opacity)'
+    }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <PawPrint className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold text-text-color-dark hidden sm:block">
+            <span className="text-xl font-bold hidden sm:block" style={{
+              color: 'var(--header-text-dark)'
+            }}>
               {getAppName()}
             </span>
           </Link>
@@ -142,8 +148,11 @@ export const Header: React.FC = () => {
                 className={`px-2.5 py-1.5 text-sm rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer ${
                   isActive(item.path)
                     ? 'bg-blue-600 text-white shadow-lg'
-                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                    : 'hover:bg-blue-50 hover:text-blue-600'
                 }`}
+                style={{
+                  color: isActive(item.path) ? 'white' : 'var(--header-text-primary)'
+                }}
               >
                 {item.label}
               </a>
@@ -157,7 +166,12 @@ export const Header: React.FC = () => {
                 <AdminStatus />
                 <Link
                   to="/profile"
-                  className="flex items-center space-x-2 text-text-color-dark hover:text-primary transition-colors"
+                  className="flex items-center space-x-2 transition-colors"
+                  style={{
+                    color: 'var(--header-text-dark)'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--header-text-primary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--header-text-dark)'}
                 >
                   <img
                     src={getImageUrl.userAvatar(profile?.avatar_url, 'small')}
@@ -170,7 +184,12 @@ export const Header: React.FC = () => {
                 </Link>
                 <button
                   onClick={() => signOut()}
-                  className="flex items-center space-x-1 text-text-color hover:text-red-600 transition-colors"
+                  className="flex items-center space-x-1 transition-colors"
+                  style={{
+                    color: 'var(--header-text-dark)'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--header-text-dark)'}
                 >
                   <LogOut className="h-4 w-4" />
                   <span className="hidden sm:block text-sm">Sair</span>
@@ -180,7 +199,13 @@ export const Header: React.FC = () => {
               <>
                 <Link
                   to="/login"
-                  className="hidden sm:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-primary-dark bg-primary/20 hover:bg-primary/30 transition-colors duration-200"
+                  className="hidden sm:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg transition-colors duration-200"
+                  style={{
+                    color: 'var(--header-text-primary)',
+                    backgroundColor: 'rgba(var(--primary-rgb), 0.2)'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.3)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.2)'}
                 >
                   Entrar
                 </Link>
@@ -196,7 +221,18 @@ export const Header: React.FC = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-text-color hover:text-primary-dark hover:bg-surface-dark transition-colors duration-200"
+              className="md:hidden p-2 rounded-lg transition-colors duration-200"
+              style={{
+                color: 'var(--header-text-dark)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--header-text-primary)';
+                e.currentTarget.style.backgroundColor = 'var(--surface-dark)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--header-text-dark)';
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -211,7 +247,11 @@ export const Header: React.FC = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-surface border-t border-accent/20"
+            className="md:hidden border-t"
+            style={{
+              backgroundColor: 'var(--header-bg)',
+              borderTopColor: 'var(--header-border)'
+            }}
           >
             <div className="px-4 py-2 space-y-1">
               {navItems.map((item) => (
@@ -221,9 +261,12 @@ export const Header: React.FC = () => {
                   onClick={(e) => handleNavClick(item.path, e)}
                   className={`block px-3 py-2 text-sm transition-colors duration-200 cursor-pointer ${
                     isActive(item.path)
-                      ? 'text-blue-600 bg-blue-50 border-r-4 border-blue-600'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      ? 'bg-blue-50 border-r-4 border-blue-600'
+                      : 'hover:text-blue-600 hover:bg-gray-50'
                   }`}
+                  style={{
+                    color: isActive(item.path) ? '#2563eb' : 'var(--header-text-primary)'
+                  }}
                 >
                   {item.label}
                 </a>
@@ -233,7 +276,13 @@ export const Header: React.FC = () => {
                   <Link
                     to="/profile"
                     onClick={() => setIsMenuOpen(false)}
-                    className="block w-full text-center px-4 py-2 text-sm font-medium text-primary-dark bg-primary/20 rounded-lg hover:bg-primary/30 transition-colors duration-200"
+                    className="block w-full text-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
+                    style={{
+                      color: 'var(--header-text-primary)',
+                      backgroundColor: 'rgba(var(--primary-rgb), 0.2)'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.3)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.2)'}
                   >
                     Perfil
                   </Link>
@@ -277,7 +326,13 @@ export const Header: React.FC = () => {
                   <Link
                     to="/login"
                     onClick={() => setIsMenuOpen(false)}
-                    className="block w-full text-center px-4 py-2 text-sm font-medium text-primary-dark bg-primary/20 rounded-lg hover:bg-primary/30 transition-colors duration-200"
+                    className="block w-full text-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
+                    style={{
+                      color: 'var(--header-text-primary)',
+                      backgroundColor: 'rgba(var(--primary-rgb), 0.2)'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.3)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.2)'}
                   >
                     Entrar
                   </Link>
@@ -297,3 +352,5 @@ export const Header: React.FC = () => {
     </header>
   );
 };
+
+export default Header;
