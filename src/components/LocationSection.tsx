@@ -116,7 +116,7 @@ const LocationSection: React.FC = () => {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-text-color-dark">Onde Estamos</h2>
           <p className="mt-4 text-lg text-text-color max-w-2xl mx-auto">
-            Venha nos visitar! Estamos te esperando na {locationData.contact.contact_address}!
+            Venha nos visitar! Estamos te esperando!
           </p>
         </div>
 

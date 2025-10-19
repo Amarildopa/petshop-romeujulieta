@@ -212,8 +212,8 @@ const Home: React.FC = () => {
                   <p style={{ color: 'var(--landing-subtitle-color)' }}>{service.description}</p>
                 {service.name === 'Estética e Spa' && (
                   <Link
-                    to="/booking"
-                    className="inline-block px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300"
+                    to="/banho-tosa-spa"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 mt-4"
                     style={{
                       color: 'white',
                       backgroundColor: '#e05389'
@@ -221,7 +221,8 @@ const Home: React.FC = () => {
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
                   >
-                    Agendar Agora
+                    Saiba Mais
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 )}
               </motion.div>
@@ -283,10 +284,13 @@ const Home: React.FC = () => {
               <div className="text-center">
                 <Link
                   to="/bem-estar-sensorial"
-                  className="inline-flex items-center gap-2 font-semibold transition-colors duration-200"
-                  style={{ color: 'var(--color-primary)' }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-primary-dark)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-primary)'}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105"
+                  style={{
+                    color: 'white',
+                    backgroundColor: 'var(--color-primary)'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
                 >
                   Saiba mais
                   <ArrowRight className="w-4 h-4" />
