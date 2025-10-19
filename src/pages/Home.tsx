@@ -73,11 +73,11 @@ const Home: React.FC = () => {
 
   return (
     <div className="text-landing-primary" style={{
-      backgroundColor: 'var(--landing-bg-main)'
+      backgroundColor: 'var(--simple-landing-bg)'
     }}>
-      {/* Hero Section - Amarelo muito claro */}
+      {/* Hero Section */}
       <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{
-        backgroundColor: 'var(--landing-bg-sections)'
+        backgroundColor: 'var(--simple-landing-bg)'
       }}>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -86,15 +86,21 @@ const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-3xl md:text-5xl font-bold text-text-color-dark mb-6"
+                className="text-3xl md:text-5xl font-bold mb-6"
+                style={{
+                  color: 'var(--landing-title-color)'
+                }}
               >
-                Cuidado e Amor para seu <span className="text-black">Pet</span>
+                Cuidado e Amor para seu <span style={{ color: 'var(--landing-accent-color)' }}>Pet</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-xl md:text-2xl text-text-color mb-8 max-w-3xl"
+                className="text-xl md:text-2xl mb-8 max-w-3xl"
+                style={{
+                  color: 'var(--landing-subtitle-color)'
+                }}
               >
                 No Romeu & Julieta Pet&Spa, temos atenção e amor de verdade, carinho em cada detalhe e total transparência em tudo o que fazemos. Seu pet seguro, você tranquilo e todo mundo feliz! Seja muito bem vindo. Traga seu pet para comer um biscotinho com a gente!
               </motion.p>
@@ -106,7 +112,13 @@ const Home: React.FC = () => {
               >
                 <Link
                   to="/booking"
-                  className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  style={{
+                    color: 'white',
+                    backgroundColor: '#e05389'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
                 >
                   Agende seu Horário
                   <ArrowRight className="w-4 h-4" />
@@ -115,7 +127,13 @@ const Home: React.FC = () => {
                   href={`https://wa.me/${whatsappNumber}?text=Olá! Gostaria de saber mais sobre os serviços do Romeu & Julieta Pet&Spa`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  style={{
+                    color: 'white',
+                    backgroundColor: '#25D366'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1DA851'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#25D366'}
                 >
                   WhatsApp
                   <WhatsAppIcon className="w-4 h-4" />
@@ -124,7 +142,13 @@ const Home: React.FC = () => {
                   href="https://www.instagram.com/romeuejulieta_petspa/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  style={{
+                    color: 'white',
+                    backgroundColor: '#e05389'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
                 >
                   Instagram
                   <InstagramIcon className="w-4 h-4" />
@@ -156,42 +180,48 @@ const Home: React.FC = () => {
       {/* About Section - Verde muito claro */}
       <AboutSection />
 
-      {/* Services Section - Amarelo muito claro */}
+      {/* Services Section */}
       <section id="services" className="py-20" style={{
-        backgroundColor: 'var(--landing-bg-sections)'
+        backgroundColor: 'var(--simple-landing-bg)'
       }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-text-color-dark">Nossos Serviços</h2>
-            <p className="mt-4 text-lg text-text-color max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold" style={{ color: 'var(--landing-title-color)' }}>Nossos Serviços</h2>
+            <p className="mt-4 text-lg max-w-2xl mx-auto" style={{ color: 'var(--landing-subtitle-color)' }}>
               Aqui, seu pet encontra tudo para ser feliz e saudável
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((service, index) => (
               <motion.div
-                key={service.name}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 text-center group"
-                style={{
-                  backgroundColor: 'var(--landing-card-bg)'
-                }}
-              >
-                <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:bg-primary transition-colors duration-300">
-                  <service.icon className="w-8 h-8 text-primary group-hover:text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-text-color-dark mb-2">{service.name}</h3>
-                <p className="text-text-color mb-4">{service.description}</p>
+                  key={service.name}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
+                  style={{ backgroundColor: 'var(--landing-card-bg)' }}
+                >
+                  <div 
+                    className="flex items-center justify-center w-16 h-16 rounded-lg mb-4 mx-auto"
+                    style={{ backgroundColor: 'var(--surface-light)' }}
+                  >
+                    <service.icon className="w-8 h-8" style={{ color: 'var(--color-primary)' }} />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--landing-title-color)' }}>{service.name}</h3>
+                  <p style={{ color: 'var(--landing-subtitle-color)' }}>{service.description}</p>
                 {service.name === 'Estética e Spa' && (
                   <Link
-                    to="/banho-tosa-spa"
-                    className="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold transition-colors duration-200"
+                    to="/booking"
+                    className="inline-block px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300"
+                    style={{
+                      color: 'white',
+                      backgroundColor: '#e05389'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
                   >
-                    Saiba mais
-                    <ArrowRight className="w-4 h-4" />
+                    Agendar Agora
                   </Link>
                 )}
               </motion.div>
@@ -200,14 +230,14 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Nossos Diferenciais Section - Amarelo muito claro */}
+      {/* Nossos Diferenciais Section */}
       <section id="diferenciais" className="py-20" style={{
-        backgroundColor: 'var(--landing-bg-sections)'
+        backgroundColor: 'var(--simple-landing-bg)'
       }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-text-color-dark">Nossos Diferenciais</h2>
-            <p className="mt-4 text-lg text-text-color max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold" style={{ color: 'var(--landing-title-color)' }}>Nossos Diferenciais</h2>
+            <p className="mt-4 text-lg max-w-2xl mx-auto" style={{ color: 'var(--landing-subtitle-color)' }}>
               Descubra o que faz da Romeu & Julieta Pet&Spa um espaço exclusivo, onde cuidado, carinho e transparência transformam cada momento do seu pet em uma experiência única e especial.
             </p>
           </div>
@@ -224,11 +254,11 @@ const Home: React.FC = () => {
                 backgroundColor: 'var(--landing-card-bg)'
               }}
             >
-              <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:bg-primary transition-colors duration-300">
-                <Heart className="w-8 h-8 text-primary group-hover:text-white" />
+              <div className="p-4 rounded-full w-16 h-16 mx-auto mb-4 transition-colors duration-300" style={{ backgroundColor: 'var(--surface-light)' }}>
+                <Heart className="w-8 h-8" style={{ color: 'var(--color-primary)' }} />
               </div>
-              <h3 className="text-xl font-semibold text-text-color-dark mb-4">Atendimento humanizado e acolhedor</h3>
-              <p className="text-text-color mb-6">
+              <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--landing-title-color)' }}>Atendimento humanizado e acolhedor</h3>
+              <p className="mb-6" style={{ color: 'var(--landing-subtitle-color)' }}>
                 Nossa equipe dedica tempo, carinho e respeito para atender cada pet do jeitinho que ele merece, com cuidado individual e atenção às características de cada raça e personalidade.
               </p>
             </motion.div>
@@ -243,17 +273,20 @@ const Home: React.FC = () => {
                 backgroundColor: 'var(--landing-card-bg)'
               }}
             >
-              <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:bg-primary transition-colors duration-300">
-                <Palette className="w-8 h-8 text-primary group-hover:text-white" />
+              <div className="p-4 rounded-full w-16 h-16 mx-auto mb-4 transition-colors duration-300" style={{ backgroundColor: 'var(--surface-light)' }}>
+                <Palette className="w-8 h-8" style={{ color: 'var(--color-primary)' }} />
               </div>
-              <h3 className="text-xl font-semibold text-text-color-dark mb-4">Bem-estar Sensorial</h3>
-              <p className="text-text-color mb-6">
+              <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--landing-title-color)' }}>Bem-estar Sensorial</h3>
+              <p className="mb-6" style={{ color: 'var(--landing-subtitle-color)' }}>
                 Cromoterapia, aromaterapia e musicoterapia: carinho sensorial e bem-estar em cada detalhe para o seu pet.
               </p>
               <div className="text-center">
                 <Link
                   to="/bem-estar-sensorial"
-                  className="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold transition-colors duration-200"
+                  className="inline-flex items-center gap-2 font-semibold transition-colors duration-200"
+                  style={{ color: 'var(--color-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-primary-dark)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-primary)'}
                 >
                   Saiba mais
                   <ArrowRight className="w-4 h-4" />
@@ -271,11 +304,11 @@ const Home: React.FC = () => {
                 backgroundColor: 'var(--landing-card-bg)'
               }}
             >
-              <div className="bg-primary-light p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:bg-primary transition-colors duration-300">
-                <Award className="w-8 h-8 text-primary group-hover:text-white" />
+              <div className="p-4 rounded-full w-16 h-16 mx-auto mb-4 transition-colors duration-300" style={{ backgroundColor: 'var(--surface-light)' }}>
+                <Award className="w-8 h-8" style={{ color: 'var(--color-primary)' }} />
               </div>
-              <h3 className="text-xl font-semibold text-text-color-dark mb-4">Produtos Premium</h3>
-              <p className="text-text-color mb-6">
+              <h3 className="text-xl font-semibold mb-4" style={{ color: 'var(--landing-title-color)' }}>Produtos Premium</h3>
+              <p className="mb-6" style={{ color: 'var(--landing-subtitle-color)' }}>
                 Utilizamos apenas shampoos e condicionadores de alta qualidade, incluindo opções hipoalergênicas para pets sensíveis, garantindo resultados visíveis e duradouros.
               </p>
             </motion.div>
@@ -285,28 +318,28 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Live Camera Section - Amarelo muito claro */}
+      {/* Live Camera Section */}
       <section style={{
-        backgroundColor: 'var(--landing-bg-sections)'
+        backgroundColor: 'var(--simple-landing-bg)'
       }}>
         <LiveCameraSection />
       </section>
 
-      {/* VIP Packages Section - Amarelo muito claro */}
+      {/* VIP Packages Section */}
         <section style={{
-          backgroundColor: 'var(--landing-bg-sections)'
+          backgroundColor: 'var(--simple-landing-bg)'
         }}>
           <VIPPackages />
         </section>
 
-      {/* Weekly Content Section - Amarelo muito claro */}
+      {/* Weekly Content Section */}
       <section className="py-20" style={{
-        backgroundColor: 'var(--landing-bg-sections)'
+        backgroundColor: 'var(--simple-landing-bg)'
       }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-text-color-dark">Dicas da Semana e Super Ofertas</h2>
-            <p className="mt-4 text-lg text-text-color max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold" style={{ color: 'var(--landing-title-color)' }}>Dicas da Semana e Super Ofertas</h2>
+            <p className="mt-4 text-lg max-w-2xl mx-auto" style={{ color: 'var(--landing-subtitle-color)' }}>
               Fique por dentro das melhores dicas de cuidado pet e aproveite nossas ofertas especiais
             </p>
           </div>
@@ -324,23 +357,23 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Weekly Baths Section - Amarelo muito claro */}
+      {/* Weekly Baths Section */}
         <section style={{
-          backgroundColor: 'var(--landing-bg-sections)'
+          backgroundColor: 'var(--simple-landing-bg)'
         }}>
           <WeeklyBaths />
         </section>
 
-      {/* Testimonials Section - Amarelo muito claro */}
+      {/* Testimonials Section */}
         <section style={{
-          backgroundColor: 'var(--landing-bg-sections)'
+          backgroundColor: 'var(--simple-landing-bg)'
         }}>
           <Testimonials />
         </section>
 
-      {/* CTA Section - Amarelo muito claro */}
+      {/* CTA Section */}
       <section className="py-20" style={{
-        backgroundColor: 'var(--landing-bg-sections)'
+        backgroundColor: 'var(--simple-landing-bg)'
       }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
@@ -349,23 +382,35 @@ const Home: React.FC = () => {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl font-bold text-text-color-dark mb-6">
+            <h2 className="text-4xl font-bold mb-6" style={{ color: 'var(--landing-title-color)' }}>
               Pronto para Cuidar do seu Pet?
             </h2>
-            <p className="text-xl text-text-color mb-8 max-w-2xl mx-auto">
+            <p className="text-xl mb-8 max-w-2xl mx-auto" style={{ color: 'var(--landing-subtitle-color)' }}>
               Agende agora mesmo e proporcione o melhor cuidado para seu companheiro de quatro patas
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/agendamento"
-                className="bg-primary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-primary-dark transition-all duration-300 flex items-center justify-center gap-2"
+                className="px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2"
+                style={{
+                  color: 'white',
+                  backgroundColor: '#e05389'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
               >
                 Agendar Agora
                 <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
                 to="/register"
-                className="bg-secondary text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-secondary-dark transition-all duration-300 flex items-center justify-center gap-2"
+                className="px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2"
+                style={{
+                  color: 'white',
+                  backgroundColor: '#e05389'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
               >
                 Criar Conta
                 <ArrowRight className="w-5 h-5" />

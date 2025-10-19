@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase'
 import { logger } from '../lib/logger'
+import { normalizeColor } from '../utils/colorUtils'
 
 // Tipos para o serviço administrativo
 export interface AdminUser {
@@ -694,6 +695,12 @@ export const adminService = {
   },
 
   // =============================================
+  // GESTÃO DE CORES DO TEMA SIMPLES
+  // =============================================
+
+
+
+  // =============================================
   // ESTATÍSTICAS DO DASHBOARD
   // =============================================
 
@@ -883,6 +890,119 @@ export const adminService = {
         responseTime: 2.3,
         pageViews: 1200
       }
+    }
+  },
+
+  // =============================================
+  // SISTEMA DE CORES SIMPLIFICADO
+  // =============================================
+
+  async getSimpleThemeColors(): Promise<Record<string, string>> {
+    try {
+      const { data, error } = await supabase
+        .from('simple_theme_colors')
+        .select('area, color_type, color_value')
+        .eq('is_active', true)
+
+      if (error) throw error
+
+      // Converter para formato esperado pelo hook
+      const colors: Record<string, string> = {}
+      
+      if (data) {
+        data.forEach((row) => {
+          const key = `${row.area}_${row.color_type}`
+          colors[key] = row.color_value
+        })
+      }
+
+      logger.info('Simple theme colors fetched successfully', { count: data?.length || 0 }, 'THEME')
+      return colors
+    } catch (error) {
+      logger.error('Error fetching simple theme colors', error as Error, {}, 'THEME')
+      throw error
+    }
+  },
+
+  async updateSimpleThemeColor(area: string, colorType: string, colorValue: string): Promise<boolean> {
+    try {
+      // Normalizar e validar cor
+      let normalizedColor: string;
+      try {
+        normalizedColor = normalizeColor(colorValue);
+      } catch {
+        throw new Error('Valor de cor inválido. Use formato #RRGGBB, #RGB, rgb(), rgba(), hsl(), hsla() ou nomes de cores CSS válidos');
+      }
+
+      const { error } = await supabase
+        .from('simple_theme_colors')
+        .update({ 
+          color_value: normalizedColor,
+          updated_at: new Date().toISOString()
+        })
+        .eq('area', area)
+        .eq('color_type', colorType)
+        .eq('is_active', true)
+
+      if (error) throw error
+
+      // Log da ação
+      await this.logAdminAction('update_simple_theme_color', 'simple_theme_color', null, {
+        area,
+        color_type: colorType,
+        color_value: colorValue
+      })
+
+      logger.info('Simple theme color updated successfully', { area, colorType, colorValue }, 'THEME')
+      return true
+    } catch (error) {
+      logger.error('Error updating simple theme color', error as Error, { area, colorType, colorValue }, 'THEME')
+      return false
+    }
+  },
+
+  async resetSimpleThemeColors(): Promise<boolean> {
+    try {
+      // Cores originais do sistema
+      const originalColors = [
+        { area: 'header', color_type: 'bg', color_value: '#FEF7FF' },
+        { area: 'header', color_type: 'text', color_value: '#F8BBD9' },
+        { area: 'header', color_type: 'hover', color_value: '#F472B6' },
+        { area: 'landing', color_type: 'bg', color_value: '#FEF7FF' },
+        { area: 'dashboard', color_type: 'bg', color_value: '#FFFBEB' },
+        { area: 'buttons', color_type: 'primary', color_value: '#F8BBD9' },
+        { area: 'buttons', color_type: 'secondary', color_value: '#BFDBFE' },
+        { area: 'buttons', color_type: 'login_bg', color_value: '#f8fafc' },
+        { area: 'buttons', color_type: 'login_text', color_value: '#e05389' },
+        { area: 'buttons', color_type: 'register_bg', color_value: '#e05389' },
+        { area: 'buttons', color_type: 'register_text', color_value: '#ffffff' }
+      ]
+
+      // Atualizar todas as cores
+      for (const color of originalColors) {
+        const { error } = await supabase
+          .from('simple_theme_colors')
+          .update({ 
+            color_value: color.color_value,
+            updated_at: new Date().toISOString()
+          })
+          .eq('area', color.area)
+          .eq('color_type', color.color_type)
+          .eq('is_active', true)
+
+        if (error) throw error
+      }
+
+      // Log da ação
+      await this.logAdminAction('reset_simple_theme_colors', 'simple_theme_colors', null, {
+        colors_reset: originalColors.length
+      })
+
+      logger.info('Simple theme colors reset successfully', { count: originalColors.length }, 'THEME')
+      return true
+    } catch (error) {
+      logger.error('Error resetting simple theme colors', error as Error, {}, 'THEME')
+      return false
     }
   }
 }

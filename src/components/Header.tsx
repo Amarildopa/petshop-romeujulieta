@@ -10,7 +10,8 @@ import {
   PawPrint,
   Menu, 
   X, 
-  LogOut
+  LogOut,
+  ExternalLink
 } from 'lucide-react';
 
 const Header: React.FC = () => {
@@ -27,13 +28,13 @@ const Header: React.FC = () => {
     { path: '/#about', label: 'Sobre Nós' },
     { path: '/#services', label: 'Nossos serviços' },
     { path: '/#vip-packages', label: 'Clube' },
-    { path: '/store', label: 'E-commerce' }
+    { path: 'https://www.store.romeuejulietapetspa.com.br/', label: 'E-commerce', external: true }
   ];
 
   // Menu para usuários logados (área restrita)
   const authenticatedNavItems = [
     { path: '/', label: 'Home' },
-    { path: '/store', label: 'E-Commerce' },
+    { path: 'https://www.store.romeuejulietapetspa.com.br/', label: 'E-Commerce', external: true },
     { path: '/#vip-packages', label: 'Clube' },
     { path: '/dashboard', label: 'Dashboard' }
   ];
@@ -41,8 +42,15 @@ const Header: React.FC = () => {
   // Seleciona o menu baseado no status de autenticação
   const navItems = user ? authenticatedNavItems : publicNavItems;
 
-  const handleNavClick = (path: string, e: React.MouseEvent) => {
+  const handleNavClick = (path: string, e: React.MouseEvent, external?: boolean) => {
     e.preventDefault();
+    
+    // Se for um link externo, abrir em nova aba
+    if (external) {
+      window.open(path, '_blank', 'noopener,noreferrer');
+      setIsMenuOpen(false);
+      return;
+    }
     
     if (path.startsWith('/#')) {
       // Se for uma âncora, verificar se já está na home
@@ -132,7 +140,8 @@ const Header: React.FC = () => {
           <Link to="/" className="flex items-center space-x-2">
             <PawPrint className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold hidden sm:block" style={{
-              color: 'var(--header-text-dark)'
+              color: 'var(--simple-header-text)',
+              fontWeight: 'bold'
             }}>
               {getAppName()}
             </span>
@@ -144,17 +153,35 @@ const Header: React.FC = () => {
               <a
                 key={item.path}
                 href={item.path}
-                onClick={(e) => handleNavClick(item.path, e)}
-                className={`px-2.5 py-1.5 text-sm rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer ${
+                onClick={(e) => handleNavClick(item.path, e, item.external)}
+                className={`px-2.5 py-1.5 text-sm rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer flex items-center space-x-1 ${
                   isActive(item.path)
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'hover:bg-blue-50 hover:text-blue-600'
+                    ? 'shadow-lg'
+                    : ''
                 }`}
                 style={{
-                  color: isActive(item.path) ? 'white' : 'var(--header-text-primary)'
+                  color: isActive(item.path) ? 'white' : 'var(--simple-header-text)',
+                  backgroundColor: isActive(item.path) ? 'var(--color-primary)' : 'transparent'
                 }}
+                onMouseEnter={(e) => {
+                  if (!isActive(item.path)) {
+                    e.currentTarget.style.backgroundColor = 'var(--simple-header-hover)';
+                    e.currentTarget.style.color = 'white';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive(item.path)) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'var(--simple-header-text)';
+                  }
+                }}
+                {...(item.external && {
+                  target: '_blank',
+                  rel: 'noopener noreferrer'
+                })}
               >
-                {item.label}
+                <span style={{ fontWeight: 'bold' }}>{item.label}</span>
+                {item.external && <ExternalLink className="h-3 w-3" />}
               </a>
             ))}
           </nav>
@@ -168,17 +195,17 @@ const Header: React.FC = () => {
                   to="/profile"
                   className="flex items-center space-x-2 transition-colors"
                   style={{
-                    color: 'var(--header-text-dark)'
+                    color: 'var(--simple-header-text)'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--header-text-primary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--header-text-dark)'}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--simple-header-hover)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--simple-header-text)'}
                 >
                   <img
                     src={getImageUrl.userAvatar(profile?.avatar_url, 'small')}
                     alt="Perfil"
                     className="w-8 h-8 rounded-full object-cover"
                   />
-                  <span className="hidden sm:block text-sm font-medium">
+                  <span className="hidden sm:block text-sm font-medium" style={{ fontWeight: 'bold' }}>
                     {profile?.full_name || user.user_metadata?.full_name || 'Perfil'}
                   </span>
                 </Link>
@@ -186,13 +213,13 @@ const Header: React.FC = () => {
                   onClick={() => signOut()}
                   className="flex items-center space-x-1 transition-colors"
                   style={{
-                    color: 'var(--header-text-dark)'
+                    color: 'var(--simple-header-text)'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
-                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--header-text-dark)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--simple-header-text)'}
                 >
                   <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:block text-sm">Sair</span>
+                  <span className="hidden sm:block text-sm" style={{ fontWeight: 'bold' }}>Sair</span>
                 </button>
               </div>
             ) : (
@@ -201,19 +228,36 @@ const Header: React.FC = () => {
                   to="/login"
                   className="hidden sm:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg transition-colors duration-200"
                   style={{
-                    color: 'var(--header-text-primary)',
-                    backgroundColor: 'rgba(var(--primary-rgb), 0.2)'
+                    color: 'var(--simple-button-login-text)',
+                    backgroundColor: 'var(--simple-button-login-bg)',
+                    border: '1px solid var(--simple-button-login-text)'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.3)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.2)'}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--simple-button-login-text)';
+                    e.currentTarget.style.color = 'var(--simple-button-login-bg)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--simple-button-login-bg)';
+                    e.currentTarget.style.color = 'var(--simple-button-login-text)';
+                  }}
                 >
-                  Entrar
+                  <span style={{ fontWeight: 'bold' }}>Entrar</span>
                 </Link>
                 <Link
                   to="/register"
-                  className="hidden sm:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-primary hover:bg-primary-dark transition-colors duration-200"
+                  className="hidden sm:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg transition-colors duration-200"
+                  style={{
+                    color: 'var(--simple-button-register-text)',
+                    backgroundColor: 'var(--simple-button-register-bg)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '0.9';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                  }}
                 >
-                  Cadastrar
+                  <span style={{ fontWeight: 'bold' }}>Cadastrar</span>
                 </Link>
               </>
             )}
@@ -223,14 +267,14 @@ const Header: React.FC = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 rounded-lg transition-colors duration-200"
               style={{
-                color: 'var(--header-text-dark)'
+                color: 'var(--simple-header-text)'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = 'var(--header-text-primary)';
+                e.currentTarget.style.color = 'var(--simple-header-hover)';
                 e.currentTarget.style.backgroundColor = 'var(--surface-dark)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'var(--header-text-dark)';
+                e.currentTarget.style.color = 'var(--simple-header-text)';
                 e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
@@ -258,17 +302,36 @@ const Header: React.FC = () => {
                 <a
                   key={item.path}
                   href={item.path}
-                  onClick={(e) => handleNavClick(item.path, e)}
-                  className={`block px-3 py-2 text-sm transition-colors duration-200 cursor-pointer ${
+                  onClick={(e) => handleNavClick(item.path, e, item.external)}
+                  className={`flex items-center justify-between px-3 py-2 text-sm transition-colors duration-200 cursor-pointer ${
                     isActive(item.path)
-                      ? 'bg-blue-50 border-r-4 border-blue-600'
-                      : 'hover:text-blue-600 hover:bg-gray-50'
+                      ? 'border-r-4'
+                      : ''
                   }`}
                   style={{
-                    color: isActive(item.path) ? '#2563eb' : 'var(--header-text-primary)'
+                    color: isActive(item.path) ? 'white' : 'var(--simple-header-text)',
+                    backgroundColor: isActive(item.path) ? 'var(--color-primary)' : 'transparent',
+                    borderRightColor: isActive(item.path) ? 'var(--color-primary-dark)' : 'transparent'
                   }}
+                  onMouseEnter={(e) => {
+                    if (!isActive(item.path)) {
+                      e.currentTarget.style.backgroundColor = 'var(--simple-header-hover)';
+                      e.currentTarget.style.color = 'white';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive(item.path)) {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.color = 'var(--simple-header-text)';
+                    }
+                  }}
+                  {...(item.external && {
+                    target: '_blank',
+                    rel: 'noopener noreferrer'
+                  })}
                 >
-                  {item.label}
+                  <span style={{ fontWeight: 'bold' }}>{item.label}</span>
+                  {item.external && <ExternalLink className="h-3 w-3" />}
                 </a>
               ))}
               {user ? (
@@ -278,13 +341,20 @@ const Header: React.FC = () => {
                     onClick={() => setIsMenuOpen(false)}
                     className="block w-full text-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
                     style={{
-                      color: 'var(--header-text-primary)',
-                      backgroundColor: 'rgba(var(--primary-rgb), 0.2)'
+                      color: 'var(--color-primary)',
+                      backgroundColor: 'var(--surface-light)',
+                      border: '1px solid var(--color-primary)'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.3)'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.2)'}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--color-primary)';
+                      e.currentTarget.style.color = 'white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--surface-light)';
+                      e.currentTarget.style.color = 'var(--color-primary)';
+                    }}
                   >
-                    Perfil
+                    <span style={{ fontWeight: 'bold' }}>Perfil</span>
                   </Link>
                   {(import.meta as { env: { MODE: string } }).env.MODE === 'development' && (
                     <>
@@ -293,14 +363,14 @@ const Header: React.FC = () => {
                         onClick={() => setIsMenuOpen(false)}
                         className="block w-full text-center px-4 py-2 text-sm font-medium text-yellow-700 bg-yellow-100 rounded-lg hover:bg-yellow-200 transition-colors duration-200"
                       >
-                        Monitoramento
+                        <span style={{ fontWeight: 'bold' }}>Monitoramento</span>
                       </Link>
                       <Link
                         to="/photo-test"
                         onClick={() => setIsMenuOpen(false)}
                         className="block w-full text-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-200"
                       >
-                        Teste de Fotos
+                        <span style={{ fontWeight: 'bold' }}>Teste de Fotos</span>
                       </Link>
                     </>
                   )}
@@ -309,7 +379,7 @@ const Header: React.FC = () => {
                     onClick={() => setIsMenuOpen(false)}
                     className="block w-full text-center px-4 py-2 text-sm font-medium text-purple-700 bg-purple-100 rounded-lg hover:bg-purple-200 transition-colors duration-200"
                   >
-                    Administração
+                    <span style={{ fontWeight: 'bold' }}>Administração</span>
                   </Link>
                   <button
                     onClick={() => {
@@ -318,7 +388,7 @@ const Header: React.FC = () => {
                     }}
                     className="block w-full text-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200"
                   >
-                    Sair
+                    <span style={{ fontWeight: 'bold' }}>Sair</span>
                   </button>
                 </div>
               ) : (
@@ -328,20 +398,37 @@ const Header: React.FC = () => {
                     onClick={() => setIsMenuOpen(false)}
                     className="block w-full text-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
                     style={{
-                      color: 'var(--header-text-primary)',
-                      backgroundColor: 'rgba(var(--primary-rgb), 0.2)'
+                      color: 'var(--simple-button-login-text)',
+                      backgroundColor: 'var(--simple-button-login-bg)',
+                      border: '1px solid var(--simple-button-login-text)'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.3)'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(var(--primary-rgb), 0.2)'}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--simple-button-login-text)';
+                      e.currentTarget.style.color = 'var(--simple-button-login-bg)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--simple-button-login-bg)';
+                      e.currentTarget.style.color = 'var(--simple-button-login-text)';
+                    }}
                   >
-                    Entrar
+                    <span style={{ fontWeight: 'bold' }}>Entrar</span>
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setIsMenuOpen(false)}
-                    className="block w-full text-center px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors duration-200"
+                    className="block w-full text-center px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200"
+                    style={{
+                      color: 'var(--simple-button-register-text)',
+                      backgroundColor: 'var(--simple-button-register-bg)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.opacity = '0.9';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = '1';
+                    }}
                   >
-                    Cadastrar
+                    <span style={{ fontWeight: 'bold' }}>Cadastrar</span>
                   </Link>
                 </div>
               )}

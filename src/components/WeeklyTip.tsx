@@ -98,7 +98,13 @@ const WeeklyTip: React.FC = () => {
               {!user && (
                 <Link
                   to="/register?redirect=/help-center"
-                  className="inline-flex items-center bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                  style={{
+                    backgroundColor: '#e05389',
+                    color: 'white'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
                 >
                   <UserPlus className="mr-2 h-5 w-5" />
                   Cadastre-se para Mais Dicas
@@ -108,7 +114,13 @@ const WeeklyTip: React.FC = () => {
               {/* Botão para login - sempre visível */}
               <Link
                 to={user ? "/help-center" : "/login?redirect=/help-center"}
-                className="inline-flex items-center bg-secondary text-white px-6 py-3 rounded-lg font-semibold hover:bg-secondary-dark transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+                style={{
+                  backgroundColor: '#e05389',
+                  color: 'white'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
               >
                 <LogIn className="mr-2 h-5 w-5" />
                 {user ? "Ver Todas as Dicas" : "Entrar para Ver Dicas"}

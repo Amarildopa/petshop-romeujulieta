@@ -2,8 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Variáveis CSS para personalização de tema - Rosa Delicado */
+/* =============================================
+   SISTEMA SIMPLIFICADO DE PERSONALIZAÇÃO DE CORES
+   Apenas 6 variáveis CSS para 4 áreas específicas
+   ============================================= */
 :root {
+  /* HEADER - 3 cores */
+  --simple-header-bg: #FEF7FF;      /* Cor de fundo do header */
+  --simple-header-text: #F8BBD9;    /* Cor do texto do header */
+  --simple-header-hover: #F472B6;   /* Cor de hover do menu do header */
+  
+  /* LANDING PAGE - 1 cor */
+  --simple-landing-bg: #FEF7FF;     /* Cor de fundo da landing page */
+  
+  /* DASHBOARD - 1 cor */
+  --simple-dashboard-bg: #FFFBEB;   /* Cor de fundo do dashboard */
+  
+  /* BOTÕES - 6 cores */
+  --simple-button-primary: #F8BBD9;   /* Cor primária dos botões */
+  --simple-button-secondary: #BFDBFE; /* Cor secundária dos botões */
+  --simple-button-login-bg: #f8fafc;  /* Cor de fundo do botão Entrar */
+  --simple-button-login-text: #e05389; /* Cor do texto do botão Entrar */
+  --simple-button-register-bg: #e05389; /* Cor de fundo do botão Cadastrar */
+  --simple-button-register-text: #ffffff; /* Cor do texto do botão Cadastrar */
+  
+  /* =============================================
+     CORES ORIGINAIS MANTIDAS PARA COMPATIBILIDADE
+     (Todas as outras cores voltam aos valores originais)
+     ============================================= */
+  
   /* Cores Primárias - Rosa Delicado */
   --color-primary: #F8BBD9;
   --color-primary-light: #FDE2F3;
@@ -27,18 +54,21 @@
   --color-text: #64748B;
   --color-text-dark: #334155;
   
-  /* Cores específicas do Header */
-  --header-bg: #FEF7FF; /* bg-surface */
-  --header-bg-opacity: 0.8; /* bg-surface/80 */
-  --header-text-primary: #F8BBD9; /* text-primary */
-  --header-text-dark: #334155; /* text-text-color-dark */
-  --header-border: #FEF3C7; /* border-accent */
-  --header-border-opacity: 0.2; /* border-accent/20 */
+  /* Cores específicas do Header (usando variáveis simplificadas) */
+  --header-bg: var(--simple-header-bg);
+  --header-bg-opacity: 0.8;
+  --header-text-primary: var(--simple-header-text);
+  --header-text-dark: #334155;
+  --header-border: #FEF3C7;
+  --header-border-opacity: 0.2;
   
-  /* Cores específicas da Landing Page */
-  --landing-bg-main: #FEF7FF; /* bg-surface - fundo principal */
-  --landing-bg-sections: #FFFBEB; /* bg-yellow-50 - seções hero e services */
-  --landing-card-bg: #FFFFFF; /* bg-white - cards */
-  --landing-text-primary: #334155; /* text-text-color-dark */
-  --landing-text-secondary: #64748B; /* text-text-color */
+  /* Cores específicas da Landing Page (usando variáveis simplificadas) */
+  --landing-bg-main: var(--simple-landing-bg);
+  --landing-bg-sections: var(--simple-landing-bg);  /* Conectada ao sistema */
+  --landing-card-bg: #FFFFFF;
+  --landing-title-color: #334155;      /* Definida para títulos */
+  --landing-subtitle-color: #64748B;   /* Definida para subtítulos */
+  --landing-accent-color: var(--simple-button-primary);  /* Conectada ao sistema */
+  --landing-text-primary: #334155;
+  --landing-text-secondary: #64748B;
 }

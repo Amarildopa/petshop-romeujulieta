@@ -211,7 +211,13 @@ const VIPPackages: React.FC = () => {
             // Usuário logado - mostrar botão "Seus Planos"
             <Link
               to="/subscription"
-              className="inline-flex items-center justify-center gap-2 bg-yellow-400 text-white px-8 py-4 rounded-xl font-semibold hover:bg-yellow-500 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+              style={{
+                backgroundColor: '#e05389',
+                color: 'white'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
             >
               Seus Planos
               <ArrowRight className="w-4 h-4" />
@@ -221,7 +227,13 @@ const VIPPackages: React.FC = () => {
             <>
               <Link
                 to="/register"
-                className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+                style={{
+                  backgroundColor: '#e05389',
+                  color: 'white'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
               >
                 Cadastre-se
                 <ArrowRight className="w-4 h-4" />

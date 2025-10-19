@@ -229,7 +229,13 @@ const LocationSection: React.FC = () => {
                 href={`https://maps.google.com/?q=${encodeURIComponent(locationData.contact.contact_address)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300"
+                style={{
+                  color: 'white',
+                  backgroundColor: '#e05389'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
               >
                 <MapPin className="w-4 h-4" />
                 Ver no Google Maps

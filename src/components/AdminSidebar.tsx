@@ -13,7 +13,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Package,
-  ShoppingCart
+  ShoppingCart,
+  Palette,
+  Calendar
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -50,6 +52,12 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggle }) =>
       description: 'Gerenciar pedidos'
     },
     {
+      path: '/admin/slots',
+      label: 'Agendamentos',
+      icon: <Calendar className="h-5 w-5" />,
+      description: 'Gerenciar slots de agendamento'
+    },
+    {
       path: '/admin/reports',
       label: 'Relatórios',
       icon: <BarChart3 className="h-5 w-5" />,
@@ -78,6 +86,12 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggle }) =>
       label: 'Configurações',
       icon: <Settings className="h-5 w-5" />,
       description: 'Configurações gerais'
+    },
+    {
+      path: '/admin/theme-simple',
+      label: 'Personalização',
+      icon: <Palette className="h-5 w-5" />,
+      description: 'Personalização do tema'
     },
     {
       path: '/admin/security',

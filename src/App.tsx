@@ -1,10 +1,10 @@
-import { Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import LoadingSpinner from './components/LoadingSpinner';
 import AdminRouteGuard from './components/AdminRouteGuard';
-import { useGlobalTheme } from './hooks/useTheme';
+import { useSimpleTheme } from './hooks/useSimpleTheme';
 
 // Lazy loading para todas as páginas
 const Home = lazy(() => import('./pages/Home'));
@@ -33,11 +33,14 @@ const AdminSettings = lazy(() => import('./pages/AdminSettings'));
 const AdminSecurity = lazy(() => import('./pages/AdminSecurity'));
 const AdminProducts = lazy(() => import('./pages/AdminProducts'));
 const AdminOrders = lazy(() => import('./pages/AdminOrders'));
+const AdminSlots = lazy(() => import('./pages/AdminSlots'));
 const AdminLayout = lazy(() => import('./components/AdminLayout'));
+// const AdminThemeCustomizer = lazy(() => import('./components/AdminThemeCustomizer'));
+const AdminThemeSimple = lazy(() => import('./components/AdminThemeSimple'));
 const TestSupabase = lazy(() => import('./pages/TestSupabase'));
 const TestSimple = lazy(() => import('./pages/TestSimple'));
 const PhotoTest = lazy(() => import('./pages/PhotoTest'));
-const ThemeCustomizer = lazy(() => import('./pages/ThemeCustomizer'));
+
 const Checkout = lazy(() => import('./pages/Checkout'));
 const ProductCheckout = lazy(() => import('./pages/ProductCheckout'));
 const PaymentConfirmation = lazy(() => import('./pages/PaymentConfirmation'));
@@ -59,8 +62,13 @@ const Subscriptions = lazy(() => import('./pages/Subscriptions'));
 const SharedJourney = lazy(() => import('./pages/SharedJourney'));
 
 function App() {
-  // Inicializar tema global
-  useGlobalTheme();
+  // Inicializar tema simples
+  const { applyColors } = useSimpleTheme();
+  
+  // Aplicar cores na inicialização
+  React.useEffect(() => {
+    applyColors();
+  }, [applyColors]);
 
   return (
     <AuthProvider>
@@ -110,7 +118,7 @@ function App() {
               <Route path="/test-supabase" element={<TestSupabase />} />
               <Route path="/test-simple" element={<TestSimple />} />
               <Route path="/photo-test" element={<PhotoTest />} />
-              <Route path="/theme-customizer" element={<ThemeCustomizer />} />
+
               
               {/* Rotas de administração */}
               <Route path="/admin" element={<AdminLayout />}>
@@ -158,6 +166,17 @@ function App() {
                 <Route path="orders" element={
                   <AdminRouteGuard requiredPermission="orders">
                     <AdminOrders />
+                  </AdminRouteGuard>
+                } />
+                <Route path="slots" element={
+                  <AdminRouteGuard requiredPermission="appointments">
+                    <AdminSlots />
+                  </AdminRouteGuard>
+                } />
+                {/* Rota do tema avançado removida - usando apenas tema simples */}
+                <Route path="theme-simple" element={
+                  <AdminRouteGuard requiredPermission="settings">
+                    <AdminThemeSimple />
                   </AdminRouteGuard>
                 } />
               </Route>
