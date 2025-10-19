@@ -199,7 +199,7 @@ export const useCache = <T>(
         setIsLoading(false);
       }
     }
-  }, [key, ttl, maxAge, staleWhileRevalidate, onError, isStale]);
+  }, [key, ttl, maxAge, staleWhileRevalidate, onError, isStale, cacheManager]);
 
   // Função para refetch
   const refetch = useCallback(() => {
@@ -212,7 +212,7 @@ export const useCache = <T>(
     setData(null);
     setIsStale(false);
     setError(null);
-  }, [key]);
+  }, [key, cacheManager]);
 
   // Função para definir dados manualmente
   const setDataManually = useCallback((newData: T) => {
@@ -220,12 +220,12 @@ export const useCache = <T>(
     setData(newData);
     setIsStale(false);
     setError(null);
-  }, [key, ttl]);
+  }, [key, ttl, cacheManager]);
 
   // Carregar dados iniciais
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, cacheManager]);
 
   // Subscrever a mudanças no cache
   useEffect(() => {
@@ -243,7 +243,7 @@ export const useCache = <T>(
     });
 
     return unsubscribe;
-  }, [key, ttl]);
+  }, [key, ttl, cacheManager]);
 
   return {
     data,
@@ -262,19 +262,19 @@ export const useCacheInvalidation = () => {
 
   const invalidateKeys = useCallback((keys: string[]) => {
     keys.forEach(key => cacheManager.invalidate(key));
-  }, []);
+  }, [cacheManager]);
 
   const invalidatePattern = useCallback((pattern: string) => {
     cacheManager.invalidatePattern(pattern);
-  }, []);
+  }, [cacheManager]);
 
   const clearAll = useCallback(() => {
     cacheManager.clear();
-  }, []);
+  }, [cacheManager]);
 
   const getStats = useCallback(() => {
     return cacheManager.getStats();
-  }, []);
+  }, [cacheManager]);
 
   return {
     invalidateKeys,

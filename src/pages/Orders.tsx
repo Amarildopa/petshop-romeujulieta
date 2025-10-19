@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Package, Truck, Clock, CheckCircle, XCircle, Eye, Search, Filter, Calendar } from 'lucide-react';
 import { ordersService } from '../services/ordersService';
@@ -47,13 +47,13 @@ const Orders: React.FC = () => {
       return;
     }
     loadOrders();
-  }, [user, navigate]);
+  }, [user, navigate, loadOrders]);
 
   useEffect(() => {
     filterOrders();
-  }, [orders, selectedStatus, searchTerm, dateFilter]);
+  }, [filterOrders]);
 
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -65,9 +65,9 @@ const Orders: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const filterOrders = () => {
+  const filterOrders = useCallback(() => {
     let filtered = [...orders];
 
     // Filtrar por status
@@ -95,7 +95,7 @@ const Orders: React.FC = () => {
     filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
     setFilteredOrders(filtered);
-  };
+  }, [orders, selectedStatus, searchTerm, dateFilter]);
 
   const getStatusInfo = (status: string) => {
     const statusMap = {

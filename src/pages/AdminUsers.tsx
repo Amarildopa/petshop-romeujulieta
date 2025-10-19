@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Users, 
@@ -24,7 +24,7 @@ const AdminUsers: React.FC = () => {
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState<'create' | 'edit' | 'view'>('view')
 
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     try {
       setLoading(true)
       const data = await adminService.getAdminUsers()
@@ -35,11 +35,11 @@ const AdminUsers: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
     loadUsers()
-  }, [])
+  }, [loadUsers])
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.profiles_pet?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||

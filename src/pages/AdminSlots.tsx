@@ -1,18 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Calendar, 
-  Clock, 
   Plus, 
-  Search, 
-  Filter, 
   Edit, 
   Trash2, 
   RefreshCw,
   Save,
   X,
-  AlertCircle,
-  CheckCircle,
   Users
 } from 'lucide-react'
 import { availableSlotsService, AvailableSlot } from '../services/availableSlotsService'
@@ -61,14 +56,14 @@ const AdminSlots: React.FC = () => {
   // Carregar dados iniciais
   useEffect(() => {
     loadInitialData()
-  }, [])
+  }, [loadInitialData])
 
   // Aplicar filtros
   useEffect(() => {
     loadSlots()
-  }, [filters])
+  }, [filters, loadSlots])
 
-  const loadInitialData = async () => {
+  const loadInitialData = useCallback(async () => {
     try {
       setLoading(true)
       await Promise.all([
@@ -80,7 +75,7 @@ const AdminSlots: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [loadSlots])
 
   const loadServices = async () => {
     try {
@@ -97,7 +92,7 @@ const AdminSlots: React.FC = () => {
     }
   }
 
-  const loadSlots = async () => {
+  const loadSlots = useCallback(async () => {
     try {
       let query = supabase
         .from('available_slots_pet')
@@ -133,7 +128,7 @@ const AdminSlots: React.FC = () => {
     } catch (error) {
       console.error('Erro ao carregar slots:', error)
     }
-  }
+  }, [filters])
 
   const handleGenerateSlots = async () => {
     try {
@@ -352,10 +347,10 @@ const AdminSlots: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-text-color-dark">
-                          {(slot as any).services_pet?.name || 'Serviço não encontrado'}
+                          {(slot as AvailableSlot & { services_pet?: Service }).services_pet?.name || 'Serviço não encontrado'}
                         </div>
                         <div className="text-sm text-text-color">
-                          {(slot as any).services_pet?.category}
+                          {(slot as AvailableSlot & { services_pet?: Service }).services_pet?.category}
                         </div>
                       </div>
                     </td>

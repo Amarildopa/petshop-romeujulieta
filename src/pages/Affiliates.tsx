@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -106,7 +106,7 @@ const Affiliates: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState('');
 
   // Mock data
-  const mockAffiliateProgram: AffiliateProgram = {
+  const mockAffiliateProgram: AffiliateProgram = useMemo(() => ({
     id: '1',
     name: 'Programa de Afiliados Pet Shop',
     description: 'Ganhe comissões indicando nossos produtos para seus amigos!',
@@ -149,9 +149,9 @@ const Affiliates: React.FC = () => {
         color: 'bg-yellow-500'
       }
     ]
-  };
+  }), []);
 
-  const mockAffiliateStats: AffiliateStats = {
+  const mockAffiliateStats: AffiliateStats = useMemo(() => ({
     userId: '1',
     programId: '1',
     referralCode: 'PETLOVER2024',
@@ -164,9 +164,9 @@ const Affiliates: React.FC = () => {
     currentTier: '2',
     joinedAt: new Date('2023-08-15'),
     lastActivity: new Date('2024-01-15')
-  };
+  }), []);
 
-  const mockAffiliateLinks: AffiliateLink[] = [
+  const mockAffiliateLinks: AffiliateLink[] = useMemo(() => [
     {
       id: '1',
       affiliateId: '1',
@@ -199,9 +199,9 @@ const Affiliates: React.FC = () => {
       conversions: 37,
       createdAt: new Date('2024-01-10')
     }
-  ];
+  ], []);
 
-  const mockCommissions: Commission[] = [
+  const mockCommissions: Commission[] = useMemo(() => [
     {
       id: '1',
       affiliateId: '1',
@@ -236,9 +236,9 @@ const Affiliates: React.FC = () => {
       status: 'pending',
       createdAt: new Date('2024-01-14')
     }
-  ];
+  ], []);
 
-  const mockReferrals: Referral[] = [
+  const mockReferrals: Referral[] = useMemo(() => [
     {
       id: '1',
       affiliateId: '1',
@@ -271,7 +271,7 @@ const Affiliates: React.FC = () => {
       totalValue: 0,
       createdAt: new Date('2024-01-14')
     }
-  ];
+  ], []);
 
   useEffect(() => {
     // Simular carregamento de dados
@@ -283,7 +283,7 @@ const Affiliates: React.FC = () => {
       setReferrals(mockReferrals);
       setLoading(false);
     }, 1000);
-  }, []);
+  }, [mockAffiliateProgram, mockAffiliateStats, mockAffiliateLinks, mockCommissions, mockReferrals]);
 
   const getCurrentTier = () => {
     if (!affiliateProgram || !affiliateStats) return null;

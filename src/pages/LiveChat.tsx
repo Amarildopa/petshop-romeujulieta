@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -85,7 +85,7 @@ const LiveChat: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Mock data
-  const mockConversations: ChatConversation[] = [
+  const mockConversations: ChatConversation[] = useMemo(() => [
     {
       id: '1',
       customerId: 'cust-1',
@@ -134,9 +134,9 @@ const LiveChat: React.FC = () => {
       rating: 5,
       createdAt: new Date('2024-01-15T13:00:00')
     }
-  ];
+  ], []);
 
-  const mockMessages: ChatMessage[] = [
+  const mockMessages: ChatMessage[] = useMemo(() => [
     {
       id: '1',
       chatId: '1',
@@ -192,9 +192,9 @@ const LiveChat: React.FC = () => {
       isRead: false,
       isAgent: false
     }
-  ];
+  ], []);
 
-  const mockAgents: Agent[] = [
+  const mockAgents: Agent[] = useMemo(() => [
     {
       id: 'agent-1',
       name: 'João Suporte',
@@ -226,9 +226,9 @@ const LiveChat: React.FC = () => {
       avgResponseTime: 1.8,
       rating: 4.7
     }
-  ];
+  ], []);
 
-  const mockQuickReplies: QuickReply[] = [
+  const mockQuickReplies: QuickReply[] = useMemo(() => [
     {
       id: '1',
       title: 'Saudação',
@@ -253,7 +253,7 @@ const LiveChat: React.FC = () => {
       content: 'O prazo de entrega varia de 3 a 7 dias úteis, dependendo da sua localização.',
       category: 'entrega'
     }
-  ];
+  ], []);
 
   useEffect(() => {
     // Simular carregamento de dados
@@ -265,7 +265,7 @@ const LiveChat: React.FC = () => {
       setSelectedChat('1');
       setLoading(false);
     }, 1000);
-  }, []);
+  }, [mockConversations, mockMessages, mockAgents, mockQuickReplies]);
 
   useEffect(() => {
     // Auto scroll para a última mensagem

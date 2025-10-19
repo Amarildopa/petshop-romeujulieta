@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ordersService, type Order } from '../services/ordersService';
 import { 
   Package, 
@@ -81,7 +81,7 @@ const AdminOrders: React.FC = () => {
     { value: 'refunded', label: 'Reembolsado' }
   ];
 
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
       const data = await ordersService.getOrdersWithFilters({
@@ -99,7 +99,7 @@ const AdminOrders: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
 
   const loadStats = async () => {
     try {
@@ -226,7 +226,7 @@ const AdminOrders: React.FC = () => {
   useEffect(() => {
     loadOrders();
     loadStats();
-  }, [filters]);
+  }, [filters, loadOrders]);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));

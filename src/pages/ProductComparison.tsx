@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { X, ShoppingCart, Heart, ArrowLeft, ArrowRight, Download, Share2, Plus } from 'lucide-react';
 import { comparisonService, ComparisonData } from '../services/comparisonService';
@@ -42,7 +42,7 @@ const ProductComparison: React.FC = () => {
     return () => {
       window.removeEventListener('comparisonUpdated', handleComparisonUpdate);
     };
-  }, []);
+  }, [loadComparison]);
 
   const loadCurrentUser = async () => {
     try {
@@ -53,7 +53,7 @@ const ProductComparison: React.FC = () => {
     }
   };
 
-  const loadComparison = async () => {
+  const loadComparison = useCallback(async () => {
     try {
       setLoading(true);
       const data = await comparisonService.getComparisonData();
@@ -77,7 +77,7 @@ const ProductComparison: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchParams]);
 
   const handleRemoveFromComparison = async (productId: string) => {
     try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { TrendingUp, TrendingDown, Users, ShoppingCart, DollarSign, Package, Star, Download, RefreshCw } from 'lucide-react';
 import { analyticsService } from '../services/analyticsService';
@@ -68,9 +68,9 @@ export default function Analytics() {
 
   useEffect(() => {
     loadAnalyticsData();
-  }, [selectedPeriod]);
+  }, [loadAnalyticsData]);
 
-  const loadAnalyticsData = async () => {
+  const loadAnalyticsData = useCallback(async () => {
     try {
       setLoading(true);
       const data = await analyticsService.getAnalyticsData(selectedPeriod);
@@ -81,7 +81,7 @@ export default function Analytics() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedPeriod]);
 
   const refreshData = async () => {
     try {

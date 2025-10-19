@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   BarChart3, 
@@ -64,7 +64,7 @@ const AdminReports: React.FC = () => {
   const [reportType, setReportType] = useState('overview')
   const [exporting, setExporting] = useState(false)
 
-  const loadReportData = async () => {
+  const loadReportData = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -118,11 +118,11 @@ const AdminReports: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [dateRange])
 
   useEffect(() => {
     loadReportData()
-  }, [dateRange])
+  }, [dateRange, loadReportData])
 
   const exportReport = async (format: 'pdf' | 'excel' | 'csv') => {
     try {

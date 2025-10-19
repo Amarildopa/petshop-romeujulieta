@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { 
   BarChart3, 
@@ -87,7 +87,7 @@ const AdminDashboard: React.FC = () => {
     }
   }
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true)
       
@@ -133,7 +133,7 @@ const AdminDashboard: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const handleRefresh = async () => {
     setRefreshing(true)
@@ -143,7 +143,7 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     loadDashboardData()
-  }, [])
+  }, [loadDashboardData])
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {

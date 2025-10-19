@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star, 
@@ -47,9 +47,9 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
 
   useEffect(() => {
     loadReviews();
-  }, [productId]);
+  }, [productId, loadReviews]);
 
-  const loadReviews = async () => {
+  const loadReviews = useCallback(async () => {
     try {
       setLoading(true);
       const [reviewsData, statsData] = await Promise.all([
@@ -68,7 +68,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ productId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [productId, user]);
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();

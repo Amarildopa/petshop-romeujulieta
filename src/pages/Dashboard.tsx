@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -59,43 +59,43 @@ const Dashboard: React.FC = () => {
   }, [user, authLoading, navigate]);
 
   // Load data on component mount
-  useEffect(() => {
-    const loadData = async () => {
-      if (!user) return;
+  const loadData = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      setLoading(true);
+      console.log('🔍 Dashboard - Carregando dados para usuário:', user.id);
+      const [petsData, appointmentsData, activeSubscription] = await Promise.all([
+        petsService.getPets(),
+        appointmentsService.getUpcomingAppointments(),
+        userSubscriptionsService.getActiveSubscription(user.id)
+      ]);
       
-      try {
-        setLoading(true);
-        console.log('🔍 Dashboard - Carregando dados para usuário:', user.id);
-        const [petsData, appointmentsData, activeSubscription] = await Promise.all([
-          petsService.getPets(),
-          appointmentsService.getUpcomingAppointments(),
-          userSubscriptionsService.getActiveSubscription(user.id)
-        ]);
-        
-        console.log('🐕 Dashboard - Pets carregados:', petsData);
-        console.log('📊 Dashboard - Total de pets:', petsData.length);
-        console.info('🔍 Dashboard - IDs dos pets:', JSON.stringify(petsData.map(p => ({ id: p.id, name: p.name })), null, 2));
-        setPets(petsData);
-        setUpcomingAppointments(appointmentsData);
-        setHasActiveSubscription(!!activeSubscription);
-        
-        // Set default selected pet to first pet
-        if (petsData.length > 0 && !selectedPetId) {
-          setSelectedPetId(petsData[0].id);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
-        // Em caso de erro na verificação de assinatura, assumir que não tem
-        setHasActiveSubscription(false);
-      } finally {
-        setLoading(false);
+      console.log('🐕 Dashboard - Pets carregados:', petsData);
+      console.log('📊 Dashboard - Total de pets:', petsData.length);
+      console.info('🔍 Dashboard - IDs dos pets:', JSON.stringify(petsData.map(p => ({ id: p.id, name: p.name })), null, 2));
+      setPets(petsData);
+      setUpcomingAppointments(appointmentsData);
+      setHasActiveSubscription(!!activeSubscription);
+      
+      // Set default selected pet to first pet
+      if (petsData.length > 0 && !selectedPetId) {
+        setSelectedPetId(petsData[0].id);
       }
-    };
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
+      // Em caso de erro na verificação de assinatura, assumir que não tem
+      setHasActiveSubscription(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, selectedPetId]);
 
+  useEffect(() => {
     if (user) {
       loadData();
     }
-  }, [user]);
+  }, [user, loadData]);
 
   // Simula o check-in e o progresso do serviço
   useEffect(() => {

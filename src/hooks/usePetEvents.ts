@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 
@@ -86,15 +86,15 @@ export const usePetEvents = (petId?: string) => {
   };
 
   // Process photos to add public URLs
-  const processPhotos = (photos: EventPhoto[]): EventPhoto[] => {
+  const processPhotos = useCallback((photos: EventPhoto[]): EventPhoto[] => {
     return photos.map(photo => ({
       ...photo,
       photo_url: getPhotoUrl(photo.file_path)
     }));
-  };
+  }, []);
 
   // Fetch pet events
-  const fetchPetEvents = async () => {
+  const fetchPetEvents = useCallback(async () => {
     if (!petId || !user) {
       console.log('🔄 usePetEvents - Missing petId or user, skipping fetch');
       return;
@@ -132,7 +132,7 @@ export const usePetEvents = (petId?: string) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [petId, user, processPhotos]);
 
   // Create new event
   const createEvent = async (eventData: CreateEventData): Promise<PetEvent | null> => {
@@ -250,7 +250,7 @@ export const usePetEvents = (petId?: string) => {
     if (petId && user) {
       fetchPetEvents();
     }
-  }, [petId, user]);
+  }, [petId, user, fetchPetEvents]);
 
   return {
     events,

@@ -31,8 +31,7 @@ export const useDebounce = <T>(value: T, delay: number): T => {
  */
 export const useDebouncedCallback = <T extends (...args: unknown[]) => unknown>(
   callback: T,
-  delay: number,
-  deps: React.DependencyList = []
+  delay: number
 ): T => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const callbackRef = useRef(callback);
@@ -40,7 +39,7 @@ export const useDebouncedCallback = <T extends (...args: unknown[]) => unknown>(
   // Atualizar referência do callback
   useEffect(() => {
     callbackRef.current = callback;
-  }, [callback, ...deps]);
+  }, [callback]);
 
   // Cleanup na desmontagem
   useEffect(() => {
@@ -135,8 +134,7 @@ export const useDebouncedState = <T>(
  */
 export const useThrottledCallback = <T extends (...args: unknown[]) => unknown>(
   callback: T,
-  delay: number,
-  deps: React.DependencyList = []
+  delay: number
 ): T => {
   const lastCallRef = useRef<number>(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -145,7 +143,7 @@ export const useThrottledCallback = <T extends (...args: unknown[]) => unknown>(
   // Atualizar referência do callback
   useEffect(() => {
     callbackRef.current = callback;
-  }, [callback, ...deps]);
+  }, [callback]);
 
   // Cleanup na desmontagem
   useEffect(() => {

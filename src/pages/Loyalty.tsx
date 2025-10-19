@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -69,7 +69,7 @@ const Loyalty: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
 
   // Mock data
-  const mockLoyaltyProgram: LoyaltyProgram = {
+  const mockLoyaltyProgram: LoyaltyProgram = useMemo(() => ({
     id: '1',
     name: 'Pet Lovers Club',
     description: 'Ganhe pontos a cada compra e troque por recompensas incríveis!',
@@ -111,9 +111,9 @@ const Loyalty: React.FC = () => {
         color: 'bg-blue-500'
       }
     ]
-  };
+  }), []);
 
-  const mockUserLoyalty: UserLoyalty = {
+  const mockUserLoyalty: UserLoyalty = useMemo(() => ({
     userId: '1',
     programId: '1',
     currentPoints: 2450,
@@ -122,9 +122,9 @@ const Loyalty: React.FC = () => {
     currentTier: '2',
     nextTierPoints: 2550,
     joinedAt: new Date('2023-06-15')
-  };
+  }), []);
 
-  const mockTransactions: PointsTransaction[] = [
+  const mockTransactions: PointsTransaction[] = useMemo(() => [
     {
       id: '1',
       userId: '1',
@@ -151,9 +151,9 @@ const Loyalty: React.FC = () => {
       orderId: 'ORD-002',
       createdAt: new Date('2024-01-08')
     }
-  ];
+  ], []);
 
-  const mockRewards: Reward[] = [
+  const mockRewards: Reward[] = useMemo(() => [
     {
       id: '1',
       name: 'Desconto R$ 10,00',
@@ -193,7 +193,7 @@ const Loyalty: React.FC = () => {
       isActive: true,
       stock: 2
     }
-  ];
+  ], []);
 
   useEffect(() => {
     // Simular carregamento de dados
@@ -204,7 +204,7 @@ const Loyalty: React.FC = () => {
       setRewards(mockRewards);
       setLoading(false);
     }, 1000);
-  }, []);
+  }, [mockLoyaltyProgram, mockUserLoyalty, mockTransactions, mockRewards]);
 
   const getCurrentTier = () => {
     if (!loyaltyProgram || !userLoyalty) return null;
