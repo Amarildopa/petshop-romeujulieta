@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { settingsService } from '../services/settingsService';
-import Testimonials from '../components/Testimonials';
+// import Testimonials from '../components/Testimonials';
 import WeeklyBaths from '../components/WeeklyBaths';
 
-import WeeklyTip from '../components/WeeklyTip';
-import SpecialOffers from '../components/SpecialOffers';
+// import WeeklyTip from '../components/WeeklyTip';
+// import SpecialOffers from '../components/SpecialOffers';
 import VIPPackages from '../components/VIPPackages';
 import LiveCameraSection from '../components/LiveCameraSection';
 import AboutSection from '../components/AboutSection';
@@ -287,10 +287,15 @@ const Home: React.FC = () => {
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105"
                   style={{
                     color: 'white',
-                    backgroundColor: 'var(--color-primary)'
+                    backgroundColor: '#e05389'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
+                  onClick={() => {
+                    setTimeout(() => {
+                      window.scrollTo(0, 0);
+                    }, 100);
+                  }}
                 >
                   Saiba mais
                   <ArrowRight className="w-4 h-4" />
@@ -336,7 +341,8 @@ const Home: React.FC = () => {
           <VIPPackages />
         </section>
 
-      {/* Weekly Content Section */}
+      {/* Weekly Content Section - DESABILITADA */}
+      {/* 
       <section className="py-20" style={{
         backgroundColor: 'var(--simple-landing-bg)'
       }}>
@@ -348,18 +354,17 @@ const Home: React.FC = () => {
             </p>
           </div>
           <div className="grid lg:grid-cols-2 gap-12 items-start">
-            {/* Weekly Tip */}
             <div>
               <WeeklyTip />
             </div>
             
-            {/* Special Offers */}
             <div>
               <SpecialOffers />
             </div>
           </div>
         </div>
       </section>
+      */}
 
       {/* Weekly Baths Section */}
         <section style={{
@@ -368,12 +373,14 @@ const Home: React.FC = () => {
           <WeeklyBaths />
         </section>
 
-      {/* Testimonials Section */}
+      {/* Testimonials Section - DESABILITADA */}
+      {/* 
         <section style={{
           backgroundColor: 'var(--simple-landing-bg)'
         }}>
           <Testimonials />
         </section>
+      */}
 
       {/* CTA Section */}
       <section className="py-20" style={{

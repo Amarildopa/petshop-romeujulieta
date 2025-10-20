@@ -13,6 +13,16 @@ export default function BanhoTosaSpa() {
     navigate(-1);
   };
 
+  const handleBooking = () => {
+    navigate('/booking');
+  };
+
+  const handleWhatsApp = () => {
+    const whatsappNumber = '5511999999999'; // Substitua pelo número real
+    const message = 'Olá! Gostaria de saber mais sobre os serviços de Banho, Tosa & Spa do Romeu & Julieta Pet&Spa';
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+  };
+
   const services = [
     {
       id: 'banho-tradicional',
@@ -274,6 +284,35 @@ export default function BanhoTosaSpa() {
            'Sessão de reiki energizante',
            'Ambiente exclusivo e acolhedor'
          ]
+       },
+       {
+         id: 'prp-cronograma',
+         title: 'PRP - CRONOGRAMA HIDRATAÇÃO',
+         icon: Sparkles,
+         color: 'from-emerald-500 to-emerald-700',
+         bgColor: 'from-emerald-50 to-emerald-100',
+         iconColor: 'text-emerald-600',
+         description: 'Programa de Recuperação de Pelagem Hydra. Logo na chegada, convidamos o tutor a responder algumas perguntas sobre a pelagem do seu pet, isso garante que cada protocolo seja montado sob medida, respeitando as características únicas de cada pelagem. O tratamento é dividido em 4 etapas cuidadosamente planejadas, unindo a mais avançada tecnologia cosmética da linha Hydra a uma rotina humanizada de cuidado. Utilizamos ativos de alta performance e hidratação profunda, criando uma jornada de recuperação que devolve brilho, vitalidade e maciez, até para as pelagens mais sensíveis ou fragilizadas. Assinando o pacote PRP o banho de ozônio é cortesia! Aqui, cada etapa é conduzida com carinho e transparência, permitindo que o tutor acompanhe todo o processo de pertinho. Porque para nós, cuidar é mais do que estética: é proporcionar saúde, conforto e autoestima, transformando cada sessão em um momento único de renovação para o seu melhor amigo.',
+         features: [
+           {
+             icon: Heart,
+             title: 'Protocolo Personalizado',
+             description: 'Cada protocolo é montado sob medida após análise detalhada da pelagem, respeitando as características únicas de cada pet.',
+             color: 'text-emerald-600'
+           },
+           {
+             icon: Sparkles,
+             title: '4 Etapas Planejadas',
+             description: 'Tratamento dividido em etapas cuidadosas com tecnologia cosmética avançada e rotina humanizada de cuidado.',
+             color: 'text-green-600'
+           }
+         ],
+         includes: [
+           'Análise personalizada da pelagem',
+           'Protocolo sob medida em 4 etapas',
+           'Produtos linha Hydra de alta performance',
+           'Banho de ozônio cortesia'
+         ]
        }
   ];
 
@@ -353,10 +392,27 @@ export default function BanhoTosaSpa() {
             Proporcione ao seu pet uma experiência única de relaxamento e cuidado
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-200">
+            <button 
+              onClick={handleBooking}
+              className="text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-200"
+              style={{
+                backgroundColor: '#e05389'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
+            >
               Agendar Agora
             </button>
-            <button className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-200">
+            <button 
+              onClick={handleWhatsApp}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+              style={{
+                color: 'white',
+                backgroundColor: '#25D366'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1DA851'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#25D366'}
+            >
               Falar no WhatsApp
             </button>
             <button 

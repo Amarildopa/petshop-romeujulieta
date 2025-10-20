@@ -37,48 +37,11 @@ const VIPPackages: React.FC = () => {
               <Star className="w-8 h-8 text-primary group-hover:text-white" />
             </div>
             <h3 className="text-xl font-semibold text-text-color-dark mb-2">
-              Pacote Essencial 4 Banhos
+              Clube Bem Vindo Romeu & Julieta
             </h3>
             <p className="text-text-color mb-4 flex-grow">
-              O cuidado básico que seu pet merece com qualidade premium e flexibilidade total.
+              Com o Clube Bem Vindo, você adquire 4 sessões do serviço escolhido para ser utilizado em até 2 meses. Assim, garante os benefícios da recorrência, descontos especiais e flexibilidade para cuidar do seu pet com tranquilidade e planejamento. Ideal para quem ama personalizar o cuidado, com liberdade para investir exatamente no tratamento que seu pet mais precisa!
             </p>
-
-            {/* Lista de serviços inclusos */}
-            <div className="bg-gray-50 rounded-xl p-4 mb-4">
-              <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center justify-center gap-2">
-                <span>✨</span>
-                Serviços Inclusos
-              </h4>
-              <div className="space-y-2">
-                {[
-                  'Banho',
-                  'Banho de Ozônio',
-                  'Hidratação',
-                  'Banho de Ofurô',
-                  'Desembolo',
-                  'Remoção de Subpelo',
-                  'Tosa Higiênica'
-                ].map((service, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div>
-                    <span className="text-gray-700">{service}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Benefícios adicionais */}
-            <div className="flex flex-wrap justify-center gap-1 mt-auto">
-              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-                ✨ Flexibilidade
-              </span>
-              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-                💰 Descontos
-              </span>
-              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-                🎯 Personalizado
-              </span>
-            </div>
           </div>
         </motion.div>
 
@@ -94,48 +57,13 @@ const VIPPackages: React.FC = () => {
               <Sparkles className="w-8 h-8 text-primary group-hover:text-white" />
             </div>
             <h3 className="text-xl font-semibold text-text-color-dark mb-2">
-              Pacote Fidelidade
+              Clube Parceiros Romeu & Julieta
             </h3>
             <p className="text-text-color mb-4 flex-grow">
-              8 sessões do serviço escolhido para usar em até 6 meses. Desconto maior e participação no sorteio mensal de prêmios exclusivos.
+              No Clube Parceiros Romeu e Julieta, você adquire 8 sessões do serviço escolhido para serem utilizadas em até 6 meses. Além de praticidade e flexibilidade, você aproveita um desconto ainda maior tornando o cuidado do seu pet ainda mais vantajoso! 
+              
+              Você ainda escolhe 2 serviços extra.
             </p>
-
-            {/* Lista de serviços inclusos */}
-            <div className="bg-gray-50 rounded-xl p-4 mb-4">
-              <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center justify-center gap-2">
-                <span>✨</span>
-                Serviços Inclusos
-              </h4>
-              <div className="space-y-2">
-                {[
-                  'Banho',
-                  'Banho de Ozônio',
-                  'Hidratação',
-                  'Banho de Ofurô',
-                  'Desembolo',
-                  'Remoção de Subpelo',
-                  'Tosa Higiênica'
-                ].map((service, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div>
-                    <span className="text-gray-700">{service}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Benefícios adicionais */}
-            <div className="flex flex-wrap justify-center gap-1 mt-auto">
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                🎁 Sorteio Mensal
-              </span>
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                💰 Maior Desconto
-              </span>
-              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
-                ⏰ 6 Meses
-              </span>
-            </div>
           </div>
         </motion.div>
 
@@ -151,61 +79,59 @@ const VIPPackages: React.FC = () => {
               <Crown className="w-8 h-8 text-primary group-hover:text-white" />
             </div>
             <h3 className="text-xl font-semibold text-text-color-dark mb-2">
-              Pacote VIP
+              Clube VIP Romeu & Julieta
             </h3>
             <p className="text-text-color mb-4 flex-grow">
-              12 sessões do serviço especial para usar em até 12 meses. Maior desconto entre todos os pacotes + todos os benefícios do Plano Fidelidade.
+              O Clube VIP foi pensado para quem valoriza o máximo de benefícios e economia! 
+              Ao contratar 12 sessões do serviço especial de sua escolha, você garante o maior desconto entre todos os pacotes, aproveitando ainda mais praticidade, flexibilidade e cuidado contínuo para seu pet e pode usar em até 12 meses. 
+              Aqui você desfruta do atendimento exclusivo do Romeu & Julieta Pet&Spa e ainda escolhe 3 serviços extra.
             </p>
-
-            {/* Lista de serviços inclusos */}
-            <div className="bg-gray-50 rounded-xl p-4 mb-4">
-              <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center justify-center gap-2">
-                <span>✨</span>
-                Serviços Inclusos
-              </h4>
-              <div className="space-y-2">
-                {[
-                  'Banho',
-                  'Banho de Ozônio',
-                  'Hidratação',
-                  'Banho de Ofurô',
-                  'Desembolo',
-                  'Remoção de Subpelo',
-                  'Tosa Higiênica'
-                ].map((service, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0"></div>
-                    <span className="text-gray-700">{service}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Benefícios adicionais */}
-            <div className="flex flex-wrap justify-center gap-1 mt-auto">
-              <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
-                👑 Máximo Desconto
-              </span>
-              <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
-                🎁 Sorteio + Exclusivo
-              </span>
-              <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
-                📅 12 Meses
-              </span>
-            </div>
           </div>
         </motion.div>
       </div>
 
+      {/* Quadro de Serviços Extras */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.0, duration: 0.6 }}
+        className="mt-8 max-w-4xl mx-auto"
+      >
+        <div className="bg-gradient-to-r from-primary/10 to-primary-light/20 p-6 rounded-2xl border-2 border-primary/20 shadow-lg">
+          <div className="text-center mb-4">
+            <h3 className="text-2xl font-bold text-primary mb-2">SERVIÇOS EXTRAS</h3>
+            <p className="text-sm text-gray-600">Disponíveis em todos os planos dos clubes</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="text-center p-3 bg-white/70 rounded-xl">
+              <div className="text-primary font-semibold text-sm">Banho de Ozônio</div>
+            </div>
+            <div className="text-center p-3 bg-white/70 rounded-xl">
+              <div className="text-primary font-semibold text-sm">Hidratação</div>
+            </div>
+            <div className="text-center p-3 bg-white/70 rounded-xl">
+              <div className="text-primary font-semibold text-sm">Remoção de Pelos Mortos</div>
+            </div>
+            <div className="text-center p-3 bg-white/70 rounded-xl">
+              <div className="text-primary font-semibold text-sm">Tosa Higiênica</div>
+            </div>
+          </div>
+          
+          {/* Descritivo do desconto */}
+          <div className="text-center mt-4 p-3 bg-gradient-to-r from-green-100 to-green-50 rounded-xl border border-green-200">
+            <p className="text-green-700 font-semibold text-sm">
+              🎉 5% de desconto nos produtos adquiridos na loja física assinando qualquer plano - Não Cumulativo
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.0, duration: 0.5 }}
+        transition={{ delay: 1.2, duration: 0.5 }}
         className="text-center mt-12"
       >
-        <p className="text-sm text-gray-600 mb-4">
-          Contratando 2 ou + pacotes de serviços você ainda tem 5% de desconto nos produtos da loja
-        </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           {user ? (
             // Usuário logado - mostrar botão "Seus Planos"
