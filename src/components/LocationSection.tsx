@@ -50,7 +50,10 @@ const LocationSection: React.FC = () => {
       sunday: 'Domingo'
     };
 
-    const formatTime = (time: string) => {
+    const formatTime = (time: string | undefined) => {
+      if (!time || typeof time !== 'string') {
+        return '';
+      }
       return time.replace(':', 'h');
     };
 
@@ -60,17 +63,17 @@ const LocationSection: React.FC = () => {
     // Verificar se todos os dias da semana têm o mesmo horário
     const weekdayHours = weekdays.map(day => businessHours[day]);
     const sameWeekdayHours = weekdayHours.every(hours => 
-      hours && hours.open === weekdayHours[0]?.open && hours.close === weekdayHours[0]?.close
+      hours && !hours.closed && hours.open === weekdayHours[0]?.open && hours.close === weekdayHours[0]?.close
     );
 
     const result = [];
 
-    if (sameWeekdayHours && weekdayHours[0]) {
+    if (sameWeekdayHours && weekdayHours[0] && !weekdayHours[0].closed) {
       result.push(`Segunda a Sexta: ${formatTime(weekdayHours[0].open)} às ${formatTime(weekdayHours[0].close)}`);
     } else {
       weekdays.forEach(day => {
         const hours = businessHours[day];
-        if (hours) {
+        if (hours && !hours.closed && hours.open && hours.close) {
           result.push(`${dayNames[day]}: ${formatTime(hours.open)} às ${formatTime(hours.close)}`);
         }
       });
@@ -79,7 +82,11 @@ const LocationSection: React.FC = () => {
     weekend.forEach(day => {
       const hours = businessHours[day];
       if (hours) {
-        result.push(`${dayNames[day]}: ${formatTime(hours.open)} às ${formatTime(hours.close)}`);
+        if (hours.closed) {
+          result.push(`${dayNames[day]}: Fechado`);
+        } else if (hours.open && hours.close) {
+          result.push(`${dayNames[day]}: ${formatTime(hours.open)} às ${formatTime(hours.close)}`);
+        }
       }
     });
 

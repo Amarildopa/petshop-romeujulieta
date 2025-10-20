@@ -55,8 +55,11 @@ const Footer: React.FC = () => {
       sunday: 'Domingo'
     };
 
-    const formatTime = (time: string) => {
-      return time.replace(':', ':');
+    const formatTime = (time: string | undefined) => {
+      if (!time || typeof time !== 'string') {
+        return '';
+      }
+      return time.replace(':', 'h');
     };
 
     // Agrupar horários iguais
@@ -64,6 +67,20 @@ const Footer: React.FC = () => {
     
     Object.entries(hours).forEach(([day, times]) => {
       if (!times) return;
+      
+      // Verificar se o dia está fechado
+      if (times.closed) {
+        const closedKey = 'Fechado';
+        if (!groupedHours[closedKey]) {
+          groupedHours[closedKey] = [];
+        }
+        groupedHours[closedKey].push(dayNames[day as keyof typeof dayNames]);
+        return;
+      }
+      
+      // Verificar se open e close existem antes de formatar
+      if (!times.open || !times.close) return;
+      
       const timeRange = `${formatTime(times.open)} às ${formatTime(times.close)}`;
       if (!groupedHours[timeRange]) {
         groupedHours[timeRange] = [];
