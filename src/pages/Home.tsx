@@ -431,6 +431,23 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Instagram Button */}
+      <div className="fixed bottom-24 right-6 z-50">
+        <a
+          href="https://www.instagram.com/romeuejulieta_petspa/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-pink-500 hover:bg-pink-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center group overflow-hidden hover:rounded-full hover:px-6"
+          aria-label="Seguir no Instagram"
+          style={{ backgroundColor: '#E4405F' }}
+        >
+          <InstagramIcon size={24} className="flex-shrink-0" />
+          <span className="max-w-0 group-hover:max-w-xs group-hover:ml-3 overflow-hidden transition-all duration-300 whitespace-nowrap text-sm font-medium">
+            Seguir no Instagram
+          </span>
+        </a>
+      </div>
+
       {/* WhatsApp Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <a
