@@ -48,7 +48,8 @@ export default function BanhoTosaSpa() {
       ],
       includes: [
         'Escovação dos dentinhos (traga a escova e creme dental)',
-        'Corte de unhas profissional'
+        'Corte de unhas profissional',
+        'Limpeza de ouvidos'
       ]
     },
     {
