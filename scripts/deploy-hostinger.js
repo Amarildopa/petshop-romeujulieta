@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import readline from 'readline';
 
 console.log('🚀 Iniciando deploy para Hostinger...');
 
@@ -13,7 +14,6 @@ try {
   
   if (branch !== 'main' && branch !== 'master') {
     console.log('⚠️  Aviso: Você não está no branch main/master');
-    const readline = require('readline');
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
