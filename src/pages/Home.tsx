@@ -28,6 +28,22 @@ import InstagramIcon from '../components/icons/InstagramIcon';
 
 const Home: React.FC = () => {
   const [whatsappNumber, setWhatsappNumber] = useState('5511999999999'); // Valor padrão
+  const [isMobile, setIsMobile] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+
+  // Detectar se é dispositivo mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as Window & { opera?: string }).opera;
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      const isSmallScreen = window.innerWidth <= 768;
+      setIsMobile(isMobileDevice || isSmallScreen);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Buscar número do WhatsApp do banco de dados
   useEffect(() => {
@@ -77,24 +93,38 @@ const Home: React.FC = () => {
     }}>
       {/* Hero Section */}
       <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Video Background */}
+        {/* Background - Video para desktop, imagem para mobile */}
         <div className="absolute inset-0 w-full h-full">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
-            poster={IMAGE_CONFIG.home.hero}
-          >
-            <source src="/videos/hero-video.mp4" type="video/mp4" />
-            {/* Fallback para navegadores que não suportam vídeo */}
-            <img
-              src={IMAGE_CONFIG.home.hero}
-              alt="Cachorro feliz"
+          {!isMobile && !videoError ? (
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              webkit-playsinline="true"
+              preload="metadata"
               className="w-full h-full object-cover"
+              poster={IMAGE_CONFIG.home.hero}
+              onError={() => setVideoError(true)}
+              onLoadedData={() => console.log('🎥 Vídeo carregado com sucesso')}
+            >
+              <source src="/videos/hero-video.mp4" type="video/mp4" />
+              {/* Fallback para navegadores que não suportam vídeo */}
+              <img
+                src={IMAGE_CONFIG.home.hero}
+                alt="Cachorro feliz"
+                className="w-full h-full object-cover"
+              />
+            </video>
+          ) : (
+            // Imagem de fundo para mobile ou quando vídeo falha
+            <div 
+              className="w-full h-full bg-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url(${IMAGE_CONFIG.home.hero})`
+              }}
             />
-          </video>
+          )}
           {/* Overlay escuro para melhor legibilidade */}
           <div className="absolute inset-0 bg-black/40"></div>
         </div>
