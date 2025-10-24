@@ -31,13 +31,38 @@ const Home: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [videoError, setVideoError] = useState(false);
 
-  // Detectar se é dispositivo mobile
+  // Detectar se é dispositivo mobile com detecção mais robusta
   useEffect(() => {
     const checkMobile = () => {
       const userAgent = navigator.userAgent || navigator.vendor || (window as Window & { opera?: string }).opera;
-      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+      
+      // Detecção mais precisa de dispositivos móveis
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i.test(userAgent.toLowerCase());
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+      const isAndroid = /Android/.test(userAgent);
+      const isTablet = /iPad|Android(?!.*Mobile)|Tablet/i.test(userAgent);
       const isSmallScreen = window.innerWidth <= 768;
-      setIsMobile(isMobileDevice || isSmallScreen);
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      
+      // Verificar se o dispositivo suporta autoplay de vídeo
+      const supportsAutoplay = !isMobileDevice && !isIOS && !isAndroid;
+      
+      // Considerar como mobile se for dispositivo móvel, tela pequena ou não suportar autoplay
+      const shouldUseMobile = isMobileDevice || isIOS || isAndroid || isTablet || isSmallScreen || isTouchDevice || !supportsAutoplay;
+      
+      console.log('📱 Detecção de dispositivo:', {
+        userAgent: userAgent.substring(0, 50) + '...',
+        isMobileDevice,
+        isIOS,
+        isAndroid,
+        isTablet,
+        isSmallScreen,
+        isTouchDevice,
+        supportsAutoplay,
+        shouldUseMobile
+      });
+      
+      setIsMobile(shouldUseMobile);
     };
 
     checkMobile();
@@ -93,20 +118,33 @@ const Home: React.FC = () => {
     }}>
       {/* Hero Section */}
       <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background - Video para desktop, imagem para mobile */}
+        {/* Background - Lógica condicional otimizada para mobile */}
         <div className="absolute inset-0 w-full h-full">
           {!isMobile && !videoError ? (
+            // Vídeo otimizado para desktop
             <video
               autoPlay
               muted
               loop
               playsInline
               webkit-playsinline="true"
-              preload="metadata"
-              className="w-full h-full object-cover"
+              preload="none"
+              className="w-full h-full object-cover transition-opacity duration-500"
               poster={IMAGE_CONFIG.home.hero}
-              onError={() => setVideoError(true)}
-              onLoadedData={() => console.log('🎥 Vídeo carregado com sucesso')}
+              onError={(e) => {
+                console.error('❌ Erro no vídeo:', e);
+                setVideoError(true);
+              }}
+              onLoadedData={() => {
+                console.log('🎥 Vídeo carregado com sucesso');
+              }}
+              onCanPlay={() => {
+                console.log('🎬 Vídeo pronto para reproduzir');
+              }}
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center'
+              }}
             >
               <source src="/videos/hero-video.mp4" type="video/mp4" />
               {/* Fallback para navegadores que não suportam vídeo */}
@@ -117,12 +155,17 @@ const Home: React.FC = () => {
               />
             </video>
           ) : (
-            // Imagem de fundo para mobile ou quando vídeo falha
+            // Imagem otimizada para mobile e fallback
             <div 
-              className="w-full h-full bg-cover bg-center bg-no-repeat"
+              className="w-full h-full bg-cover bg-center bg-no-repeat transition-opacity duration-500"
               style={{
-                backgroundImage: `url(${IMAGE_CONFIG.home.hero})`
+                backgroundImage: `url(${IMAGE_CONFIG.home.hero})`,
+                backgroundAttachment: 'scroll', // Melhor performance no mobile
+                backgroundSize: 'cover',
+                backgroundPosition: 'center center'
               }}
+              role="img"
+              aria-label="Cachorro feliz - Pet Shop Romeo e Julieta"
             />
           )}
           {/* Overlay escuro para melhor legibilidade */}
