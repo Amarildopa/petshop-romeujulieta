@@ -76,30 +76,9 @@ const Home: React.FC = () => {
       backgroundColor: 'var(--simple-landing-bg)'
     }}>
       {/* Hero Section */}
-      <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Video Background */}
-        <div className="absolute inset-0 w-full h-full">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover"
-            poster={IMAGE_CONFIG.home.hero}
-          >
-            <source src="/videos/hero-video.mp4" type="video/mp4" />
-            {/* Fallback para navegadores que não suportam vídeo */}
-            <img
-              src={IMAGE_CONFIG.home.hero}
-              alt="Cachorro feliz"
-              className="w-full h-full object-cover"
-            />
-          </video>
-          {/* Overlay escuro para melhor legibilidade */}
-          <div className="absolute inset-0 bg-black/40"></div>
-        </div>
-
-        {/* Content */}
+      <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{
+        backgroundColor: 'var(--simple-landing-bg)'
+      }}>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
@@ -107,15 +86,21 @@ const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-3xl md:text-5xl font-bold mb-6 text-white drop-shadow-lg"
+                className="text-3xl md:text-5xl font-bold mb-6"
+                style={{
+                  color: 'var(--landing-title-color)'
+                }}
               >
-                Cuidado e Amor para seu <span className="text-pink-300">Pet</span>
+                Cuidado e Amor para seu <span style={{ color: 'var(--landing-accent-color)' }}>Pet</span>
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-xl md:text-2xl mb-8 max-w-3xl text-white/90 drop-shadow-md"
+                className="text-xl md:text-2xl mb-8 max-w-3xl"
+                style={{
+                  color: 'var(--landing-subtitle-color)'
+                }}
               >
                 No Romeu & Julieta Pet&Spa, temos atenção e amor de verdade, carinho em cada detalhe e total transparência em tudo o que fazemos. Seu pet seguro, você tranquilo e todo mundo feliz! Seja muito bem vindo. Traga seu pet para comer um biscotinho com a gente!
               </motion.p>
@@ -127,7 +112,13 @@ const Home: React.FC = () => {
               >
                 <Link
                   to="/booking"
-                  className="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-pink-500/90 hover:bg-pink-600/90 text-white border border-white/20"
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  style={{
+                    color: 'white',
+                    backgroundColor: '#e05389'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
                 >
                   Agende seu Horário
                   <ArrowRight className="w-4 h-4" />
@@ -136,7 +127,13 @@ const Home: React.FC = () => {
                   href={`https://wa.me/${whatsappNumber}?text=Olá! Gostaria de saber mais sobre os serviços do Romeu & Julieta Pet&Spa`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-green-500/90 hover:bg-green-600/90 text-white border border-white/20"
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  style={{
+                    color: 'white',
+                    backgroundColor: '#25D366'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1DA851'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#25D366'}
                 >
                   WhatsApp
                   <WhatsAppIcon className="w-4 h-4" />
@@ -145,7 +142,13 @@ const Home: React.FC = () => {
                   href="https://www.instagram.com/romeuejulieta_petspa/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-pink-500/90 hover:bg-pink-600/90 text-white border border-white/20"
+                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  style={{
+                    color: 'white',
+                    backgroundColor: '#e05389'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#c44576'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e05389'}
                 >
                   Instagram
                   <InstagramIcon className="w-4 h-4" />
@@ -156,17 +159,15 @@ const Home: React.FC = () => {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              className="relative lg:flex justify-center items-center hidden"
+              className="relative"
             >
-              {/* Elemento decorativo para desktop - pode ser removido se necessário */}
-              <div className="relative">
-                <div className="w-96 h-96 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <Heart className="w-16 h-16 mx-auto mb-4 text-pink-300" />
-                    <p className="text-lg font-semibold">Amor & Cuidado</p>
-                    <p className="text-sm opacity-80">Para seu melhor amigo</p>
-                  </div>
-                </div>
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+                <img
+                  src={IMAGE_CONFIG.home.hero}
+                  alt="Cachorro feliz"
+                  className="w-full h-[500px] object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>
             </motion.div>
           </div>
