@@ -100,7 +100,6 @@ const Home: React.FC = () => {
         dataSaver: connection?.saveData || false
       });
       
-      setIsMobile(shouldUseMobile);
       setIsIOS(isIOSDevice);
       setIsAndroid(isAndroidDevice);
       
