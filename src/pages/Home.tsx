@@ -38,7 +38,7 @@ const Home: React.FC = () => {
       
       // Detecção mais precisa de dispositivos móveis
       const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i.test(userAgent.toLowerCase());
-      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as Window & { MSStream?: unknown }).MSStream;
       const isAndroid = /Android/.test(userAgent);
       const isTablet = /iPad|Android(?!.*Mobile)|Tablet/i.test(userAgent);
       const isSmallScreen = window.innerWidth <= 768;
