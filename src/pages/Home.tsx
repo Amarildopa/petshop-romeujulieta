@@ -28,47 +28,138 @@ import InstagramIcon from '../components/icons/InstagramIcon';
 
 const Home: React.FC = () => {
   const [whatsappNumber, setWhatsappNumber] = useState('5511999999999'); // Valor padrão
-  const [isMobile, setIsMobile] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  
+  // Novos estados para otimização de vídeo
+  const [isIOS, setIsIOS] = useState(false);
+  const [isAndroid, setIsAndroid] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [connectionType, setConnectionType] = useState<string>('unknown');
+  const [videoLoadAttempted, setVideoLoadAttempted] = useState(false);
 
-  // Detectar se é dispositivo mobile com detecção mais robusta
+  // Detectar se é dispositivo mobile com detecção mais robusta e específica para iOS e Android
   useEffect(() => {
     const checkMobile = () => {
       const userAgent = navigator.userAgent || navigator.vendor || (window as Window & { opera?: string }).opera;
       
       // Detecção mais precisa de dispositivos móveis
       const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i.test(userAgent.toLowerCase());
-      const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !(window as Window & { MSStream?: unknown }).MSStream;
-      const isAndroid = /Android/.test(userAgent);
+      const isIOSDevice = /iPad|iPhone|iPod/.test(userAgent) && !(window as Window & { MSStream?: unknown }).MSStream;
+      const isAndroidDevice = /Android/.test(userAgent);
       const isTablet = /iPad|Android(?!.*Mobile)|Tablet/i.test(userAgent);
       const isSmallScreen = window.innerWidth <= 768;
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       
+      // Verificar conexão de rede se disponível
+      const connection = (navigator as Navigator & { 
+        connection?: { effectiveType?: string; type?: string; downlink?: number }; 
+        mozConnection?: { effectiveType?: string; type?: string; downlink?: number }; 
+        webkitConnection?: { effectiveType?: string; type?: string; downlink?: number }; 
+      }).connection || (navigator as Navigator & { 
+        mozConnection?: { effectiveType?: string; type?: string; downlink?: number }; 
+      }).mozConnection || (navigator as Navigator & { 
+        webkitConnection?: { effectiveType?: string; type?: string; downlink?: number }; 
+      }).webkitConnection;
+      let networkType = 'unknown';
+      let isSlowConnection = false;
+      
+      if (connection) {
+        networkType = connection.effectiveType || connection.type || 'unknown';
+        // Considerar conexões 2g e slow-2g como lentas
+        isSlowConnection = ['slow-2g', '2g'].includes(networkType) || 
+                          (connection.downlink && connection.downlink < 1.5);
+        setConnectionType(networkType);
+      }
+      
       // Verificar se o dispositivo suporta autoplay de vídeo
-      const supportsAutoplay = !isMobileDevice && !isIOS && !isAndroid;
+      const supportsAutoplay = !isMobileDevice && !isIOSDevice && !isAndroidDevice;
+      
+      // Lógica específica para iOS e Android - ser mais restritivo para ambos
+      const shouldAvoidVideo = isIOSDevice || isAndroidDevice || isSlowConnection || 
+                              (isMobileDevice && isSmallScreen) ||
+                              (connection && connection.saveData); // Respeitar data saver
       
       // Considerar como mobile se for dispositivo móvel, tela pequena ou não suportar autoplay
-      const shouldUseMobile = isMobileDevice || isIOS || isAndroid || isTablet || isSmallScreen || isTouchDevice || !supportsAutoplay;
+      const shouldUseMobile = isMobileDevice || isIOSDevice || isAndroidDevice || isTablet || 
+                             isSmallScreen || isTouchDevice || !supportsAutoplay || shouldAvoidVideo;
       
-      console.log('📱 Detecção de dispositivo:', {
+      console.log('📱 Detecção avançada de dispositivo:', {
         userAgent: userAgent.substring(0, 50) + '...',
         isMobileDevice,
-        isIOS,
-        isAndroid,
+        isIOSDevice,
+        isAndroidDevice,
         isTablet,
         isSmallScreen,
         isTouchDevice,
         supportsAutoplay,
-        shouldUseMobile
+        shouldUseMobile,
+        networkType,
+        isSlowConnection,
+        shouldAvoidVideo,
+        dataSaver: connection?.saveData || false
       });
       
       setIsMobile(shouldUseMobile);
+      setIsIOS(isIOSDevice);
+      setIsAndroid(isAndroidDevice);
+      
+      // Para desktop com boa conexão, carregar vídeo automaticamente
+      if (!shouldUseMobile && !isSlowConnection && !shouldAvoidVideo) {
+        setShouldLoadVideo(true);
+      }
     };
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Função para carregar vídeo sob demanda
+  const handleLoadVideo = async () => {
+    if (videoLoadAttempted) return;
+    
+    setVideoLoading(true);
+    setVideoLoadAttempted(true);
+    
+    console.log('🎥 Iniciando carregamento do vídeo sob demanda...');
+    
+    try {
+      // Simular verificação de tamanho do arquivo (em produção, isso viria do servidor)
+      const videoSizeKB = 2369; // 2.4MB
+      const isLargeVideo = videoSizeKB > 2000; // Considerar vídeos > 2MB como grandes
+      
+      // Verificar tanto iOS quanto Android para vídeos grandes
+      if ((isIOS || isAndroid) && isLargeVideo) {
+        const deviceType = isIOS ? 'iOS' : 'Android';
+        console.log(`⚠️ Vídeo grande detectado no ${deviceType}, perguntando ao usuário...`);
+        
+        const userConfirm = window.confirm(
+          `Este vídeo tem ${(videoSizeKB / 1024).toFixed(1)}MB. Deseja carregá-lo? Pode consumir dados móveis.`
+        );
+        
+        if (!userConfirm) {
+          console.log(`❌ Usuário cancelou carregamento do vídeo no ${deviceType}`);
+          setVideoLoading(false);
+          return;
+        }
+        
+        console.log(`✅ Usuário confirmou carregamento do vídeo no ${deviceType}`);
+      }
+      
+      // Aguardar um pouco para simular carregamento
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setShouldLoadVideo(true);
+      console.log('✅ Vídeo autorizado para carregamento');
+      
+    } catch (error) {
+      console.error('❌ Erro ao tentar carregar vídeo:', error);
+      setVideoError(true);
+    } finally {
+      setVideoLoading(false);
+    }
+  };
 
   // Buscar número do WhatsApp do banco de dados
   useEffect(() => {
@@ -118,28 +209,51 @@ const Home: React.FC = () => {
     }}>
       {/* Hero Section */}
       <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background - Lógica condicional otimizada para mobile */}
+        {/* Background - Lógica condicional otimizada para mobile, iOS e Android */}
         <div className="absolute inset-0 w-full h-full">
-          {!isMobile && !videoError ? (
-            // Vídeo otimizado para desktop
+          {shouldLoadVideo && !videoError ? (
+            // Vídeo otimizado com configurações específicas para iOS e Android
             <video
               autoPlay
               muted
               loop
-              playsInline
-              webkit-playsinline="true"
-              preload="none"
+              playsInline // Crucial para iOS e Android
+              webkit-playsinline="true" // Compatibilidade com versões antigas do iOS
+              preload={(isIOS || isAndroid) ? "none" : "metadata"} // Mobile: não precarregar, desktop: só metadados
               className="w-full h-full object-cover transition-opacity duration-500"
               poster={IMAGE_CONFIG.home.hero}
               onError={(e) => {
                 console.error('❌ Erro no vídeo:', e);
+                const deviceInfo = isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop';
+                console.log(`📱 Detalhes do erro no ${deviceInfo}:`, {
+                  isIOS,
+                  isAndroid,
+                  connectionType,
+                  userAgent: navigator.userAgent.substring(0, 100)
+                });
                 setVideoError(true);
+                setShouldLoadVideo(false);
+              }}
+              onLoadStart={() => {
+                const deviceInfo = isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop';
+                console.log(`🎬 Iniciando carregamento do vídeo no ${deviceInfo}...`);
               }}
               onLoadedData={() => {
-                console.log('🎥 Vídeo carregado com sucesso');
+                const deviceInfo = isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop';
+                console.log(`🎥 Vídeo carregado com sucesso no ${deviceInfo}`);
+                setVideoLoading(false);
               }}
               onCanPlay={() => {
-                console.log('🎬 Vídeo pronto para reproduzir');
+                const deviceInfo = isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop';
+                console.log(`🎬 Vídeo pronto para reproduzir no ${deviceInfo}`);
+              }}
+              onPlay={() => {
+                const deviceInfo = isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop';
+                console.log(`▶️ Vídeo começou a reproduzir no ${deviceInfo}`);
+              }}
+              onStalled={() => {
+                const deviceInfo = isIOS ? 'iOS' : isAndroid ? 'Android' : 'Desktop';
+                console.log(`⏸️ Vídeo travou no ${deviceInfo} - possível problema de conexão`);
               }}
               style={{
                 objectFit: 'cover',
@@ -155,18 +269,59 @@ const Home: React.FC = () => {
               />
             </video>
           ) : (
-            // Imagem otimizada para mobile e fallback
-            <div 
-              className="w-full h-full bg-cover bg-center bg-no-repeat transition-opacity duration-500"
-              style={{
-                backgroundImage: `url(${IMAGE_CONFIG.home.hero})`,
-                backgroundAttachment: 'scroll', // Melhor performance no mobile
-                backgroundSize: 'cover',
-                backgroundPosition: 'center center'
-              }}
-              role="img"
-              aria-label="Cachorro feliz - Pet Shop Romeo e Julieta"
-            />
+            // Imagem otimizada para mobile, iOS e fallback
+            <div className="relative w-full h-full">
+              <div 
+                className="w-full h-full bg-cover bg-center bg-no-repeat transition-opacity duration-500"
+                style={{
+                  backgroundImage: `url(${IMAGE_CONFIG.home.hero})`,
+                  backgroundAttachment: 'scroll', // Melhor performance no mobile
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center center'
+                }}
+                role="img"
+                aria-label="Cachorro feliz - Pet Shop Romeo e Julieta"
+              />
+              
+              {/* Botão para carregar vídeo (apenas se não for erro e não estiver carregando) */}
+              {!videoError && !shouldLoadVideo && !videoLoadAttempted && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black/60 backdrop-blur-sm rounded-lg p-4 text-center">
+                    <button
+                      onClick={handleLoadVideo}
+                      disabled={videoLoading}
+                      className="px-6 py-3 bg-white/90 hover:bg-white text-gray-800 rounded-lg font-medium transition-all duration-300 flex items-center gap-2 mx-auto"
+                    >
+                      {videoLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                          Carregando...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                          </svg>
+                          Carregar Vídeo
+                        </>
+                      )}
+                    </button>
+                    {(isIOS || isAndroid) && (
+                      <p className="text-white/80 text-sm mt-2">
+                        Vídeo de fundo disponível (2.4MB)
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Mensagem de erro se o vídeo falhou */}
+              {videoError && (
+                <div className="absolute top-4 left-4 bg-red-500/80 text-white px-3 py-1 rounded text-sm">
+                  Vídeo indisponível - usando imagem
+                </div>
+              )}
+            </div>
           )}
           {/* Overlay escuro para melhor legibilidade */}
           <div className="absolute inset-0 bg-black/40"></div>
