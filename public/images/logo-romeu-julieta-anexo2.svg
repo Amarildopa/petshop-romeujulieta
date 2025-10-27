@@ -1,0 +1,89 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Banheira principal -->
+  <path d="M30 80 Q30 75 35 75 L165 75 Q170 75 170 80 L170 120 Q170 130 160 130 L40 130 Q30 130 30 120 Z" fill="#e05389"/>
+  
+  <!-- Alça da banheira -->
+  <path d="M170 85 Q180 85 185 90 Q190 95 190 105 Q190 115 185 120 Q180 125 170 125" stroke="#e05389" stroke-width="8" fill="none"/>
+  
+  <!-- Gotas de água saindo do chuveiro -->
+  <circle cx="175" cy="45" r="3" fill="#e05389" opacity="0.6"/>
+  <circle cx="185" cy="35" r="2" fill="#e05389" opacity="0.4"/>
+  <circle cx="180" cy="55" r="2.5" fill="#e05389" opacity="0.5"/>
+  <circle cx="190" cy="50" r="2" fill="#e05389" opacity="0.3"/>
+  
+  <!-- Cachorro (esquerda) -->
+  <g transform="translate(45, 35)">
+    <!-- Cabeça -->
+    <ellipse cx="0" cy="0" rx="18" ry="15" fill="#a8d5a8" stroke="#7cb87c" stroke-width="2"/>
+    <!-- Orelhas -->
+    <ellipse cx="-12" cy="-8" rx="6" ry="10" fill="#a8d5a8" stroke="#7cb87c" stroke-width="1.5"/>
+    <ellipse cx="12" cy="-8" rx="6" ry="10" fill="#a8d5a8" stroke="#7cb87c" stroke-width="1.5"/>
+    <!-- Olhos -->
+    <circle cx="-6" cy="-2" r="2.5" fill="#7cb87c"/>
+    <circle cx="6" cy="-2" r="2.5" fill="#7cb87c"/>
+    <!-- Focinho -->
+    <ellipse cx="0" cy="6" rx="4" ry="3" fill="#7cb87c"/>
+    <!-- Boca sorrindo -->
+    <path d="M-3 8 Q0 10 3 8" stroke="#7cb87c" stroke-width="1.5" fill="none"/>
+    <!-- Língua -->
+    <ellipse cx="0" cy="9" rx="2" ry="1" fill="#ff9999"/>
+    <!-- Bigodes -->
+    <line x1="-15" y1="2" x2="-20" y2="0" stroke="#7cb87c" stroke-width="1"/>
+    <line x1="-15" y1="6" x2="-20" y2="6" stroke="#7cb87c" stroke-width="1"/>
+    <line x1="15" y1="2" x2="20" y2="0" stroke="#7cb87c" stroke-width="1"/>
+    <line x1="15" y1="6" x2="20" y2="6" stroke="#7cb87c" stroke-width="1"/>
+  </g>
+  
+  <!-- Gato (direita) -->
+  <g transform="translate(125, 35)">
+    <!-- Cabeça -->
+    <ellipse cx="0" cy="0" rx="16" ry="14" fill="#a8d5a8" stroke="#7cb87c" stroke-width="2"/>
+    <!-- Orelhas triangulares -->
+    <path d="M-10 -12 L-6 -20 L-2 -12 Z" fill="#a8d5a8" stroke="#7cb87c" stroke-width="1.5"/>
+    <path d="M2 -12 L6 -20 L10 -12 Z" fill="#a8d5a8" stroke="#7cb87c" stroke-width="1.5"/>
+    <!-- Laço rosa no meio das orelhas -->
+    <ellipse cx="0" cy="-16" rx="4" ry="2" fill="#e05389"/>
+    <path d="M-4 -16 Q-6 -18 -4 -20 Q0 -18 4 -20 Q6 -18 4 -16" fill="#e05389"/>
+    <!-- Olhos -->
+    <circle cx="-5" cy="-2" r="2.5" fill="#7cb87c"/>
+    <circle cx="5" cy="-2" r="2.5" fill="#7cb87c"/>
+    <!-- Focinho triangular -->
+    <path d="M-2 4 L0 6 L2 4 Z" fill="#e05389"/>
+    <!-- Boca -->
+    <path d="M-3 7 Q0 9 3 7" stroke="#7cb87c" stroke-width="1.5" fill="none"/>
+    <!-- Bigodes -->
+    <line x1="-12" y1="2" x2="-18" y2="0" stroke="#7cb87c" stroke-width="1"/>
+    <line x1="-12" y1="6" x2="-18" y2="6" stroke="#7cb87c" stroke-width="1"/>
+    <line x1="12" y1="2" x2="18" y2="0" stroke="#7cb87c" stroke-width="1"/>
+    <line x1="12" y1="6" x2="18" y2="6" stroke="#7cb87c" stroke-width="1"/>
+  </g>
+  
+  <!-- Bolhas na água -->
+  <circle cx="50" cy="95" r="3" fill="white" opacity="0.8"/>
+  <circle cx="70" cy="105" r="2" fill="white" opacity="0.6"/>
+  <circle cx="90" cy="90" r="2.5" fill="white" opacity="0.7"/>
+  <circle cx="110" cy="100" r="2" fill="white" opacity="0.6"/>
+  <circle cx="130" cy="95" r="3" fill="white" opacity="0.8"/>
+  <circle cx="150" cy="110" r="2" fill="white" opacity="0.6"/>
+  <circle cx="60" cy="115" r="1.5" fill="white" opacity="0.5"/>
+  <circle cx="140" cy="85" r="2" fill="white" opacity="0.7"/>
+  
+  <!-- Patinha no centro da banheira -->
+  <g transform="translate(100, 105)">
+    <!-- Almofada principal -->
+    <ellipse cx="0" cy="2" rx="8" ry="6" fill="white"/>
+    <!-- Dedos -->
+    <circle cx="-4" cy="-4" r="3" fill="white"/>
+    <circle cx="0" cy="-6" r="3" fill="white"/>
+    <circle cx="4" cy="-4" r="3" fill="white"/>
+  </g>
+  
+  <!-- Borda da banheira com brilho -->
+  <ellipse cx="100" cy="75" rx="70" ry="5" fill="white" opacity="0.3"/>
+  
+  <!-- Texto "Romeu e Julieta" -->
+  <text x="100" y="160" text-anchor="middle" font-family="MuseoModerno, sans-serif" font-size="24" font-weight="bold" fill="#e05389">Romeu e Julieta</text>
+  
+  <!-- Texto "PET & SPA" -->
+  <text x="100" y="185" text-anchor="middle" font-family="MuseoModerno, sans-serif" font-size="16" font-weight="normal" fill="#a8d5a8">PET &amp; SPA</text>
+</svg>

@@ -4,10 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import AdminStatus from './AdminStatus';
-import { getAppName } from '../constants/app';
 import { getImageUrl } from '../config/images';
 import { 
-  PawPrint,
   Menu, 
   X, 
   LogOut,
@@ -138,12 +136,17 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <PawPrint className="h-8 w-8 text-primary" />
+            <img 
+              src="/images/logo-romeu-julieta-anexo.png" 
+              alt="Romeu e Julieta Pet&Spa Logo" 
+              className="h-12 w-16"
+            />
             <span className="text-xl font-bold hidden sm:block" style={{
-              color: 'var(--simple-header-text)',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontFamily: 'MuseoModerno'
             }}>
-              {getAppName()}
+              <span style={{ color: '#e05389' }}>Romeu e Julieta</span>
+              <span style={{ color: '#baceae' }}> Pet&Spa</span>
             </span>
           </Link>
 

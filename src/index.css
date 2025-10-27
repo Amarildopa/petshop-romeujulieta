@@ -8,9 +8,9 @@
    ============================================= */
 :root {
   /* HEADER - 3 cores */
-  --simple-header-bg: #FEF7FF;      /* Cor de fundo do header */
-  --simple-header-text: #F8BBD9;    /* Cor do texto do header */
-  --simple-header-hover: #F472B6;   /* Cor de hover do menu do header */
+  --simple-header-bg: #ffffff;      /* Cor de fundo do header - BRANCO */
+  --simple-header-text: #64748B;    /* Cor do texto do header */
+  --simple-header-hover: #F8BBD9;   /* Cor de hover dos links do header */
   
   /* LANDING PAGE - 1 cor */
   --simple-landing-bg: #FEF7FF;     /* Cor de fundo da landing page */
@@ -21,8 +21,8 @@
   /* BOTÕES - 6 cores */
   --simple-button-primary: #F8BBD9;   /* Cor primária dos botões */
   --simple-button-secondary: #BFDBFE; /* Cor secundária dos botões */
-  --simple-button-login-bg: #f8fafc;  /* Cor de fundo do botão Entrar */
-  --simple-button-login-text: #e05389; /* Cor do texto do botão Entrar */
+  --simple-button-login-bg: #ffffff;  /* Cor de fundo do botão Entrar - BRANCO */
+  --simple-button-login-text: #e05389; /* Cor do texto do botão Entrar - ROSA */
   --simple-button-register-bg: #e05389; /* Cor de fundo do botão Cadastrar */
   --simple-button-register-text: #ffffff; /* Cor do texto do botão Cadastrar */
   
