@@ -426,7 +426,9 @@ const Home: React.FC = () => {
                 transition={{ duration: 0.8, delay: 0.2 }}
                 className="text-xl md:text-2xl mb-8 max-w-3xl text-white/90 drop-shadow-md"
               >
-                No Romeu & Julieta Pet&Spa, temos atenção e amor de verdade, carinho em cada detalhe e total transparência em tudo o que fazemos. Seu pet seguro, você tranquilo e todo mundo feliz! Seja muito bem vindo. Traga seu pet para comer um biscotinho com a gente!
+                Mais que um pet shop: um Spa onde transparência, tecnologia e muito carinho caminham juntos. 
+                Aqui, você consegue acompanhar seu pet ao vivo pelo app. 
+                Produtos premium, profissionais especializados e a tranquilidade de ver tudo o que acontece — em tempo real. Traga seu pet para comer um biscoitinho com a gente!
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
