@@ -56,6 +56,10 @@ const Home: React.FC = () => {
       const isSmallScreen = window.innerWidth <= 768;
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       
+      // Detecção específica para Chrome iOS vs Safari iOS
+      const isIOSChrome = isIOSDevice && /CriOS/.test(userAgent);
+      const isIOSSafari = isIOSDevice && /Safari/.test(userAgent) && !/CriOS/.test(userAgent);
+      
       // Verificar conexão de rede se disponível
       const connection = (navigator as Navigator & { 
         connection?: { effectiveType?: string; type?: string; downlink?: number; saveData?: boolean }; 
@@ -103,6 +107,8 @@ const Home: React.FC = () => {
         isMobileDevice,
         isIOSDevice,
         isAndroidDevice,
+        isIOSChrome,
+        isIOSSafari,
         isTablet,
         isSmallScreen,
         isTouchDevice,
@@ -240,11 +246,10 @@ const Home: React.FC = () => {
           {shouldLoadVideo && !videoError ? (
             // Vídeo otimizado com configurações específicas para iOS e Android
             <video
-              autoPlay
+              autoPlay={!isIOS || (isIOS && isMobile)} // iOS Chrome precisa de interação do usuário
               muted
               loop
               playsInline // Crucial para iOS e Android
-              webkit-playsinline="true" // Compatibilidade com versões antigas do iOS
               preload={isMobile ? "metadata" : "auto"} // Mobile: só metadados, Desktop: carregamento completo
               className="w-full h-full object-cover transition-opacity duration-500"
               poster={IMAGE_CONFIG.home.hero}
@@ -307,6 +312,12 @@ const Home: React.FC = () => {
                 objectFit: 'cover',
                 objectPosition: 'center'
               }}
+              // Configurações específicas para iOS Chrome
+              {...(isIOS && {
+                controls: false,
+                disablePictureInPicture: true,
+                disableRemotePlayback: true
+              })}
             >
               <source src={videoSource} type="video/mp4" />
               {/* Fallback para navegadores que não suportam vídeo */}
