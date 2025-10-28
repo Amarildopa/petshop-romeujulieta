@@ -42,6 +42,10 @@ const Home: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [videoSource, setVideoSource] = useState('');
   const [loadingTimeout, setLoadingTimeout] = useState<NodeJS.Timeout | null>(null);
+  
+  // Estados específicos para detecção de navegador iOS
+  const [isIOSChrome, setIsIOSChrome] = useState(false);
+  const [isIOSSafari, setIsIOSSafari] = useState(false);
 
   // Detectar dispositivo e definir vídeo apropriado
   useEffect(() => {
@@ -56,9 +60,9 @@ const Home: React.FC = () => {
       const isSmallScreen = window.innerWidth <= 768;
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       
-      // Detecção específica para Chrome iOS vs Safari iOS
-      const isIOSChrome = isIOSDevice && /CriOS/.test(userAgent);
-      const isIOSSafari = isIOSDevice && /Safari/.test(userAgent) && !/CriOS/.test(userAgent);
+      // Detecção específica e mais robusta para Chrome iOS vs Safari iOS
+      const isIOSChrome = isIOSDevice && (/CriOS/.test(userAgent) || /Chrome/.test(userAgent));
+      const isIOSSafari = isIOSDevice && /Safari/.test(userAgent) && !(/CriOS/.test(userAgent) || /Chrome/.test(userAgent));
       
       // Verificar conexão de rede se disponível
       const connection = (navigator as Navigator & { 
@@ -107,8 +111,8 @@ const Home: React.FC = () => {
         isMobileDevice,
         isIOSDevice,
         isAndroidDevice,
-        isIOSChrome,
-        isIOSSafari,
+        isIOSChrome: `${isIOSChrome} ${isIOSChrome ? '🚫 CHROME iOS DETECTADO' : ''}`,
+        isIOSSafari: `${isIOSSafari} ${isIOSSafari ? '✅ SAFARI iOS DETECTADO' : ''}`,
         isTablet,
         isSmallScreen,
         isTouchDevice,
@@ -124,6 +128,8 @@ const Home: React.FC = () => {
       setIsMobile(shouldUseMobile);
       setIsIOS(isIOSDevice);
       setIsAndroid(isAndroidDevice);
+      setIsIOSChrome(isIOSChrome);
+      setIsIOSSafari(isIOSSafari);
       setVideoSource(selectedVideoSource);
       
       // Carregar vídeo automaticamente se as condições forem favoráveis
@@ -246,11 +252,11 @@ const Home: React.FC = () => {
           {shouldLoadVideo && !videoError ? (
             // Vídeo otimizado com configurações específicas para iOS e Android
             <video
-              autoPlay={!isIOS || (isIOS && isMobile)} // iOS Chrome precisa de interação do usuário
+              autoPlay={!isIOSChrome} // Chrome iOS não suporta autoplay, Safari iOS pode funcionar
               muted
               loop
               playsInline // Crucial para iOS e Android
-              preload={isMobile ? "metadata" : "auto"} // Mobile: só metadados, Desktop: carregamento completo
+              preload={isIOSChrome ? "none" : (isMobile ? "metadata" : "auto")} // Chrome iOS: none, Mobile: metadata, Desktop: auto
               className="w-full h-full object-cover transition-opacity duration-500"
               poster={IMAGE_CONFIG.home.hero}
               onError={(e) => {
@@ -262,6 +268,8 @@ const Home: React.FC = () => {
                   isMobile,
                   isIOS,
                   isAndroid,
+                  isIOSChrome: `${isIOSChrome} ${isIOSChrome ? '🚫 CHROME iOS' : ''}`,
+                  isIOSSafari: `${isIOSSafari} ${isIOSSafari ? '✅ SAFARI iOS' : ''}`,
                   connectionType,
                   userAgent: navigator.userAgent.substring(0, 100),
                   error: e.currentTarget.error
@@ -277,14 +285,19 @@ const Home: React.FC = () => {
               onLoadStart={() => {
                 const deviceInfo = isMobile ? (isIOS ? 'iOS' : isAndroid ? 'Android' : 'Mobile') : 'Desktop';
                 const videoSize = isMobile ? '640KB' : 'Full Size';
-                console.log(`🎬 Iniciando carregamento - ${deviceInfo} (${videoSize})`);
+                const browserInfo = isIOSChrome ? '🚫 CHROME iOS' : isIOSSafari ? '✅ SAFARI iOS' : '';
+                console.log(`🎬 Iniciando carregamento - ${deviceInfo} (${videoSize}) ${browserInfo}`);
                 console.log(`📁 Carregando: ${videoSource}`);
                 setVideoLoading(true);
               }}
               onLoadedData={() => {
                 const deviceInfo = isMobile ? (isIOS ? 'iOS' : isAndroid ? 'Android' : 'Mobile') : 'Desktop';
                 const videoSize = isMobile ? '640KB' : 'Full Size';
-                console.log(`🎥 Vídeo carregado com sucesso - ${deviceInfo} (${videoSize})`);
+                const browserInfo = isIOSChrome ? '🚫 CHROME iOS' : isIOSSafari ? '✅ SAFARI iOS' : '';
+                console.log(`🎥 Vídeo carregado com sucesso - ${deviceInfo} (${videoSize}) ${browserInfo}`);
+                if (isIOSChrome) {
+                  console.log('🚫 CHROME iOS: Vídeo carregado mas pode precisar de interação do usuário para reproduzir');
+                }
                 setVideoLoading(false);
                 // Limpar timeout se houver
                 if (loadingTimeout) {
@@ -312,11 +325,19 @@ const Home: React.FC = () => {
                 objectFit: 'cover',
                 objectPosition: 'center'
               }}
-              // Configurações específicas para iOS Chrome
-              {...(isIOS && {
+              // Configurações específicas para iOS Chrome - mais restritivas
+              {...(isIOSChrome && {
                 controls: false,
                 disablePictureInPicture: true,
-                disableRemotePlayback: true
+                disableRemotePlayback: true,
+                webkit_playsinline: true,
+                'x5-video-player-type': 'h5',
+                'x5-video-player-fullscreen': false
+              })}
+              // Configurações para Safari iOS - menos restritivas
+              {...(isIOSSafari && {
+                controls: false,
+                disablePictureInPicture: true
               })}
             >
               <source src={videoSource} type="video/mp4" />
