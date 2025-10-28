@@ -416,19 +416,19 @@ const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="text-3xl md:text-5xl font-bold mb-6 text-white drop-shadow-lg"
+                className="text-2xl md:text-4xl font-bold mb-6 text-white drop-shadow-lg"
               >
-                Cuidado e Amor para seu <span className="text-pink-300">Pet</span>
+                Mais que um pet shop: um Spa onde transparência, tecnologia e muito carinho caminham juntos.
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-xl md:text-2xl mb-8 max-w-3xl text-white/90 drop-shadow-md"
+                className="text-xl md:text-2xl mb-8 max-w-5xl text-white/90 drop-shadow-md"
               >
-                Mais que um pet shop: um Spa onde transparência, tecnologia e muito carinho caminham juntos. 
-                Aqui, você consegue acompanhar seu pet ao vivo pelo app. 
-                Produtos premium, profissionais especializados e a tranquilidade de ver tudo o que acontece — em tempo real. Traga seu pet para comer um biscoitinho com a gente!
+                Aqui, você consegue acompanhar seu pet ao vivo pelo app.
+                <br />
+                Produtos premium, profissionais especializados e a tranquilidade de ver tudo o que acontece — em tempo real.
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
