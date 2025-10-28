@@ -252,11 +252,11 @@ const Home: React.FC = () => {
           {shouldLoadVideo && !videoError ? (
             // Vídeo otimizado com configurações específicas para iOS e Android
             <video
-              autoPlay={!isIOSChrome} // Chrome iOS não suporta autoplay, Safari iOS pode funcionar
+              autoPlay={!isIOS} // Desabilitar autoplay para todos os dispositivos iOS
               muted
               loop
               playsInline // Crucial para iOS e Android
-              preload={isIOSChrome ? "none" : (isMobile ? "metadata" : "auto")} // Chrome iOS: none, Mobile: metadata, Desktop: auto
+              preload={isMobile ? "metadata" : "auto"} // Mobile: metadata, Desktop: auto
               className="w-full h-full object-cover transition-opacity duration-500"
               poster={IMAGE_CONFIG.home.hero}
               onError={(e) => {
@@ -325,17 +325,8 @@ const Home: React.FC = () => {
                 objectFit: 'cover',
                 objectPosition: 'center'
               }}
-              // Configurações específicas para iOS Chrome - mais restritivas
-              {...(isIOSChrome && {
-                controls: false,
-                disablePictureInPicture: true,
-                disableRemotePlayback: true,
-                webkit_playsinline: true,
-                'x5-video-player-type': 'h5',
-                'x5-video-player-fullscreen': false
-              })}
-              // Configurações para Safari iOS - menos restritivas
-              {...(isIOSSafari && {
+              // Configurações básicas para iOS
+              {...(isIOS && {
                 controls: false,
                 disablePictureInPicture: true
               })}
