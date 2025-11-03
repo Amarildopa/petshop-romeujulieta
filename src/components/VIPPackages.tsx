@@ -106,7 +106,7 @@ const VIPPackages: React.FC = () => {
               <Sparkles className="w-8 h-8 text-primary" />
             </div>
             <p className="text-xl font-semibold leading-relaxed" style={{ color: '#e05389' }}>
-              Clientes do clube ganham banho de ozônio, 5% OFF em produtos da loja e ainda concorrem todo mês a um DaySpa exclusivo para pets! Venha viver experiências premium com benefícios especiais. (Válido para associados, não cumulativo com outros pacotes
+              Além de descontos progressivos, clientes do clube ganham banho de ozônio,  e ainda concorrem todo mês a um DaySpa exclusivo para pets! Venha viver experiências premium com benefícios especiais. (Válido para associados, não cumulativo com outros pacotes
             </p>
           </motion.div>
         </div>
