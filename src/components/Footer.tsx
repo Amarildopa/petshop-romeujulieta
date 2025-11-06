@@ -146,7 +146,7 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-4">
               <a 
-                href={`https://wa.me/${whatsappNumber}`}
+                href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá! Entrando em contato pelo site. Preciso de informações sobre os serviços do Romeu & Julieta Pet&Spa.')}`}
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-green-500 hover:text-green-600 transition-colors duration-200"

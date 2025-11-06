@@ -463,7 +463,7 @@ const WeeklyBaths: React.FC = () => {
             Quer ver seu pet aqui na próxima semana?
           </p>
           <a
-            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá! Gostaria de agendar um banho para meu pet.')}`}
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá! Vi o Hall da Fama e queria agendar um banho para meu pet. Quero ver ele(a) também nas fotos da semana! 🐾')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 bg-green-500/90 hover:bg-green-600/90 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm border border-white/20"

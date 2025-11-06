@@ -469,7 +469,7 @@ const Home: React.FC = () => {
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <a
-                  href={`https://wa.me/${whatsappNumber}?text=Olá! Gostaria de saber mais sobre os serviços do Romeu & Julieta Pet&Spa`}
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá! Visitei o site e quero conhecer mais sobre os serviços do Romeu & Julieta Pet&Spa. Meu pet merece o melhor cuidado! 🐶🐱')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl backdrop-blur-sm bg-green-500/90 hover:bg-green-600/90 text-white border border-white/20"
@@ -786,7 +786,7 @@ const Home: React.FC = () => {
       {/* WhatsApp Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <a
-          href={`https://wa.me/${whatsappNumber}`}
+          href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá! Vi o site e gostaria de falar com a equipe pelo WhatsApp para tirar dúvidas e agendar serviços.')}`}
           target="_blank"
           rel="noopener noreferrer"
           className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center group overflow-hidden hover:rounded-full hover:px-6"
