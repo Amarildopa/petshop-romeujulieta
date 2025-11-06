@@ -1,12 +1,24 @@
 import { ArrowLeft, Sparkles, Heart, Shield, Droplets, Zap, Leaf, Waves, Bath, Scissors, Wind, Brush, Sun } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { settingsService } from '../services/settingsService';
 
 export default function BanhoTosaSpa() {
   const navigate = useNavigate();
+  const [whatsappNumber, setWhatsappNumber] = useState<string>('5511988181826');
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const loadWhatsApp = async () => {
+      try {
+        const number = await settingsService.getWhatsAppNumber();
+        setWhatsappNumber(number);
+      } catch (e) {
+        console.error('Erro ao carregar WhatsApp number:', e);
+        setWhatsappNumber('5511988181826');
+      }
+    };
+    loadWhatsApp();
   }, []);
 
   const handleGoBack = () => {
@@ -18,7 +30,6 @@ export default function BanhoTosaSpa() {
   };
 
   const handleWhatsApp = () => {
-    const whatsappNumber = '5511999999999'; // Substitua pelo número real
     const message = 'Olá! Gostaria de saber mais sobre os serviços de Banho, Tosa & Spa do Romeu & Julieta Pet&Spa';
     window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };

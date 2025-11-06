@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Heart, AlertCircle, RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import { weeklyBathsService, WeeklyBath } from '../services/weeklyBathsService';
 import WhatsAppIcon from './icons/WhatsAppIcon';
+import { settingsService } from '../services/settingsService';
 
 const WeeklyBaths: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -14,6 +15,7 @@ const WeeklyBaths: React.FC = () => {
   const [imageLoadErrors, setImageLoadErrors] = useState<Set<string>>(new Set());
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [whatsappNumber, setWhatsappNumber] = useState<string>('5511988181826');
 
   // Função para calcular itens por visualização baseado no tamanho da tela
   const calculateItemsPerView = useCallback(() => {
@@ -141,6 +143,20 @@ const WeeklyBaths: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [weeklyBaths.length, currentIndex, calculateItemsPerView]);
 
+  useEffect(() => {
+    const loadWhatsApp = async () => {
+      try {
+        const number = await settingsService.getWhatsAppNumber();
+        setWhatsappNumber(number);
+      } catch (e) {
+        console.error('Erro ao carregar WhatsApp number:', e);
+        setWhatsappNumber('5511988181826');
+      }
+    };
+    loadWhatsApp();
+  }, []);
+
+  // Restaurar efeito para carregar banhos da semana com dependência correta
   useEffect(() => {
     loadWeeklyBaths();
   }, [loadWeeklyBaths]);
@@ -447,7 +463,7 @@ const WeeklyBaths: React.FC = () => {
             Quer ver seu pet aqui na próxima semana?
           </p>
           <a
-            href={`https://wa.me/5511993805117?text=${encodeURIComponent('Olá! Gostaria de agendar um banho para meu pet.')}`}
+            href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Olá! Gostaria de agendar um banho para meu pet.')}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 bg-green-500/90 hover:bg-green-600/90 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm border border-white/20"

@@ -8,16 +8,19 @@ const Footer: React.FC = () => {
   const [contactData, setContactData] = useState<ContactSettings | null>(null);
   const [businessHours, setBusinessHours] = useState<BusinessHours | null>(null);
   const [loading, setLoading] = useState(true);
+  const [whatsappNumber, setWhatsappNumber] = useState<string>('5511988181826');
 
   useEffect(() => {
     const loadFooterData = async () => {
       try {
-        const [contact, hours] = await Promise.all([
+        const [contact, hours, number] = await Promise.all([
           settingsService.getContactSettings(),
-          settingsService.getBusinessHours()
+          settingsService.getBusinessHours(),
+          settingsService.getWhatsAppNumber()
         ]);
         setContactData(contact);
         setBusinessHours(hours);
+        setWhatsappNumber(number);
       } catch (error) {
         console.error('Erro ao carregar dados do footer:', error);
         // Usar dados padrão em caso de erro
@@ -36,6 +39,7 @@ const Footer: React.FC = () => {
           saturday: { open: '08:00', close: '17:00' },
           sunday: { open: '09:00', close: '15:00' }
         });
+        setWhatsappNumber('5511988181826');
       } finally {
         setLoading(false);
       }
@@ -142,7 +146,7 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-4">
               <a 
-                href="https://wa.me/5511993805117" 
+                href={`https://wa.me/${whatsappNumber}`}
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-green-500 hover:text-green-600 transition-colors duration-200"
