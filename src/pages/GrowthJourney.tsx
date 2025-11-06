@@ -11,6 +11,7 @@ import {
 
 import { useAuth } from '../hooks/useAuth';
 import { usePetEvents } from '../hooks/usePetEvents';
+import type { EventPhoto } from '../hooks/usePetEvents';
 import { getPlaceholderImageByCategory } from '../utils/placeholderImages';
 import { PetSelector } from '../components/PetSelector';
 import { petsService } from '../services/petsService';
@@ -44,6 +45,17 @@ interface Pet {
   breed: string;
 }
 
+// Helper para formatar data sem sofrer offset de timezone
+const formatEventDate = (dateString: string) => {
+  try {
+    const d = new Date(dateString);
+    // Força renderização em UTC para evitar o -1 dia em fuso local
+    return d.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+  } catch {
+    return dateString;
+  }
+};
+
 const GrowthJourney: React.FC = () => {
   const { petId } = useParams<{ petId: string }>();
   const { user } = useAuth();
@@ -54,12 +66,13 @@ const GrowthJourney: React.FC = () => {
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
-  const [selectedEventPhotos, setSelectedEventPhotos] = useState<{url: string; id: string}[]>([]);
+  const [selectedEventPhotos, setSelectedEventPhotos] = useState<EventPhoto[]>([]);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [selectedEventTitle, setSelectedEventTitle] = useState('');
   
-  const { events, eventTypes, loading: eventsLoading, createEvent, refetch } = usePetEvents(petId || '');
+  const { events, eventTypes, loading: eventsLoading, createEvent } = usePetEvents(petId || '');
   // Removed empty object pattern
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,7 +100,7 @@ const GrowthJourney: React.FC = () => {
         
         // If petId exists, find the specific pet
         if (petId) {
-          const currentPet = allPetsData.find(p => p.id === petId);
+          const currentPet = allPetsData.find(p => p.id === petId) as Pet | undefined;
           if (currentPet) {
             console.log('🐕 GrowthJourney Debug - Pet found:', currentPet);
             setPet(currentPet);
@@ -102,7 +115,7 @@ const GrowthJourney: React.FC = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, [petId, user, navigate]);
 
@@ -127,16 +140,23 @@ const GrowthJourney: React.FC = () => {
     );
   }
 
-  const handlePetSelect = (selectedPetId: string) => {
-    navigate(`/journey/${selectedPetId}`);
+  const handlePetSelect = (selectedPet: Pet | null) => {
+    if (selectedPet) {
+      navigate(`/journey/${selectedPet.id}`);
+    }
   };
 
-  const handleAddEvent = async (eventData: {type: string; title: string; description: string; date: string}) => {
+  const handleAddEvent = async (eventData: { title: string; description: string; event_date: string; event_type_id: string; pet_id: string; photos?: string[] }) => {
     try {
       console.log('🔄 GrowthJourney - handleAddEvent called with:', eventData);
-      const newEvent = await createEvent(eventData);
+      const newEvent = await createEvent({
+        pet_id: eventData.pet_id,
+        event_type_id: eventData.event_type_id,
+        title: eventData.title,
+        description: eventData.description,
+        event_date: eventData.event_date,
+      });
       console.log('✅ GrowthJourney - Event created successfully:', newEvent);
-      
       return newEvent;
     } catch (error) {
       console.error('❌ GrowthJourney - Error in handleAddEvent:', error);
@@ -144,20 +164,11 @@ const GrowthJourney: React.FC = () => {
     }
   };
 
-  const handleModalClose = async () => {
-    console.log('🔄 GrowthJourney - Modal closing, refreshing timeline');
+  const handleModalClose = () => {
     setShowAddEvent(false);
-    
-    // Refresh the events list after modal closes
-    try {
-      await refetch();
-      console.log('✅ GrowthJourney - Timeline refreshed after modal close');
-    } catch (error) {
-      console.error('❌ GrowthJourney - Error refreshing timeline:', error);
-    }
   };
 
-  const handlePhotoClick = (photos: {url: string; id: string}[], photoIndex: number, eventTitle: string) => {
+  const handlePhotoClick = (photos: EventPhoto[], photoIndex: number, eventTitle: string) => {
     setSelectedEventPhotos(photos);
     setSelectedPhotoIndex(photoIndex);
     setSelectedEventTitle(eventTitle);
@@ -209,8 +220,9 @@ const GrowthJourney: React.FC = () => {
           <div className="mb-6">
             <PetSelector
               pets={allPets}
-              selectedPetId={petId || ''}
-              onPetSelect={handlePetSelect}
+              selectedPet={pet}
+              onSelectPet={handlePetSelect}
+              showValidation={false}
             />
           </div>
         )}
@@ -255,9 +267,10 @@ const GrowthJourney: React.FC = () => {
 
         {/* Timeline */}
         <div className="relative">
-          {/* Central Timeline Line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-gradient-to-b from-purple-400 via-pink-400 to-blue-400 h-full hidden lg:block"></div>
-          
+          {/* Vertical line */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-purple-200 rounded"></div>
+
+          {/* Events */}
           <div className="space-y-12">
             {events.map((event, index) => {
               const eventType = eventTypes.find(et => et.id === event.event_type_id);
@@ -267,7 +280,7 @@ const GrowthJourney: React.FC = () => {
               
               return (
                 <motion.div
-                  key={event.id}
+                  key={`event-${event.id}`}
                   initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.2, duration: 0.6 }}
@@ -288,53 +301,46 @@ const GrowthJourney: React.FC = () => {
                   <div className={`w-full lg:w-5/12 ${
                     isLeft ? 'lg:pr-8' : 'lg:pl-8'
                   }`}>
-                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-                      {/* Event Photo */}
-                       {mainPhoto ? (
-                         <div 
-                           className="relative h-64 overflow-hidden group cursor-pointer"
-                           onClick={() => handlePhotoClick(event.photos || [], 0, event.title)}
-                         >
-                           <img 
-                             src={mainPhoto.photo_url} 
-                             alt={event.title}
-                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                           />
-                           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                             <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                               <Camera className="w-6 h-6 text-white" />
-                             </div>
-                           </div>
-                           <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
-                             <span className="text-sm font-medium text-gray-800">
-                               {new Date(event.event_date).toLocaleDateString('pt-BR')}
-                             </span>
-                           </div>
-                         </div>
-                       ) : (
-                        <div className="h-64 bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center relative">
-                          <div className="text-center">
-                            <Icon className="w-16 h-16 text-purple-400 mx-auto mb-4" />
-                            <p className="text-purple-600 font-medium">Sem foto</p>
-                          </div>
-                          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
-                            <span className="text-sm font-medium text-gray-800">
-                              {new Date(event.event_date).toLocaleDateString('pt-BR')}
-                            </span>
+                    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                      {/* Event Image */}
+                      {mainPhoto ? (
+                        <div className="relative">
+                          <img
+                            src={mainPhoto.photo_url}
+                            alt={event.title}
+                            className="w-full h-64 object-cover"
+                            onClick={() => handlePhotoClick(event.photos || [], 0, event.title)}
+                          />
+                          <div className="absolute top-4 right-4 bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                            {formatEventDate(event.event_date)}
                           </div>
                         </div>
+                      ) : (
+                        <div className="bg-gradient-to-r from-pink-100 to-purple-100 p-8 text-center">
+                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow">
+                            <Scissors className="w-8 h-8 text-purple-600" />
+                          </div>
+                          <p className="mt-4 text-sm text-purple-700">Sem foto</p>
+                          <div className="mt-2 text-xs text-gray-500">{formatEventDate(event.event_date)}</div>
+                        </div>
                       )}
-                      
+
                       {/* Event Content */}
                       <div className="p-6">
-                        <div className="flex items-center mb-3">
-                          <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3 lg:hidden">
-                            <Icon className="w-4 h-4 text-purple-600" />
-                          </div>
-                          <h3 className="text-xl font-bold text-gray-800 flex-1">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-xl font-semibold text-gray-800">
                             {event.title}
                           </h3>
+                          <div className="flex items-center space-x-2">
+                            <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
+                              {eventType?.name || 'Evento'}
+                            </span>
+                            {event.weekly_bath_source_id && (
+                              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-medium">
+                                🛁 Banho Semanal
+                              </span>
+                            )}
+                          </div>
                         </div>
                         
                         <p className="text-gray-600 leading-relaxed mb-4">
@@ -349,94 +355,75 @@ const GrowthJourney: React.FC = () => {
                             </p>
                             <div className="flex space-x-2 overflow-x-auto pb-2">
                                {event.photos.map((photo, photoIndex) => (
-                                 <div 
-                                   key={`${event.id}-${photo.id}-${photoIndex}`} 
-                                   className="relative group flex-shrink-0 cursor-pointer"
-                                   onClick={() => handlePhotoClick(event.photos || [], photoIndex, event.title)}
-                                 >
-                                   <img
-                                     src={photo.photo_url}
-                                     alt={photo.caption || `Foto ${photoIndex + 1}`}
-                                     className="w-20 h-20 rounded-lg object-cover transition-all duration-200 group-hover:scale-105 group-hover:shadow-lg"
-                                   />
-                                   <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-lg flex items-center justify-center">
-                                     <Camera className="w-4 h-4 text-white" />
-                                   </div>
-                                   {photo.is_primary && (
-                                     <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-400 rounded-full flex items-center justify-center">
-                                       <Star className="w-3 h-3 text-white" />
-                                     </div>
-                                   )}
-                                 </div>
+                                  <div 
+                                    key={`photo-${photo.id}-${photoIndex}`}
+                                    className="w-20 h-20 rounded overflow-hidden cursor-pointer border hover:border-purple-400"
+                                    onClick={() => handlePhotoClick(event.photos || [], photoIndex, event.title)}
+                                  >
+                                    <img 
+                                      src={photo.photo_url} 
+                                      alt={photo.caption || event.title} 
+                                      className="w-full h-full object-cover" 
+                                    />
+                                  </div>
                                ))}
-                             </div>
+                            </div>
                           </div>
                         )}
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Connector Line */}
-                  <div className={`absolute top-6 w-8 h-0.5 bg-purple-300 hidden lg:block ${
-                    isLeft 
-                      ? 'right-1/2 mr-6' 
-                      : 'left-1/2 ml-6'
-                  }`}></div>
                 </motion.div>
               );
             })}
           </div>
-        </div>
 
-        {/* Empty State */}
-        {events.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-            <Camera className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-800 mb-2">
-              Nenhum momento registrado ainda
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Comece a documentar a jornada de crescimento do {pet.name}!
-            </p>
-            <button
-              onClick={() => setShowAddEvent(true)}
-              className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              Adicionar Primeiro Evento
-            </button>
-          </div>
-         )}
-       </div>
-       
-       {/* Add Event Modal */}
-       <AddEventModal
+          {/* Empty state */}
+          {events.length === 0 && (
+            <div className="text-center py-16">
+              <PawPrint className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Nenhum evento ainda</h3>
+              <p className="text-gray-600 mb-6">Comece adicionando um momento especial da {pet.name}.</p>
+              <button
+                onClick={() => setShowAddEvent(true)}
+                className="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Adicionar Primeiro Evento
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {/* Add Event Modal */}
+        <AddEventModal
           isOpen={showAddEvent}
           onClose={handleModalClose}
           onSubmit={handleAddEvent}
           eventTypes={eventTypes}
           petId={petId}
         />
-       
-       {/* Share Journey Modal */}
-       <ShareJourneyModal
-         isOpen={showShareModal}
-         onClose={() => setShowShareModal(false)}
-         petId={petId || ''}
-         petName={pet?.name || ''}
-       />
-       
-       {/* Photo Modal */}
-       <PhotoModal
-         isOpen={showPhotoModal}
-         photos={selectedEventPhotos}
-         currentIndex={selectedPhotoIndex}
-         eventTitle={selectedEventTitle}
-         onClose={() => setShowPhotoModal(false)}
-         onPrevious={handlePreviousPhoto}
-         onNext={handleNextPhoto}
-       />
-     </div>
-   );
- };
+        
+        {/* Share Journey Modal */}
+        <ShareJourneyModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          petId={petId || ''}
+          petName={pet?.name || ''}
+        />
+        
+        {/* Photo Modal */}
+        <PhotoModal
+          isOpen={showPhotoModal}
+          photos={selectedEventPhotos}
+          currentIndex={selectedPhotoIndex}
+          eventTitle={selectedEventTitle}
+          onClose={() => setShowPhotoModal(false)}
+          onPrevious={handlePreviousPhoto}
+          onNext={handleNextPhoto}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default GrowthJourney;

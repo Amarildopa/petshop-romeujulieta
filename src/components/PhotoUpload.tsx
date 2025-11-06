@@ -4,6 +4,7 @@ import { storageService } from '../services/storageService';
 
 interface PhotoUploadProps {
   onUploadComplete: (imageUrl: string) => void;
+  onUploadCompleteDetailed?: (result: { url: string; path: string }) => void;
   onUploadError: (error: string) => void;
   maxSizeMB?: number;
   acceptedTypes?: string[];
@@ -12,6 +13,7 @@ interface PhotoUploadProps {
 
 const PhotoUpload: React.FC<PhotoUploadProps> = ({
   onUploadComplete,
+  onUploadCompleteDetailed,
   onUploadError,
   maxSizeMB = 5,
   acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
@@ -30,7 +32,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
     return null;
   };
 
-  const uploadFile = async (file: File): Promise<string> => {
+  const uploadFile = async (file: File): Promise<{ url: string; path: string }> => {
     console.log('📸 PhotoUpload.uploadFile iniciado:', {
       fileName: file.name,
       fileSize: file.size,
@@ -46,8 +48,8 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
       prefix: 'pet'
     });
     
-    console.log('✅ PhotoUpload.uploadFile concluído:', result.url);
-    return result.url;
+    console.log('✅ PhotoUpload.uploadFile concluído:', result.url, result.path);
+    return result;
   };
 
   const handleFileSelect = async (file: File) => {
@@ -73,9 +75,12 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
       reader.readAsDataURL(file);
 
       // Upload file
-      const imageUrl = await uploadFile(file);
-      console.log('🎉 Upload concluído com sucesso:', imageUrl);
-      onUploadComplete(imageUrl);
+      const result = await uploadFile(file);
+      console.log('🎉 Upload concluído com sucesso:', result.url, result.path);
+      onUploadComplete(result.url);
+      if (onUploadCompleteDetailed) {
+        onUploadCompleteDetailed(result);
+      }
     } catch (error) {
       console.error('💥 Erro no upload:', error);
       onUploadError(error instanceof Error ? error.message : 'Erro desconhecido no upload');
@@ -88,10 +93,10 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+    if (e.type === 'dragenter' || e.type === 'dragleave') {
+      setDragActive(e.type === 'dragenter');
+    } else if (e.type === 'dragover') {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
     }
   };
 

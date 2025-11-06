@@ -24,6 +24,7 @@ export interface PetEvent {
   metadata: Record<string, unknown>;
   created_at: string;
   updated_at: string;
+  weekly_bath_source_id?: string; // NOVO: ID do banho semanal que originou este evento
   event_type?: EventType;
   photos?: EventPhoto[];
 }
@@ -77,21 +78,47 @@ export const usePetEvents = (petId?: string) => {
   };
 
   // Generate photo URL from file path
-  const getPhotoUrl = (filePath: string): string => {
+  const getPhotoUrl = useCallback((filePath: string): string => {
     const { data } = supabase.storage
       .from('pet-photos')
       .getPublicUrl(filePath);
     
     return data.publicUrl;
-  };
-
-  // Process photos to add public URLs
-  const processPhotos = useCallback((photos: EventPhoto[]): EventPhoto[] => {
-    return photos.map(photo => ({
-      ...photo,
-      photo_url: getPhotoUrl(photo.file_path)
-    }));
   }, []);
+
+  // Helpers: normalizar file_path e criar URL
+  const isPublicUrl = useCallback((s: string) => s.startsWith('http://') || s.startsWith('https://'), []);
+  const extractPathFromPublicUrl = useCallback((url: string): string | null => {
+    const marker = '/object/public/pet-photos/';
+    const idx = url.indexOf(marker);
+    if (idx === -1) return null;
+    return url.slice(idx + marker.length);
+  }, []);
+  const getPhotoUrlFromFilePathOrUrl = useCallback((value: string): string => {
+    if (isPublicUrl(value)) {
+      const path = extractPathFromPublicUrl(value);
+      if (path) {
+        return getPhotoUrl(path);
+      }
+      return value; // já é URL pública utilizável
+    }
+    return getPhotoUrl(value);
+  }, [isPublicUrl, extractPathFromPublicUrl, getPhotoUrl]);
+
+  // Process photos to add public URLs (e normalizar file_path)
+  const processPhotos = useCallback((photos: EventPhoto[]): EventPhoto[] => {
+    return photos.map(photo => {
+      const normalizedPath = isPublicUrl(photo.file_path)
+        ? (extractPathFromPublicUrl(photo.file_path) ?? photo.file_path)
+        : photo.file_path;
+      const photoUrl = getPhotoUrlFromFilePathOrUrl(photo.file_path);
+      return {
+        ...photo,
+        file_path: normalizedPath,
+        photo_url: photoUrl,
+      };
+    });
+  }, [getPhotoUrlFromFilePathOrUrl, isPublicUrl, extractPathFromPublicUrl]);
 
   // Fetch pet events
   const fetchPetEvents = useCallback(async () => {
@@ -111,7 +138,7 @@ export const usePetEvents = (petId?: string) => {
           photos:event_photos_pet(*)
         `)
         .eq('pet_id', petId)
-        .eq('user_id', user.id)
+        // Removido filtro por user_id para exibir eventos integrados criados por admins
         .order('event_date', { ascending: false });
 
       if (error) throw error;
@@ -119,20 +146,65 @@ export const usePetEvents = (petId?: string) => {
       console.log('✅ usePetEvents - Raw data fetched:', data?.length, 'events');
       
       // Process events to add photo URLs
-      const processedEvents = (data || []).map(event => ({
+      const processedEvents: PetEvent[] = (data || []).map((event: PetEvent) => ({
         ...event,
-        photos: event.photos ? processPhotos(event.photos) : []
+        photos: event.photos ? processPhotos(event.photos as EventPhoto[]) : []
       }));
+
+      // Fallback: eventos sem fotos mas com weekly_bath_source_id -> buscar image_path/image_url dos banhos
+      const missingPhotoBathIds = processedEvents
+        .filter(e => e.weekly_bath_source_id && (!e.photos || e.photos.length === 0))
+        .map(e => e.weekly_bath_source_id!)
+        .filter(Boolean);
+
+      let bathsById: Record<string, { id: string; image_path?: string; image_url?: string }> = {};
+      if (missingPhotoBathIds.length > 0) {
+        const { data: bathsData, error: bathsError } = await supabase
+          .from('weekly_baths')
+          .select('id,image_path,image_url')
+          .in('id', missingPhotoBathIds);
+        if (!bathsError && bathsData) {
+          const bathsArray = bathsData as Array<{ id: string; image_path?: string; image_url?: string }>;
+          bathsById = Object.fromEntries(bathsArray.map(b => [b.id, b]));
+        } else {
+          console.warn('⚠️ usePetEvents - Falha ao buscar weekly_baths para fallback', bathsError);
+        }
+      }
+
+      const withFallback = processedEvents.map(e => {
+        if (e.weekly_bath_source_id && (!e.photos || e.photos.length === 0)) {
+          const bath = bathsById[e.weekly_bath_source_id];
+          if (bath) {
+            const path = bath.image_path ?? extractPathFromPublicUrl(bath.image_url || '') ?? undefined;
+            if (path) {
+              const url = getPhotoUrlFromFilePathOrUrl(path);
+              const name = path.split('/').pop() || 'photo.jpg';
+              const fallbackPhoto: EventPhoto = {
+                id: `fallback-${e.id}`,
+                event_id: e.id,
+                user_id: e.user_id,
+                file_path: path,
+                file_name: name,
+                is_primary: true,
+                created_at: new Date().toISOString(),
+                photo_url: url,
+              };
+              return { ...e, photos: [fallbackPhoto] };
+            }
+          }
+        }
+        return e;
+      });
       
-      console.log('✅ usePetEvents - Processed events:', processedEvents.length);
-      setEvents(processedEvents);
+      console.log('✅ usePetEvents - Processed events (with fallback):', withFallback.length);
+      setEvents(withFallback);
     } catch (err) {
       console.error('❌ usePetEvents - Error fetching pet events:', err);
       setError('Erro ao carregar eventos do pet');
     } finally {
       setLoading(false);
     }
-  }, [petId, user, processPhotos]);
+  }, [petId, user, processPhotos, getPhotoUrlFromFilePathOrUrl, extractPathFromPublicUrl]);
 
   // Create new event
   const createEvent = async (eventData: CreateEventData): Promise<PetEvent | null> => {
@@ -164,8 +236,8 @@ export const usePetEvents = (petId?: string) => {
       };
 
       // Update local state
-      setEvents(prev => [processedEvent, ...prev]);
-      return processedEvent;
+      setEvents(prev => [processedEvent as PetEvent, ...prev]);
+      return processedEvent as PetEvent;
     } catch (err) {
       console.error('Error creating event:', err);
       setError('Erro ao criar evento');
@@ -199,7 +271,7 @@ export const usePetEvents = (petId?: string) => {
       const processedEvent = {
         ...data,
         photos: data.photos ? processPhotos(data.photos) : []
-      };
+      } as PetEvent;
 
       // Update local state
       setEvents(prev => prev.map(event => 
@@ -247,10 +319,8 @@ export const usePetEvents = (petId?: string) => {
   }, []);
 
   useEffect(() => {
-    if (petId && user) {
-      fetchPetEvents();
-    }
-  }, [petId, user, fetchPetEvents]);
+    fetchPetEvents();
+  }, [fetchPetEvents]);
 
   return {
     events,
@@ -260,7 +330,6 @@ export const usePetEvents = (petId?: string) => {
     createEvent,
     updateEvent,
     deleteEvent,
-    refetch: fetchPetEvents,
     clearError,
   };
 };

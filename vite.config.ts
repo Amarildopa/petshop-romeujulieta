@@ -8,11 +8,13 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    strictPort: true,
-    hmr: {
-      port: 5173,
-      host: 'localhost'
-    },
+    // strictPort can cause conflicts if port is busy; disable to allow fallback
+    // strictPort: true,
+    // Let Vite auto-manage HMR; removing fixed host/port avoids protocol mismatch
+    // hmr: {
+    //   port: 5173,
+    //   host: 'localhost'
+    // },
     cors: true,
     headers: {
       'Access-Control-Allow-Origin': '*',

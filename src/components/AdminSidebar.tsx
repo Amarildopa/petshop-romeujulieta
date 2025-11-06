@@ -15,7 +15,8 @@ import {
   Package,
   ShoppingCart,
   Palette,
-  Calendar
+  Calendar,
+  Camera
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -56,6 +57,12 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggle }) =>
       label: 'Agendamentos',
       icon: <Calendar className="h-5 w-5" />,
       description: 'Gerenciar slots de agendamento'
+    },
+    {
+      path: '/admin/weekly-baths',
+      label: 'Banhos Semanais',
+      icon: <Camera className="h-5 w-5" />,
+      description: 'Curadoria de banhos semanais'
     },
     {
       path: '/admin/reports',

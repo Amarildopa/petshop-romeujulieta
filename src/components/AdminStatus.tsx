@@ -2,9 +2,11 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Shield, Crown, User, AlertCircle } from 'lucide-react'
 import { useAdminAuth } from '../hooks/useAdminAuth'
+import { useNavigate } from 'react-router-dom'
 
 const AdminStatus: React.FC = () => {
   const { isAdmin, isSuperAdmin, isManager, adminUser, loading } = useAdminAuth()
+  const navigate = useNavigate()
 
   if (loading) {
     return (
@@ -37,6 +39,10 @@ const AdminStatus: React.FC = () => {
     return 'text-green-600 bg-green-100'
   }
 
+  const handleAdminClick = () => {
+    navigate('/admin')
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -44,7 +50,10 @@ const AdminStatus: React.FC = () => {
       className="flex items-center space-x-2"
     >
       {getRoleIcon()}
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor()}`}>
+      <span 
+        className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor()} cursor-pointer hover:opacity-80 transition-opacity`}
+        onClick={handleAdminClick}
+      >
         {getRoleLabel()}
       </span>
       {!adminUser?.is_active && (

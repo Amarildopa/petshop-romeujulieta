@@ -37,6 +37,7 @@ const AdminSlots = lazy(() => import('./pages/AdminSlots'));
 const AdminLayout = lazy(() => import('./components/AdminLayout'));
 // const AdminThemeCustomizer = lazy(() => import('./components/AdminThemeCustomizer'));
 const AdminThemeSimple = lazy(() => import('./components/AdminThemeSimple'));
+const WeeklyBathsCuration = lazy(() => import('./components/WeeklyBathsCuration'));
 const TestSupabase = lazy(() => import('./pages/TestSupabase'));
 const TestSimple = lazy(() => import('./pages/TestSimple'));
 const PhotoTest = lazy(() => import('./pages/PhotoTest'));
@@ -177,6 +178,11 @@ function App() {
                 <Route path="theme-simple" element={
                   <AdminRouteGuard requiredPermission="settings">
                     <AdminThemeSimple />
+                  </AdminRouteGuard>
+                } />
+                <Route path="weekly-baths" element={
+                  <AdminRouteGuard requiredPermission="settings">
+                    <WeeklyBathsCuration />
                   </AdminRouteGuard>
                 } />
               </Route>

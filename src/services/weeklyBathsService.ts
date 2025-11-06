@@ -7,6 +7,7 @@ export interface WeeklyBath {
   pet_name: string;
   pet_id?: string;
   image_url: string;
+  image_path?: string;
   bath_date: string;
   approved: boolean;
   approved_by?: string;
@@ -14,26 +15,35 @@ export interface WeeklyBath {
   week_start: string; // Data da segunda-feira da semana
   display_order: number;
   curator_notes?: string;
+  add_to_journey: boolean; // NOVO: Se deve ser adicionado à jornada
+  journey_event_id?: string; // NOVO: ID do evento criado na jornada
 }
 
 export interface WeeklyBathCreate {
   pet_name: string;
   pet_id?: string;
   image_url: string;
+  image_path?: string;
   bath_date: string;
   week_start: string;
   display_order?: number;
   curator_notes?: string;
+  add_to_journey?: boolean; // NOVO: Se deve ser adicionado à jornada
 }
 
 export interface WeeklyBathUpdate {
   pet_name?: string;
   image_url?: string;
+  image_path?: string;
   bath_date?: string;
   approved?: boolean;
   approved_by?: string;
   display_order?: number;
   curator_notes?: string;
+  add_to_journey?: boolean; // NOVO: Se deve ser adicionado à jornada
+  journey_event_id?: string; // NOVO: ID do evento criado na jornada
+  // Adicionado: permitir atualizar o vínculo do pet
+  pet_id?: string;
 }
 
 export const weeklyBathsService = {
@@ -62,7 +72,9 @@ export const weeklyBathsService = {
       .from('weekly_baths')
       .select('*')
       .eq('week_start', weekStart)
-      .order('created_at', { ascending: false });
+      // Ordenar por data do banho para refletir cronologia
+      .order('bath_date', { ascending: true })
+      .order('created_at', { ascending: true });
 
     if (error) {
       throw new Error(`Erro ao buscar banhos da semana: ${error.message}`);
@@ -163,23 +175,6 @@ export const weeklyBathsService = {
     return data || [];
   },
 
-  // Update display order for multiple baths
-  async updateDisplayOrder(updates: { id: string; display_order: number }[]): Promise<void> {
-    const promises = updates.map(({ id, display_order }) =>
-      supabase
-        .from('weekly_baths')
-        .update({ display_order, updated_at: new Date().toISOString() })
-        .eq('id', id)
-    );
-
-    const results = await Promise.all(promises);
-    const errors = results.filter(result => result.error);
-
-    if (errors.length > 0) {
-      throw new Error(`Erro ao atualizar ordem de exibição: ${errors[0].error?.message}`);
-    }
-  },
-
   // Get weeks that have baths (for navigation)
   async getAvailableWeeks(): Promise<string[]> {
     const { data, error } = await supabase
@@ -196,66 +191,103 @@ export const weeklyBathsService = {
     return uniqueWeeks;
   },
 
-  // Archive old weeks (keep only last 8 weeks)
-  async archiveOldWeeks(): Promise<void> {
-    const eightWeeksAgo = new Date();
-    eightWeeksAgo.setDate(eightWeeksAgo.getDate() - (8 * 7));
-    const cutoffDate = getWeekStart(eightWeeksAgo);
-
-    const { error } = await supabase
-      .from('weekly_baths')
-      .delete()
-      .lt('week_start', cutoffDate);
+  // Get pets for selection (integration feature)
+  async getPetsForSelection(): Promise<Pet[]> {
+    const { data, error } = await supabase
+      .rpc('get_pets_for_selection');
 
     if (error) {
-      throw new Error(`Erro ao arquivar semanas antigas: ${error.message}`);
+      throw new Error(`Erro ao buscar pets para seleção: ${error.message}`);
     }
+
+    return data || [];
+  },
+
+  // Approve bath with integration to journey
+  async approveBathWithIntegration(
+    bathId: string, 
+    approvedBy: string, 
+    petId?: string
+  ): Promise<IntegrationResult> {
+    const { data, error } = await supabase
+      .rpc('approve_bath_with_integration', {
+        p_bath_id: bathId,
+        p_approved_by: approvedBy,
+        p_pet_id: petId
+      });
+
+    if (error) {
+      throw new Error(`Erro ao aprovar banho com integração: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  async getIntegrationStats(): Promise<IntegrationStats> {
+    const { data, error } = await supabase
+      .rpc('get_integration_stats');
+
+    if (error) {
+      throw new Error(`Erro ao buscar estatísticas de integração: ${error.message}`);
+    }
+
+    return data || { total_baths: 0, integrated_baths: 0, total_events: 0 };
+  },
+
+  async isBathIntegrated(bathId: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('weekly_baths')
+      .select('journey_event_id')
+      .eq('id', bathId)
+      .single();
+
+    if (error) {
+      throw new Error(`Erro ao verificar integração do banho: ${error.message}`);
+    }
+
+    return !!data?.journey_event_id;
+  },
+
+  async getJourneyEventFromBath(bathId: string): Promise<JourneyEvent | null> {
+    const { data, error } = await supabase
+      .from('pet_events_pet')
+      .select('*')
+      .eq('weekly_bath_source_id', bathId)
+      .single();
+
+    if (error) {
+      // If not found, return null
+      if (error && typeof error === 'object' && 'code' in error && (error as { code?: string }).code === 'PGRST116') return null;
+      throw new Error(`Erro ao buscar evento da jornada: ${error.message}`);
+    }
+
+    return data || null;
   }
 };
 
-// Helper function to get the start of the week (Monday)
 function getWeekStart(date: Date): string {
-  const d = new Date(date);
-  const day = d.getDay(); // 0=domingo, 1=segunda, 2=terça...
-  
-  // Calcular quantos dias voltar para chegar na segunda-feira
-  let daysToSubtract;
-  if (day === 0) {
-    // Se é domingo, voltar 6 dias para chegar na segunda anterior
-    daysToSubtract = 6;
-  } else {
-    // Se é segunda a sábado, voltar (day - 1) dias
-    daysToSubtract = day - 1;
-  }
-  
-  const monday = new Date(d);
-  monday.setDate(d.getDate() - daysToSubtract);
-  monday.setHours(0, 0, 0, 0);
-  return monday.toISOString().split('T')[0];
+  // Normaliza para meia-noite local e calcula segunda-feira
+  const base = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const day = base.getDay(); // 0 (Domingo) a 6 (Sábado)
+  const diff = base.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(base.getFullYear(), base.getMonth(), diff);
+  const y = monday.getFullYear();
+  const m = String(monday.getMonth() + 1).padStart(2, '0');
+  const d = String(monday.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
-// Helper function to get the start of the previous week (for carousel display)
-function getPreviousWeekStart(date: Date): string {
-  const currentWeekStart = getWeekStart(date);
-  const previousWeekStart = new Date(currentWeekStart);
-  previousWeekStart.setDate(previousWeekStart.getDate() - 7);
-  return previousWeekStart.toISOString().split('T')[0];
-}
-
-// Helper function to get week range string for display
 export function getWeekRangeString(weekStart: string): string {
   const start = new Date(weekStart);
-  const end = new Date(start);
-  end.setDate(start.getDate() + 6);
-  
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit'
-    });
-  };
-  
-  return `${formatDate(start)} - ${formatDate(end)}`;
+  const end = new Date(weekStart);
+  end.setDate(end.getDate() + 6); // Monday to Sunday
+  return `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+}
+
+export function getPreviousWeekStart(date: Date): string {
+  const d = new Date(date);
+  d.setDate(d.getDate() - 7);
+  return getWeekStart(d);
 }
 
 // Helper function to check if it's Monday (update day)
@@ -267,4 +299,10 @@ export function isMondayUpdateTime(): boolean {
 // Helper function to get current week start
 export function getCurrentWeekStart(): string {
   return getWeekStart(new Date());
+}
+
+// Novo: obter o início da semana a partir de uma string de data (yyyy-mm-dd)
+export function getWeekStartFromString(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return getWeekStart(new Date(y, (m || 1) - 1, d || 1));
 }

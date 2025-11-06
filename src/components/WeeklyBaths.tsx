@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Heart, AlertCircle, RefreshCw, Wifi, WifiOff } from 'lucide-react';
 import { weeklyBathsService, WeeklyBath } from '../services/weeklyBathsService';
+import WhatsAppIcon from './icons/WhatsAppIcon';
 
 const WeeklyBaths: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -11,7 +12,6 @@ const WeeklyBaths: React.FC = () => {
   const [retrying, setRetrying] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [imageLoadErrors, setImageLoadErrors] = useState<Set<string>>(new Set());
-  const [itemsPerView, setItemsPerView] = useState(3);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
@@ -126,13 +126,11 @@ const WeeklyBaths: React.FC = () => {
   // Atualiza itens por visualização quando a tela redimensiona
   useEffect(() => {
     const handleResize = () => {
-      const newItemsPerView = calculateItemsPerView();
-      setItemsPerView(newItemsPerView);
-      
-      // Ajusta o índice atual se necessário
-      const maxIndex = Math.max(0, weeklyBaths.length - newItemsPerView);
-      if (currentIndex > maxIndex) {
-        setCurrentIndex(maxIndex);
+      // Normaliza índice para continuar ciclando por todos os itens
+      if (weeklyBaths.length > 0) {
+        setCurrentIndex((prev) => ((prev % weeklyBaths.length) + weeklyBaths.length) % weeklyBaths.length);
+      } else {
+        setCurrentIndex(0);
       }
     };
 
@@ -149,17 +147,17 @@ const WeeklyBaths: React.FC = () => {
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => {
-      const maxIndex = Math.max(0, weeklyBaths.length - itemsPerView);
-      return prevIndex >= maxIndex ? 0 : prevIndex + 1;
+      if (weeklyBaths.length === 0) return 0;
+      return (prevIndex + 1) % weeklyBaths.length;
     });
-  }, [weeklyBaths.length, itemsPerView]);
+  }, [weeklyBaths.length]);
 
   const prevSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => {
-      const maxIndex = Math.max(0, weeklyBaths.length - itemsPerView);
-      return prevIndex === 0 ? maxIndex : prevIndex - 1;
+      if (weeklyBaths.length === 0) return 0;
+      return (prevIndex - 1 + weeklyBaths.length) % weeklyBaths.length;
     });
-  }, [weeklyBaths.length, itemsPerView]);
+  }, [weeklyBaths.length]);
 
   // Suporte a touch/swipe para dispositivos móveis
   const minSwipeDistance = 50;
@@ -261,7 +259,7 @@ const WeeklyBaths: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-4xl font-bold text-text-color-dark">
-              Quem passou por aqui na última semana?
+              Hall da Fama - Quem passou por aqui na última semana?
             </h2>
             <p className="mt-4 text-lg text-text-color">
               Em breve teremos fotos dos pets mais fofos da semana!
@@ -285,7 +283,7 @@ const WeeklyBaths: React.FC = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl font-bold text-text-color-dark">
-              Quem passou por aqui na última semana?
+              Hall da Fama - Quem passou por aqui na última semana?
             </h2>
             <p className="mt-4 text-lg text-text-color">
               Confira os pets mais fofos que visitaram nosso petshop!
@@ -448,10 +446,18 @@ const WeeklyBaths: React.FC = () => {
           <p className="text-text-color mb-4">
             Quer ver seu pet aqui na próxima semana?
           </p>
-          <button className="inline-flex items-center justify-center gap-2 bg-primary text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-dark transition-all duration-300 transform hover:scale-105 shadow-lg">
-            Agende um Banho
-          </button>
-        </motion.div>
+          <a
+            href={`https://wa.me/5511993805117?text=${encodeURIComponent('Olá! Gostaria de agendar um banho para meu pet.')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 bg-green-500/90 hover:bg-green-600/90 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm border border-white/20"
+            aria-label="Agende pelo WhatsApp"
+          >
+            <WhatsAppIcon className="w-5 h-5" />
+            Agende pelo WhatsApp
+          </a>
+        </motion.div
+        >
       </div>
     </section>
   );
