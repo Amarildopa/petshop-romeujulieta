@@ -25,6 +25,7 @@ import { wishlistService } from '../services/wishlistService';
 import { comparisonService } from '../services/comparisonService';
 import { getImageUrl } from '../config/images';
 import ProductModal from '../components/ProductModal';
+import { FEATURES } from '../config/features';
 
 const Store: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -867,6 +868,7 @@ const Store: React.FC = () => {
                       </div>
                     </div>
 
+                    {FEATURES.enableEcommerce && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -881,6 +883,7 @@ const Store: React.FC = () => {
                     >
                       {product.stock > 0 ? 'Adicionar ao Carrinho' : 'Indisponível'}
                     </button>
+                    )}
                   </div>
                 </motion.div>
               ))}

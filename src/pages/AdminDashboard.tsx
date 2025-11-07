@@ -21,6 +21,7 @@ import { adminService, AdminNotification, SupportTicket } from '../services/admi
 import { ordersService } from '../services/ordersService'
 import { logger } from '../lib/logger'
 import { metrics } from '../lib/metrics'
+import { FEATURES } from '../config/features';
 
 interface DashboardStats {
   totalUsers: number
@@ -239,25 +240,27 @@ const AdminDashboard: React.FC = () => {
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-lg p-6 border border-accent/20"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-text-color mb-1">Receita Total</p>
-                <p className="text-3xl font-bold text-green-600">{formatCurrency(stats?.totalRevenue || 0)}</p>
+          {FEATURES.enableAdminSalesDash && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl shadow-lg p-6 border border-accent/20"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-text-color mb-1">Receita Total</p>
+                  <p className="text-3xl font-bold text-green-600">{formatCurrency(stats?.totalRevenue || 0)}</p>
+                </div>
+                <div className="p-3 bg-green-100 rounded-full">
+                  <DollarSign className="h-6 w-6 text-green-600" />
+                </div>
               </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <DollarSign className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-            <p className="text-sm text-text-color mt-2">
-              +8% este mês
-            </p>
-          </motion.div>
+              <p className="text-sm text-text-color mt-2">
+                +8% este mês
+              </p>
+            </motion.div>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -279,82 +282,86 @@ const AdminDashboard: React.FC = () => {
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-white rounded-2xl shadow-lg p-6 border border-accent/20"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-text-color mb-1">Pedidos</p>
-                <p className="text-3xl font-bold text-orange-600">{stats?.totalOrders}</p>
+          {FEATURES.enableAdminSalesDash && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-white rounded-2xl shadow-lg p-6 border border-accent/20"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-text-color mb-1">Pedidos</p>
+                  <p className="text-3xl font-bold text-orange-600">{stats?.totalOrders}</p>
+                </div>
+                <div className="p-3 bg-orange-100 rounded-full">
+                  <ShoppingBag className="h-6 w-6 text-orange-600" />
+                </div>
               </div>
-              <div className="p-3 bg-orange-100 rounded-full">
-                <ShoppingBag className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-            <p className="text-sm text-text-color mt-2">
-              {stats?.openTickets} tickets abertos
-            </p>
-          </motion.div>
+              <p className="text-sm text-text-color mt-2">
+                {stats?.openTickets} tickets abertos
+              </p>
+            </motion.div>
+          )}
         </div>
 
         {/* Métricas de Vendas */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mb-8 bg-white rounded-2xl shadow-lg p-6 border border-accent/20"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-text-color-dark">Métricas de Vendas</h2>
-            <TrendingUp className="h-5 w-5 text-green-600" />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="text-center">
-              <p className="text-sm text-text-color mb-1">Receita Total</p>
-              <p className="text-2xl font-bold text-green-600">{formatCurrency(salesMetrics.totalRevenue)}</p>
+        {FEATURES.enableAdminSalesDash && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mb-8 bg-white rounded-2xl shadow-lg p-6 border border-accent/20"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-text-color-dark">Métricas de Vendas</h2>
+              <TrendingUp className="h-5 w-5 text-green-600" />
             </div>
-            <div className="text-center">
-              <p className="text-sm text-text-color mb-1">Total de Pedidos</p>
-              <p className="text-2xl font-bold text-blue-600">{salesMetrics.totalOrders}</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div className="text-center">
+                <p className="text-sm text-text-color mb-1">Receita Total</p>
+                <p className="text-2xl font-bold text-green-600">{formatCurrency(salesMetrics.totalRevenue)}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-text-color mb-1">Total de Pedidos</p>
+                <p className="text-2xl font-bold text-blue-600">{salesMetrics.totalOrders}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-text-color mb-1">Valor Médio do Pedido</p>
+                <p className="text-2xl font-bold text-purple-600">{formatCurrency(salesMetrics.averageOrderValue)}</p>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-sm text-text-color mb-1">Valor Médio do Pedido</p>
-              <p className="text-2xl font-bold text-purple-600">{formatCurrency(salesMetrics.averageOrderValue)}</p>
-            </div>
-          </div>
 
-          {/* Pedidos por Status */}
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-text-color-dark mb-4">Pedidos por Status</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {salesMetrics.ordersByStatus.map((item) => (
-                <div key={item.status} className="bg-gray-50 rounded-lg p-4 text-center">
-                  <p className="text-sm text-text-color capitalize">{item.status.replace('_', ' ')}</p>
-                  <p className="text-xl font-bold text-text-color-dark">{item.count}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Receita por Dia (últimos 7 dias) */}
-          {salesMetrics.revenueByDay.length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold text-text-color-dark mb-4">Receita dos Últimos 7 Dias</h3>
-              <div className="grid grid-cols-7 gap-2">
-                {salesMetrics.revenueByDay.slice(-7).map((day, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-3 text-center">
-                    <p className="text-xs text-text-color">{new Date(day.date).toLocaleDateString('pt-BR', { weekday: 'short' })}</p>
-                    <p className="text-sm font-bold text-green-600">{formatCurrency(day.revenue)}</p>
+            {/* Pedidos por Status */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-text-color-dark mb-4">Pedidos por Status</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {salesMetrics.ordersByStatus.map((item) => (
+                  <div key={item.status} className="bg-gray-50 rounded-lg p-4 text-center">
+                    <p className="text-sm text-text-color capitalize">{item.status.replace('_', ' ')}</p>
+                    <p className="text-xl font-bold text-text-color-dark">{item.count}</p>
                   </div>
                 ))}
               </div>
             </div>
-          )}
-        </motion.div>
+
+            {/* Receita por Dia (últimos 7 dias) */}
+            {salesMetrics.revenueByDay.length > 0 && (
+              <div>
+                <h3 className="text-lg font-semibold text-text-color-dark mb-4">Receita dos Últimos 7 Dias</h3>
+                <div className="grid grid-cols-7 gap-2">
+                  {salesMetrics.revenueByDay.slice(-7).map((day, index) => (
+                    <div key={index} className="bg-gray-50 rounded-lg p-3 text-center">
+                      <p className="text-xs text-text-color">{new Date(day.date).toLocaleDateString('pt-BR', { weekday: 'short' })}</p>
+                      <p className="text-sm font-bold text-green-600">{formatCurrency(day.revenue)}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Notificações Recentes */}

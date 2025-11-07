@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import type { Pet, IntegrationStats, IntegrationResult, JourneyEvent } from '../types/integration';
 
 export interface WeeklyBath {
   id: string;
@@ -36,6 +37,7 @@ export interface WeeklyBathUpdate {
   image_url?: string;
   image_path?: string;
   bath_date?: string;
+  week_start?: string;
   approved?: boolean;
   approved_by?: string;
   display_order?: number;
@@ -231,7 +233,7 @@ export const weeklyBathsService = {
       throw new Error(`Erro ao buscar estatísticas de integração: ${error.message}`);
     }
 
-    return data || { total_baths: 0, integrated_baths: 0, total_events: 0 };
+    return data || { total_baths: 0, integrated_baths: 0, total_events: 0 } as unknown as IntegrationStats;
   },
 
   async isBathIntegrated(bathId: string): Promise<boolean> {

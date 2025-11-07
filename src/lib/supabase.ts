@@ -3,19 +3,33 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Verificar se as variáveis existem
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+// Inicialização segura do Supabase: evita lançar erro em tempo de import
+const hasSupabaseEnv = !!supabaseUrl && !!supabaseAnonKey
+
+function createFallbackClient() {
+  const message = 'Supabase não configurado: defina VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no .env.'
+  console.error(message)
+  const error = new Error(message)
+  // Cliente mínimo que lança erro quando usado
+  return {
+    from: () => { throw error },
+    auth: {
+      getSession: async () => { throw error },
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    }
+  } as unknown as ReturnType<typeof createClient>
 }
 
-// Criar cliente Supabase
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
-  }
-})
+// Criar cliente Supabase (ou fallback)
+export const supabase = hasSupabaseEnv
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    })
+  : createFallbackClient()
 
 // Tipos para o banco de dados
 export interface Database {

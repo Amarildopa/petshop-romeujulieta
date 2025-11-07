@@ -53,10 +53,6 @@ const AdminSecurity: React.FC = () => {
 
 
 
-  useEffect(() => {
-    loadSecurityData()
-  }, [loadSecurityData])
-
   const loadSecurityData = useCallback(async () => {
     try {
       setLoading(true)
@@ -157,6 +153,10 @@ const AdminSecurity: React.FC = () => {
       setLoading(false)
     }
   }, [adminUser?.user_id])
+
+  useEffect(() => {
+    loadSecurityData()
+  }, [loadSecurityData])
 
   const handleEditSetting = (setting: SecuritySetting) => {
     setEditingId(setting.id)

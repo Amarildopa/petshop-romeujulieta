@@ -87,7 +87,7 @@ export interface IntegrationService {
   getPetsForSelection(): Promise<Pet[]>;
   
   // Aprovar banho com integração opcional
-  approveBathWithIntegration(request: ApprovalWithIntegrationRequest): Promise<ApprovalWithIntegrationResponse>;
+  approveBathWithIntegration(bathId: string, approvedBy: string, petId?: string): Promise<ApprovalWithIntegrationResponse>;
   
   // Gerar preview da integração
   generateIntegrationPreview(bathId: string): Promise<IntegrationPreviewData>;

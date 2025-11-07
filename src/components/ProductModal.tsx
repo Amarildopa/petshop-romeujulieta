@@ -16,6 +16,7 @@ import { useAuth } from '../hooks/useAuth';
 import { type Product } from '../services/productsService';
 import { cartService } from '../services/cartService';
 import { getImageUrl } from '../config/images';
+import { FEATURES } from '../config/features';
 import ProductReviews from './ProductReviews';
 
 interface ProductModalProps {
@@ -212,29 +213,29 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     </div>
 
                     {/* Quantity Selector */}
-                    {product.in_stock && (
-                      <div className="space-y-3">
-                        <label className="block text-sm font-medium text-text-color-dark">
-                          Quantidade
-                        </label>
-                        <div className="flex items-center space-x-3">
-                          <button
-                            onClick={() => handleQuantityChange(-1)}
-                            disabled={quantity <= 1}
-                            className="p-2 border border-accent rounded-lg hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <Minus className="w-4 h-4" />
-                          </button>
-                          <span className="w-12 text-center font-medium">{quantity}</span>
-                          <button
-                            onClick={() => handleQuantityChange(1)}
-                            className="p-2 border border-accent rounded-lg hover:bg-surface"
-                          >
-                            <Plus className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                    {FEATURES.enableEcommerce && product.in_stock && (
+                       <div className="space-y-3">
+                         <label className="block text-sm font-medium text-text-color-dark">
+                           Quantidade
+                         </label>
+                         <div className="flex items-center space-x-3">
+                           <button
+                             onClick={() => handleQuantityChange(-1)}
+                             disabled={quantity <= 1}
+                             className="p-2 border border-accent rounded-lg hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed"
+                           >
+                             <Minus className="w-4 h-4" />
+                           </button>
+                           <span className="w-12 text-center font-medium">{quantity}</span>
+                           <button
+                             onClick={() => handleQuantityChange(1)}
+                             className="p-2 border border-accent rounded-lg hover:bg-surface"
+                           >
+                             <Plus className="w-4 h-4" />
+                           </button>
+                         </div>
+                       </div>
+                     )}
 
                     {/* Error Message */}
                     {error && (
@@ -244,41 +245,45 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     )}
 
                     {/* Add to Cart Button */}
-                    <button
-                      onClick={handleAddToCart}
-                      disabled={!product.in_stock || isAddingToCart}
-                      className={`w-full py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
-                        product.in_stock && !isAddingToCart
-                          ? 'bg-primary text-white hover:bg-primary-dark'
-                          : 'bg-gray-200 text-text-color cursor-not-allowed'
-                      }`}
-                    >
-                      <ShoppingCart className="w-5 h-5" />
-                      <span>
-                        {isAddingToCart 
-                          ? 'Adicionando...' 
-                          : product.in_stock 
-                            ? 'Adicionar ao Carrinho' 
-                            : 'Indisponível'
-                        }
-                      </span>
-                    </button>
+                    {FEATURES.enableEcommerce && (
+                      <button
+                        onClick={handleAddToCart}
+                        disabled={!product.in_stock || isAddingToCart}
+                        className={`w-full py-3 px-6 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 ${
+                          product.in_stock && !isAddingToCart
+                            ? 'bg-primary text-white hover:bg-primary-dark'
+                            : 'bg-gray-200 text-text-color cursor-not-allowed'
+                        }`}
+                      >
+                        <ShoppingCart className="w-5 h-5" />
+                        <span>
+                          {isAddingToCart 
+                            ? 'Adicionando...' 
+                            : product.in_stock 
+                              ? 'Adicionar ao Carrinho' 
+                              : 'Indisponível'
+                          }
+                        </span>
+                      </button>
+                    )}
 
                     {/* Benefits */}
-                    <div className="grid grid-cols-1 gap-3 pt-4 border-t border-accent/20">
-                      <div className="flex items-center space-x-3 text-sm text-text-color">
-                        <Truck className="w-4 h-4 text-primary" />
-                        <span>Frete grátis para compras acima de R$ 99</span>
+                    {FEATURES.enableEcommerce && (
+                      <div className="grid grid-cols-1 gap-3 pt-4 border-t border-accent/20">
+                        <div className="flex items-center space-x-3 text-sm text-text-color">
+                          <Truck className="w-4 h-4 text-primary" />
+                          <span>Frete grátis para compras acima de R$ 99</span>
+                        </div>
+                        <div className="flex items-center space-x-3 text-sm text-text-color">
+                          <Shield className="w-4 h-4 text-primary" />
+                          <span>Compra 100% segura e protegida</span>
+                        </div>
+                        <div className="flex items-center space-x-3 text-sm text-text-color">
+                          <Package className="w-4 h-4 text-primary" />
+                          <span>Entrega em até 2 dias úteis</span>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-3 text-sm text-text-color">
-                        <Shield className="w-4 h-4 text-primary" />
-                        <span>Compra 100% segura e protegida</span>
-                      </div>
-                      <div className="flex items-center space-x-3 text-sm text-text-color">
-                        <Package className="w-4 h-4 text-primary" />
-                        <span>Entrega em até 2 dias úteis</span>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 

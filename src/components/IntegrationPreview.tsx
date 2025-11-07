@@ -33,8 +33,18 @@ export function IntegrationPreview({
     return null;
   }
 
+  const parseLocalDate = (dateString: string) => {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [y, m, d] = dateString.split('-').map(Number);
+      return new Date(y, (m || 1) - 1, d || 1);
+    }
+    const dt = new Date(dateString);
+    return dt;
+  };
+
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
+    const dt = parseLocalDate(dateString);
+    return dt.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
@@ -42,7 +52,8 @@ export function IntegrationPreview({
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('pt-BR', {
+    const dt = parseLocalDate(dateString);
+    return dt.toLocaleTimeString('pt-BR', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -106,7 +117,8 @@ export function IntegrationPreview({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <div className="flex items-center space-x-2 text-gray-500">
                 <Calendar className="h-4 w-4" />
-                <span>{formatDate(previewData.event_date || bath.bath_date)}</span>
+                {/* Sempre mostrar a data do card do banho para evitar diferenças de timezone */}
+                <span>{formatDate(bath.bath_date)}</span>
               </div>
               
               <div className="flex items-center space-x-2 text-gray-500">

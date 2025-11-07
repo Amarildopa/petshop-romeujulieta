@@ -18,6 +18,7 @@ import {
   Calendar,
   Camera
 } from 'lucide-react'
+import { FEATURES } from '../config/features'
 
 interface AdminSidebarProps {
   isCollapsed: boolean
@@ -40,18 +41,18 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ isCollapsed, onToggle }) =>
       icon: <Users className="h-5 w-5" />,
       description: 'Gerenciar usuários'
     },
-    {
+    ...(FEATURES.enableAdminProducts ? [{
       path: '/admin/products',
       label: 'Produtos',
       icon: <Package className="h-5 w-5" />,
       description: 'Gerenciar produtos'
-    },
-    {
+    }] : []),
+    ...(FEATURES.enableAdminOrders ? [{
       path: '/admin/orders',
       label: 'Pedidos',
       icon: <ShoppingCart className="h-5 w-5" />,
       description: 'Gerenciar pedidos'
-    },
+    }] : []),
     {
       path: '/admin/slots',
       label: 'Agendamentos',

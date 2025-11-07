@@ -5,6 +5,7 @@ import Header from './components/Header';
 import LoadingSpinner from './components/LoadingSpinner';
 import AdminRouteGuard from './components/AdminRouteGuard';
 import { useSimpleTheme } from './hooks/useSimpleTheme';
+import { FEATURES } from './config/features';
 
 // Lazy loading para todas as páginas
 const Home = lazy(() => import('./pages/Home'));
@@ -37,7 +38,7 @@ const AdminSlots = lazy(() => import('./pages/AdminSlots'));
 const AdminLayout = lazy(() => import('./components/AdminLayout'));
 // const AdminThemeCustomizer = lazy(() => import('./components/AdminThemeCustomizer'));
 const AdminThemeSimple = lazy(() => import('./components/AdminThemeSimple'));
-const WeeklyBathsCuration = lazy(() => import('./components/WeeklyBathsCuration'));
+const WeeklyBathsCuration = lazy(() => import('./components/WeeklyBathsCurationV2'));
 const TestSupabase = lazy(() => import('./pages/TestSupabase'));
 const TestSimple = lazy(() => import('./pages/TestSimple'));
 const PhotoTest = lazy(() => import('./pages/PhotoTest'));
@@ -84,24 +85,24 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/booking" element={<Booking />} />
               <Route path="/services" element={<Services />} />
-              <Route path="/store" element={<Store />} />
-              <Route path="/offers" element={<Offers />} />
+              {FEATURES.enableEcommerce && <Route path="/store" element={<Store />} />}
+              {FEATURES.enableOffers && <Route path="/offers" element={<Offers />} />}
               <Route path="/banho-tosa-spa" element={<BanhoTosaSpa />} />
               <Route path="/bem-estar-sensorial" element={<BemEstarSensorial />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/product-checkout" element={<ProductCheckout />} />
-              <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/reviews" element={<Reviews />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/comparison" element={<ProductComparison />} />
-              <Route path="/loyalty" element={<Loyalty />} />
+              {FEATURES.enableSubscriptions && <Route path="/checkout" element={<Checkout />} />}
+              {FEATURES.enableProductCheckout && <Route path="/product-checkout" element={<ProductCheckout />} />}
+              {FEATURES.enablePaymentConfirmation && <Route path="/payment-confirmation" element={<PaymentConfirmation />} />}
+              {FEATURES.enableOrders && <Route path="/orders" element={<Orders />} />}
+              {FEATURES.enableReviews && <Route path="/reviews" element={<Reviews />} />}
+              {FEATURES.enableWishlist && <Route path="/wishlist" element={<Wishlist />} />}
+              {FEATURES.enableComparison && <Route path="/comparison" element={<ProductComparison />} />}
+              {FEATURES.enableLoyalty && <Route path="/loyalty" element={<Loyalty />} />}
               <Route path="/affiliates" element={<Affiliates />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/live-chat" element={<LiveChat />} />
-              <Route path="/marketplace" element={<Marketplace />} />
+              {FEATURES.enableMarketplace && <Route path="/marketplace" element={<Marketplace />} />}
               <Route path="/social-integration" element={<SocialIntegration />} />
-              <Route path="/subscriptions" element={<Subscriptions />} />
+              {FEATURES.enableSubscriptions && <Route path="/subscriptions" element={<Subscriptions />} />}
               <Route path="/whatsapp-test" element={<WhatsAppTest />} />
               <Route path="/rtsp-test" element={<RTSPStreaming />} />
               <Route path="/shared/:shareToken" element={<SharedJourney />} />
@@ -122,7 +123,7 @@ function App() {
 
               
               {/* Rotas de administração */}
-              <Route path="/admin" element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminLayout />}> 
                 <Route index element={<AdminDashboard />} />
                 <Route path="users" element={
                   <AdminRouteGuard requiredPermission="users">
@@ -159,22 +160,25 @@ function App() {
                     <AdminSecurity />
                   </AdminRouteGuard>
                 } />
-                <Route path="products" element={
-                  <AdminRouteGuard requiredPermission="products">
-                    <AdminProducts />
-                  </AdminRouteGuard>
-                } />
-                <Route path="orders" element={
-                  <AdminRouteGuard requiredPermission="orders">
-                    <AdminOrders />
-                  </AdminRouteGuard>
-                } />
+                {FEATURES.enableAdminProducts && (
+                  <Route path="products" element={
+                    <AdminRouteGuard requiredPermission="products">
+                      <AdminProducts />
+                    </AdminRouteGuard>
+                  } />
+                )}
+                {FEATURES.enableAdminOrders && (
+                  <Route path="orders" element={
+                    <AdminRouteGuard requiredPermission="orders">
+                      <AdminOrders />
+                    </AdminRouteGuard>
+                  } />
+                )}
                 <Route path="slots" element={
                   <AdminRouteGuard requiredPermission="appointments">
                     <AdminSlots />
                   </AdminRouteGuard>
                 } />
-                {/* Rota do tema avançado removida - usando apenas tema simples */}
                 <Route path="theme-simple" element={
                   <AdminRouteGuard requiredPermission="settings">
                     <AdminThemeSimple />

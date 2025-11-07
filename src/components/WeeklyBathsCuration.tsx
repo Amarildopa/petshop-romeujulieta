@@ -7,7 +7,7 @@ import { IntegrationPreview, IntegrationPreviewCompact } from './IntegrationPrev
 import { useIntegration } from '../hooks/useIntegration';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import type { Pet } from '../types/integration';
+import type { Pet, IntegrationPreviewData } from '../types/integration';
 import { integrationService } from '../services/integrationService';
 
 interface WeeklyBathsCurationProps {
@@ -30,11 +30,11 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
   const [selectedPets, setSelectedPets] = useState<{[key: string]: Pet | null}>({});
   const [showPreview, setShowPreview] = useState<{[key: string]: boolean}>({});
   const [approvingWithIntegration, setApprovingWithIntegration] = useState<{[key: string]: boolean}>({});
+  const [previewByBath, setPreviewByBath] = useState<{[key: string]: IntegrationPreviewData | null}>({});
   
   // Integration hook
   const {
     pets,
-    generatePreview,
     approveBathWithIntegration,
     previewData,
     isLoading: integrationLoading,
@@ -42,35 +42,6 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
     clearError: clearIntegrationError,
     clearPreview
   } = useIntegration();
-
-  useEffect(() => {
-    loadBaths();
-    loadAvailableWeeks();
-  }, [loadBaths, loadAvailableWeeks]);
-
-  useEffect(() => {
-    loadBaths();
-  }, [loadBaths]);
-
-  // Sincroniza estado de integração/pet com dados do banho quando banhos ou pets são carregados
-  useEffect(() => {
-    if (!baths?.length) return;
-    setIntegrationEnabled(prev => {
-      const next = { ...prev };
-      baths.forEach(b => { next[b.id] = !!b.add_to_journey; });
-      return next;
-    });
-    if (pets?.length) {
-      setSelectedPets(prev => {
-        const next = { ...prev };
-        baths.forEach(b => {
-          const pet = b.pet_id ? pets.find(p => p.id === b.pet_id) || null : prev[b.id] || null;
-          next[b.id] = pet || null;
-        });
-        return next;
-      });
-    }
-  }, [baths, pets]);
 
   const loadBaths = useCallback(async () => {
     try {
@@ -96,12 +67,43 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
     }
   }, []);
 
-  const handleCancelEdit = () => {
-    setEditingBath(null);
-  };
+  useEffect(() => {
+    loadBaths();
+    loadAvailableWeeks();
+  }, [loadBaths, loadAvailableWeeks]);
+
+  useEffect(() => {
+    loadBaths();
+  }, [loadBaths]);
+
+  // Sincroniza estado de integração/pet com dados do banho quando banhos ou pets são carregados
+  useEffect(() => {
+    if (!baths?.length || editingBath) return;
+    setIntegrationEnabled(prev => {
+      const next = { ...prev };
+      baths.forEach(b => { next[b.id] = !!b.add_to_journey; });
+      return next;
+    });
+    if (pets?.length) {
+      setSelectedPets(prev => {
+        const next = { ...prev };
+        baths.forEach(b => {
+          const pet = b.pet_id ? pets.find(p => p.id === b.pet_id) || null : prev[b.id] || null;
+          next[b.id] = pet || null;
+        });
+        return next;
+      });
+    }
+  }, [baths, pets, editingBath]);
+
+  // Removido: função de cancelar edição não utilizada
 
   const handleDelete = async (id: string) => {
     try {
+      const bath = baths.find(b => b.id === id);
+      if (bath?.journey_event_id) {
+        await integrationService.removeIntegration(id);
+      }
       await weeklyBathsService.deleteWeeklyBath(id);
       setBaths(prev => prev.filter(b => b.id !== id));
     } catch (err) {
@@ -192,37 +194,14 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
     });
   };
 
-  const handleSaveEdit = async () => {
-    if (!editingBath) return;
-    
-    try {
-      const { id, ...updateData } = editingBath;
-      // Recalcular week_start sempre que editar a data do banho
-      updateData.week_start = getWeekStartFromString(editingBath.bath_date);
-      // Persistir integração e pet selecionado
-      const addToJourney = integrationEnabled[editingBath.id] || false;
-      const selectedPet = selectedPets[editingBath.id];
-      const payload = {
-        ...updateData,
-        add_to_journey: addToJourney,
-        pet_id: selectedPet?.id
-      };
-      await weeklyBathsService.updateWeeklyBath(id, payload);
-      // Após editar, recarrega a semana selecionada para evitar itens fora de contexto
-      await loadBaths();
-      setEditingBath(null);
-    } catch (err) {
-      console.error('Erro ao salvar edição:', err);
-      setError('Erro ao salvar alterações');
-    }
-  };
+  // Removido: função de salvar edição não utilizada
 
   const handleReject = async (id: string) => {
     try {
       // Remover integração, se existir
       await integrationService.removeIntegration(id);
       // Marcar como rejeitado e garantir que não fique sinalizado para jornada
-      await weeklyBathsService.updateWeeklyBath(id, { approved: false, add_to_journey: false, journey_event_id: null });
+      await weeklyBathsService.updateWeeklyBath(id, { approved: false, add_to_journey: false });
       // Recarregar lista
       await loadBaths();
     } catch (err) {
@@ -235,25 +214,15 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
   const handleToggleIntegration = async (bathId: string, enabled: boolean) => {
     setIntegrationEnabled(prev => ({ ...prev, [bathId]: enabled }));
     if (!enabled) {
-      setSelectedPets(prev => ({ ...prev, [bathId]: null }));
+      // Não resetar a seleção do pet; apenas fechar o preview
       setShowPreview(prev => ({ ...prev, [bathId]: false }));
-      // Se já estava integrado, remover o evento da jornada
-      const bath = baths.find(b => b.id === bathId);
-      try {
-        if (bath?.journey_event_id) {
-          await integrationService.removeIntegration(bathId);
-          await loadBaths();
-        }
-      } catch (err) {
-        console.error('Erro ao desfazer integração:', err);
-        setError('Erro ao desfazer integração');
-      }
     }
   };
 
   const handleSelectPetForBath = (bathId: string, pet: Pet | null) => {
     setSelectedPets(prev => ({ ...prev, [bathId]: pet }));
     setShowPreview(prev => ({ ...prev, [bathId]: false }));
+    setPreviewByBath(prev => ({ ...prev, [bathId]: null }));
   };
 
   const handleGeneratePreview = async (bathId: string) => {
@@ -263,7 +232,9 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
     if (!bath || !pet) return;
     
     try {
-      await generatePreview(bath, pet);
+      // Gerar preview específico para o banho selecionado
+      const preview = await integrationService.generateIntegrationPreview(bath.id);
+      setPreviewByBath(prev => ({ ...prev, [bathId]: preview }));
       setShowPreview(prev => ({ ...prev, [bathId]: true }));
     } catch (err) {
       console.error('Erro ao gerar preview:', err);
@@ -273,7 +244,20 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
 
   const handleClosePreview = (bathId: string) => {
     setShowPreview(prev => ({ ...prev, [bathId]: false }));
+    setPreviewByBath(prev => ({ ...prev, [bathId]: null }));
     clearPreview();
+  };
+
+  const handleCloseActivePreview = () => {
+    const activePreviewBathId = Object.keys(showPreview).find(key => showPreview[key]);
+    if (activePreviewBathId) {
+      handleClosePreview(activePreviewBathId);
+    } else {
+      // Fallback: limpar todos previews
+      setShowPreview({});
+      setPreviewByBath({});
+      clearPreview();
+    }
   };
 
   // Helper function to format week display
@@ -290,7 +274,7 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
   };
 
   // Component for bath card with integration
-  const BathCard = ({ bath }: { bath: WeeklyBath }) => {
+  const BathCard = React.memo(({ bath }: { bath: WeeklyBath }) => {
     const isIntegrationEnabled = integrationEnabled[bath.id] || false;
     const selectedPet = selectedPets[bath.id];
     const showPreviewForBath = showPreview[bath.id] || false;
@@ -356,14 +340,16 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
               />
               <textarea
                 value={editingBath.curator_notes || ''}
-                onChange={(e) => setEditingBath({ ...editingBath, curator_notes: e.target.value })}
+                onChange={(e) => setEditingBath(prev => prev ? { ...prev, curator_notes: e.target.value } : prev)}
                 className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                 rows={2}
                 placeholder="Notas do curador"
+                autoFocus
               />
 
               {/* Integration Section - sempre visível no modo edição */}
               <div className="space-y-3 pt-2 border-t border-gray-100">
+
                 <div className="flex items-center space-x-2">
                   <input
                     type="checkbox"
@@ -378,31 +364,30 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
                   </label>
                 </div>
 
-                {isIntegrationEnabled && (
-                  <div className="space-y-2">
-                    <PetSelector
-                      pets={pets}
-                      selectedPet={selectedPet}
-                      onSelectPet={(pet) => handleSelectPetForBath(bath.id, pet)}
-                      placeholder="Selecione o pet para adicionar à jornada..."
-                      showValidation={true}
-                    />
+                {/* Pet Selector - sempre visível e independente da integração */}
+                <div className="space-y-2">
+                  <PetSelector
+                    pets={pets}
+                    selectedPet={selectedPet}
+                    onSelectPet={(pet) => handleSelectPetForBath(bath.id, pet)}
+                    placeholder="Selecione o pet para adicionar à jornada..."
+                    showValidation={true}
+                  />
+                  {selectedPet && (
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleGeneratePreview(bath.id)}
+                        disabled={integrationLoading}
+                        className="flex items-center px-3 py-1 text-blue-600 border border-blue-200 rounded text-sm hover:bg-blue-50 disabled:opacity-50"
+                      >
+                        <Eye className="h-3 w-3 mr-1" />
+                        {integrationLoading ? 'Gerando...' : 'Preview'}
+                      </button>
+                    </div>
+                  )}
+                </div>
 
-                    {selectedPet && (
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleGeneratePreview(bath.id)}
-                          disabled={integrationLoading}
-                          className="flex items-center px-3 py-1 text-blue-600 border border-blue-200 rounded text-sm hover:bg-blue-50 disabled:opacity-50"
-                        >
-                          <Eye className="h-3 w-3 mr-1" />
-                          {integrationLoading ? 'Gerando...' : 'Preview'}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
+                {/* Integration Preview */}
                 {showPreviewForBath && previewData && selectedPet && (
                   <IntegrationPreviewCompact
                     bath={bath}
@@ -412,24 +397,64 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
                 )}
               </div>
 
-              <div className="flex space-x-2">
+              {/* Actions */}
+              <div className="flex space-x-2 pt-2">
+                {bath.approved !== true && (
+                  <button
+                    onClick={() => handleApprove(bath.id)}
+                    disabled={isApproving}
+                    className="flex-1 px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 transition-colors flex items-center justify-center disabled:opacity-50"
+                  >
+                    {isApproving ? (
+                      <>
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1"></div>
+                        Aprovando...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="h-3 w-3 mr-1" />
+                        {isIntegrationEnabled ? 'Aprovar + Jornada' : 'Aprovar'}
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {/* Botão Recusar independente da integração */}
+                {bath.approved !== false && (
+                  <button
+                    onClick={() => handleReject(bath.id)}
+                    className="flex-1 px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 transition-colors flex items-center justify-center"
+                    title="Recusar"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    <span>Recusar</span>
+                  </button>
+                )}
+
                 <button
-                  onClick={handleSaveEdit}
-                  className="flex-1 px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600"
+                  onClick={() => {
+                    if (window.confirm('Tem certeza que deseja excluir este banho? Esta ação não pode ser desfeita.')) {
+                      handleDelete(bath.id)
+                    }
+                  }}
+                  className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors flex items-center justify-center space-x-2"
+                  title="Excluir"
                 >
-                  Salvar
+                  <Trash2 className="h-5 w-5" />
+                  <span>Excluir</span>
                 </button>
                 <button
-                  onClick={handleCancelEdit}
-                  className="flex-1 px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600"
+                  onClick={() => handleEdit(bath)}
+                  className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors flex items-center justify-center"
                 >
-                  Cancelar
+                  <Edit3 className="h-3 w-3" />
                 </button>
               </div>
             </div>
           ) : (
             // View Mode with Integration
             <div className="space-y-3">
+              {/* Evitar re-render desnecessário do card no modo view */}
               <div>
                 <h3 className="font-semibold text-gray-900 flex items-center">
                   <Dog className="h-4 w-4 mr-2 text-primary" />
@@ -490,7 +515,7 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
                 )}
 
                 {/* Integration Preview */}
-                {showPreviewForBath && previewData && selectedPet && (
+                {showPreviewForBath && previewByBath[bath.id] && selectedPet && (
                   <IntegrationPreviewCompact
                     bath={bath}
                     pet={selectedPet}
@@ -520,16 +545,19 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
                     )}
                   </button>
                 )}
-                
-                {bath.approved !== false && (
-                  <button
-                    onClick={() => handleReject(bath.id)}
-                    className="flex-1 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors flex items-center justify-center"
-                  >
-                    <X className="h-3 w-3 mr-1" />
-                    Rejeitar
-                  </button>
-                )}
+
+                <button
+                  onClick={() => {
+                    if (window.confirm('Tem certeza que deseja excluir este banho? Esta ação não pode ser desfeita.')) {
+                      handleDelete(bath.id)
+                    }
+                  }}
+                  className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors flex items-center justify-center space-x-2"
+                  title="Excluir"
+                >
+                  <Trash2 className="h-5 w-5" />
+                  <span>Excluir</span>
+                </button>
                 
                 <button
                   onClick={() => handleEdit(bath)}
@@ -537,20 +565,13 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
                 >
                   <Edit3 className="h-3 w-3" />
                 </button>
-                
-                <button
-                  onClick={() => handleDelete(bath.id)}
-                  className="px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 transition-colors flex items-center justify-center"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
               </div>
             </div>
           )}
         </div>
       </div>
     );
-  };
+  });
 
   if (loading) {
     return (
@@ -752,7 +773,7 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Preview da Integração</h3>
                 <button
-                  onClick={handleClosePreview}
+                  onClick={handleCloseActivePreview}
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <X className="h-5 w-5" />
@@ -762,11 +783,12 @@ const WeeklyBathsCuration: React.FC<WeeklyBathsCurationProps> = ({ className = '
                 const activePreviewBathId = Object.keys(showPreview).find(key => showPreview[key]);
                 const activeBath = activePreviewBathId ? baths.find(b => b.id === activePreviewBathId) || baths[0] : baths[0];
                 const activePet = activePreviewBathId ? (selectedPets[activePreviewBathId] || pets[0]) : (Object.values(selectedPets).find(p => p) || pets[0]);
+                const activePreview = activePreviewBathId ? (previewByBath[activePreviewBathId] || null) : null;
                 return (
                   <IntegrationPreview
                     bath={activeBath}
                     pet={activePet}
-                    previewData={previewData}
+                    previewData={activePreview}
                   />
                 );
               })()}

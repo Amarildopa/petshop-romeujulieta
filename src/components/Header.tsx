@@ -11,6 +11,7 @@ import {
   LogOut,
   ExternalLink
 } from 'lucide-react';
+import { FEATURES } from '../config/features';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,15 +27,15 @@ const Header: React.FC = () => {
     { path: '/#about', label: 'Sobre Nós' },
     { path: '/#services', label: 'Nossos serviços' },
     { path: '/#vip-packages', label: 'Clube' },
-    { path: 'https://www.store.romeuejulietapetspa.com.br/', label: 'E-commerce', external: true }
+    ...(FEATURES.enableEcommerceExternalLink ? [{ path: 'https://www.store.romeuejulietapetspa.com.br/', label: 'E-commerce', external: true }] : [])
   ];
 
   // Menu para usuários logados (área restrita)
   const authenticatedNavItems = [
     { path: '/', label: 'Home' },
-    { path: 'https://www.store.romeuejulietapetspa.com.br/', label: 'E-Commerce', external: true },
     { path: '/#vip-packages', label: 'Clube' },
-    { path: '/dashboard', label: 'Dashboard' }
+    { path: '/dashboard', label: 'Dashboard' },
+    ...(FEATURES.enableEcommerceExternalLink ? [{ path: 'https://www.store.romeuejulietapetspa.com.br/', label: 'E-Commerce', external: true }] : [])
   ];
 
   // Seleciona o menu baseado no status de autenticação

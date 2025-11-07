@@ -53,30 +53,6 @@ const AdminSlots: React.FC = () => {
     maxAppointments: 1
   })
 
-  // Carregar dados iniciais
-  useEffect(() => {
-    loadInitialData()
-  }, [loadInitialData])
-
-  // Aplicar filtros
-  useEffect(() => {
-    loadSlots()
-  }, [filters, loadSlots])
-
-  const loadInitialData = useCallback(async () => {
-    try {
-      setLoading(true)
-      await Promise.all([
-        loadServices(),
-        loadSlots()
-      ])
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [loadSlots])
-
   const loadServices = async () => {
     try {
       const { data, error } = await supabase
@@ -129,6 +105,30 @@ const AdminSlots: React.FC = () => {
       console.error('Erro ao carregar slots:', error)
     }
   }, [filters])
+
+  const loadInitialData = useCallback(async () => {
+    try {
+      setLoading(true)
+      await Promise.all([
+        loadServices(),
+        loadSlots()
+      ])
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error)
+    } finally {
+      setLoading(false)
+    }
+  }, [loadSlots])
+
+  // Carregar dados iniciais
+  useEffect(() => {
+    loadInitialData()
+  }, [loadInitialData])
+
+  // Aplicar filtros
+  useEffect(() => {
+    loadSlots()
+  }, [filters, loadSlots])
 
   const handleGenerateSlots = async () => {
     try {
