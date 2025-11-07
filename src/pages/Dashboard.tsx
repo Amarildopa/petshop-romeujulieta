@@ -4,12 +4,9 @@ import { motion } from 'framer-motion';
 import { 
   Camera,
   Heart,
-  Star,
   Bell,
   Plus,
   ArrowRight,
-  Award,
-  Activity,
   Video,
   BookOpen,
   Expand
@@ -21,8 +18,8 @@ import { PetSelectorInline } from '../components/PetSelector';
 import { useAuth } from '../hooks/useAuth';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { petsService, type Pet as ServicePet } from '../services/petsService';
-import { appointmentsService, type Appointment } from '../services/appointmentsService';
-import { userSubscriptionsService } from '../services/userSubscriptionsService';
+// import { appointmentsService, type Appointment } from '../services/appointmentsService';
+// import { userSubscriptionsService } from '../services/userSubscriptionsService';
 import { getImageUrl } from '../config/images';
 import { generatePlaceholderImages } from '../utils/placeholderImages';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -33,10 +30,10 @@ const Dashboard: React.FC = () => {
   const [serviceProgress, setServiceProgress] = useState(0);
   const [checkedInPet, setCheckedInPet] = useState<string | null>(null);
   const [pets, setPets] = useState<ServicePet[]>([]);
-  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
+  // const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null);
+  // const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null);
   const [selectedPetId, setSelectedPetId] = useState<string>('');
   const { user, loading: authLoading } = useAuth();
   const { profile } = useUserProfile();
@@ -79,18 +76,12 @@ const Dashboard: React.FC = () => {
     try {
       setLoading(true);
       console.log('🔍 Dashboard - Carregando dados para usuário:', user.id);
-      const [petsData, appointmentsData, activeSubscription] = await Promise.all([
-        petsService.getPets(),
-        appointmentsService.getUpcomingAppointments(),
-        userSubscriptionsService.getActiveSubscription(user.id)
-      ]);
+      const petsData = await petsService.getPets();
       
       console.log('🐕 Dashboard - Pets carregados:', petsData);
       console.log('📊 Dashboard - Total de pets:', petsData.length);
       console.info('🔍 Dashboard - IDs dos pets:', JSON.stringify(petsData.map(p => ({ id: p.id, name: p.name })), null, 2));
       setPets(petsData);
-      setUpcomingAppointments(appointmentsData);
-      setHasActiveSubscription(!!activeSubscription);
       
       // Set default selected pet to first pet
       if (petsData.length > 0 && !selectedPetId) {
@@ -99,7 +90,7 @@ const Dashboard: React.FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
       // Em caso de erro na verificação de assinatura, assumir que não tem
-      setHasActiveSubscription(false);
+      // setHasActiveSubscription(false);
     } finally {
       setLoading(false);
     }
@@ -229,22 +220,7 @@ const Dashboard: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Subscription Banner for users without active subscription */}
-        {hasActiveSubscription === false && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 bg-white rounded-xl p-4 shadow-sm border border-primary/20"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-text-color-dark">Assine o Clube Premium</h3>
-                <p className="text-text-color">Acompanhe a jornada com exclusividade e benefícios</p>
-              </div>
-              <Link to="/subscription" className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark">Assinar</Link>
-            </div>
-          </motion.div>
-        )}
+        {/* Banner de assinatura removido para focar no MVP sem plano premium */}
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -369,33 +345,7 @@ const Dashboard: React.FC = () => {
               )}
             </motion.div>
 
-            {/* Appointments */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-accent/20 p-6"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-text-color-dark">Próximos Agendamentos</h2>
-                <Link to="/booking" className="text-primary hover:text-primary-dark text-sm font-medium">Ver mais</Link>
-              </div>
-              {upcomingAppointments.length === 0 ? (
-                <p className="text-text-color">Nenhum agendamento encontrado</p>
-              ) : (
-                <div className="space-y-3">
-                  {upcomingAppointments.slice(0, 3).map((appt) => (
-                    <div key={appt.id} className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                      <div>
-                        <p className="text-text-color-dark font-medium">{appt.service?.name || 'Serviço'}</p>
-                        <p className="text-sm text-text-color">{appt.pet?.name} • {appt.appointment_date} {appt.appointment_time}</p>
-                      </div>
-                      <span className="text-sm text-text-color">{appt.status}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
+
           </div>
 
           {/* Sidebar - My Pets, Subscription, etc. */}
@@ -450,36 +400,7 @@ const Dashboard: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Subscription Status */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-accent/20 p-6"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-text-color-dark">Plano Premium</h2>
-                {hasActiveSubscription ? (
-                  <span className="text-green-600">Ativo</span>
-                ) : (
-                  <span className="text-red-600">Inativo</span>
-                )}
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-text-color">Descontos exclusivos</span>
-                  <Star className="h-5 w-5 text-primary" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-text-color">Conteúdos especiais</span>
-                  <Award className="h-5 w-5 text-primary" />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-text-color">Relatórios de saúde</span>
-                  <Activity className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </motion.div>
+
           </div>
         </div>
       </div>
